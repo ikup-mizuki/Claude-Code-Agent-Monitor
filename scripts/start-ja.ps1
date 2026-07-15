@@ -31,6 +31,35 @@ if (-not (Test-Path (Join-Path $RepoRoot "client\node_modules"))) {
   Pop-Location
 }
 
+function Test-ServerUp {
+  try {
+    $resp = Invoke-WebRequest -Uri "http://127.0.0.1:4820/api/health" -TimeoutSec 2 -UseBasicParsing -ErrorAction Stop
+    return $resp.StatusCode -eq 200
+  } catch {
+    return $false
+  }
+}
+
+# This repo is often carried between machines on a portable drive (same
+# node_modules directory, different PC each time). Native addons like
+# better-sqlite3 are compiled against a specific Node.js ABI
+# (process.versions.modules), so switching to a PC running a different
+# Node.js version breaks them with ERR_DLOPEN_FAILED until rebuilt.
+#
+# Skip this entirely if a server is already up: its native module is loaded
+# and Windows locks loaded .node files, so rebuilding now would EPERM on the
+# unlink regardless of whether a rebuild is actually needed.
+if (-not (Test-ServerUp)) {
+  $abiMarker = Join-Path $RepoRoot "node_modules\.ccam-node-abi"
+  $currentAbi = (node -p "process.versions.modules").Trim()
+  $lastAbi = if (Test-Path $abiMarker) { (Get-Content $abiMarker -Raw).Trim() } else { $null }
+  if ($lastAbi -ne $currentAbi) {
+    Write-Host "[start-ja] Node ABI changed ($lastAbi -> $currentAbi) — rebuilding native modules..." -ForegroundColor Cyan
+    npm rebuild
+    Set-Content -Path $abiMarker -Value $currentAbi -NoNewline
+  }
+}
+
 if ($Dev) {
   Write-Host "[start-ja] starting dev servers (npm run dev)..." -ForegroundColor Cyan
   npm run dev
