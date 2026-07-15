@@ -1,0 +1,372 @@
+{
+  "title": "設定",
+  "subtitle": "価格、通知、データ、およびフックの管理",
+  "exportData": "データをエクスポート",
+  "acrossSessions": "追跡されたすべてのセッション",
+  "basedOnUsage": "モデルごとのトークン使用量に基づく",
+  "tabby": {
+    "title": "Tabby コンパニオン",
+    "description": "ライブセッションに反応して浮かぶ猫。",
+    "enable": "Tabby を表示",
+    "enableDesc": "ダッシュボード全体にコーナーコンパニオンを表示します (⌘Bで開く)"
+  },
+  "pricing": {
+    "title": "モデル価格",
+    "description": "100万トークンあたりのレート (USD)。パターン内のワイルドカードには % を使用します。一部のモデルには期間限定の導入レート (紫色で表示) があります。期限までの使用分はそのレートで、期限後の使用分は標準レートで請求されます。",
+    "introNote": "導入価格 ${{input}}/${{output}} ({{until}} まで)",
+    "introRatesTitle": "導入価格",
+    "introRatesHint": "プロモーションがない場合は日付を空にしてください",
+    "introUntil": "期間終了日",
+    "introUntilInvalid": "導入価格の期限は YYYY-MM-DD 形式の日付である必要があります",
+    "resetConfirm": "リセットの確認",
+    "resetDefaults": "デフォルトにリセット",
+    "resetResult": "{{count}} 個のデフォルトルールにリセットしました",
+    "addModel": "モデルを追加",
+    "pattern": "パターン",
+    "patternPlaceholder": "claude-opus-4%",
+    "namePlaceholder": "Claude Opus 4",
+    "validationRequired": "パターンと表示名は必須です",
+    "lastUpdated": "最終更新: ",
+    "tooltip": {
+      "title": "モデル価格の仕組み",
+      "howItWorks": "仕組み",
+      "howItWorksBody": "セッションが使用量を報告すると、ダッシュボードはモデルIDに一致する最初の価格ルールのパターンを見つけ、(入力トークン / 100万) および (出力トークン / 100万) に以下のレートを掛けてコストを計算します。ルールは上から順に評価され、最初に一致したものが適用されます。",
+      "patternsTitle": "パターンの構文",
+      "patternsBody": "パターンはSQLスタイルのglobです。% は任意の文字に一致するワイルドカードです。例えば: claude-opus-4-7% は claude-opus-4-7 で始まるすべてのモデルID (例: claude-opus-4-7, claude-opus-4-7-20260101) に一致します。claude-%-haiku はすべての haiku バリアントに一致します。claude-sonnet-4-6 のような完全なIDはそれ自身にのみ一致します。",
+      "manualUpdates": "価格は手動で更新する必要があります",
+      "manualUpdatesBody": "Anthropicはウェブサイト上で価格の変更を公開しており、ライブフィードはありません。新しいモデルがリリースされたり、レートが変更されたりした場合は、新しく記録されるセッションのコストが正しく計算されるように、一致するルールを編集する (またはcatch-allの上に新しいルールを追加する) 必要があります。すでに保存されているセッションには、取り込み時に適用された価格が保持されます。",
+      "apiPricing": "参考のみ - APIレート",
+      "apiPricingBody": "これらは従量課金のAPIレートです。Claude Codeをサブスクリプションプラン (Pro, Max, Team, または Enterprise) で使用している場合、実際のコストはトークンごとではなく月額固定料金となるため、これらの数字は実際に支払う額よりも高くなるのが普通です。ここにあるコストは請求書としてではなく、参考のための使用量の目安として扱ってください。"
+    },
+    "cacheWrite5m": "キャッシュ書き込み (5分)",
+    "cacheWrite1h": "キャッシュ書き込み (1時間)",
+    "fastInput": "高速入力",
+    "fastOutput": "高速出力"
+  },
+  "claudeHome": {
+    "title": "CLAUDE_HOME",
+    "description": "Claude Codeのセッションデータのルートディレクトリ。これを変更すると、トランスクリプトやインポートのスキャンパスが即座に更新されます。",
+    "save": "保存",
+    "saving": "保存中...",
+    "current": "現在:",
+    "placeholder": "/path/to/claude-home",
+    "saveFailed": "CLAUDE_HOME の更新に失敗しました"
+  },
+  "hooks": {
+    "title": "フック設定",
+    "description": "Claude Codeのフックはイベントをダッシュボードにリアルタイムで転送します。",
+    "allInstalled": "すべてのフックがインストールされています",
+    "incomplete": "フックが不完全です",
+    "reinstall": "フックを再インストール",
+    "success": "フックが正常にインストールされました",
+    "failed": "フックのインストールに失敗しました"
+  },
+  "notifications": {
+    "title": "通知",
+    "description": "重要なイベントのブラウザ通知。権限が必要です。",
+    "enable": "ブラウザ通知を有効にする",
+    "granted": "権限が付与されました",
+    "blocked": "権限がブロックされています",
+    "required": "権限が必要です",
+    "notifyWhen": "通知する条件...",
+    "newSession": "新しいセッションの開始",
+    "sessionComplete": "セッションの完了",
+    "sessionError": "セッションのエラー",
+    "subagentSpawned": "サブエージェントの生成",
+    "testTitle": "エージェントモニター",
+    "testBody": "通知は機能しています！",
+    "sendTest": "テスト通知を送信",
+    "disabledInfo": "通知は無効です - セッションイベントのアラートを受け取るには有効にしてください"
+  },
+  "import": {
+    "title": "履歴のインポート",
+    "description": "既存のClaude Codeセッションをダッシュボードに取り込みます。トークン数、モデルごとのコスト、圧縮、サブエージェント、ツール使用、およびターンの期間は元のJSONLトランスクリプトから再構築され、ライブセッションのキャプチャと同一のものになります。",
+    "accuracyNote": "再実行は安全です。セッションはセッションIDによって重複排除され、圧縮のベースラインによってトークンの合計が二重にカウントされることはありません。",
+    "supportedFiles": "サポートされる入力: .jsonl, .meta.json, .zip, .tar, .tar.gz, .tgz, .gz",
+    "instructions": "履歴の収集方法",
+    "stepLocate": "1. Claude Code の履歴を見つける",
+    "stepLocateBody": "すべてのClaude Codeセッションは、projectsフォルダの下にJSONLトランスクリプトとして保存されます。各サブフォルダは、セッションが開始された作業ディレクトリの名前 (スラッシュはダッシュに置換) になっています。",
+    "stepArchive": "2. 転送用にバンドルする (任意)",
+    "stepArchiveBody": "別のマシンから履歴を移動する場合は、まずフォルダ全体をアーカイブしてからコピーします (AirDrop、scp、USB、クラウドストレージ):",
+    "stepChoose": "3. 以下のインポートモードを選択する",
+    "stepChooseBody": "デフォルトの場所を再スキャンするか、履歴を展開したフォルダを指定するか、ファイル/アーカイブを直接アップロードします。",
+    "stepVerify": "4. トークンとコストを確認する",
+    "stepVerifyBody": "インポート後、「分析」→「コスト」を開いて内訳を確認します。同じセッションを再度インポートしても常に安全です。",
+    "defaultLocation": "このマシンのデフォルトの場所",
+    "locationFound": "フォルダが見つかりました",
+    "locationMissing": "フォルダが見つかりません",
+    "projectsLabel": "プロジェクト",
+    "jsonlLabel": "JSONLファイル",
+    "modeRescan": "デフォルトフォルダを再スキャン",
+    "modeRescanDesc": "~/.claude/projects を再読み込みし、新しいものをインポートします。",
+    "modeFolder": "フォルダをスキャン",
+    "modeFolderDesc": "このマシンの任意のディレクトリにあるJSONLトランスクリプトをスキャンします (サブフォルダも探索します)。",
+    "modeUpload": "ファイルをアップロード",
+    "modeUploadDesc": "JSONLファイルまたはアーカイブ (.zip / .tar.gz) を直接ブラウザにドロップします。",
+    "folderPlaceholder": "/absolute/path/to/claude-history",
+    "folderHelper": "絶対パス。チルダ (~) は展開されます。サブフォルダは再帰的にスキャンされます。",
+    "runRescan": "今すぐ再スキャン",
+    "runScan": "フォルダをスキャン",
+    "runUpload": "アップロードしてインポート",
+    "dropzoneHint": "ここにファイルをドラッグするか、クリックして選択",
+    "dropzoneSub": ".jsonl, .meta.json, .zip, .tar, .tar.gz, .tgz, .gz を受け付けます",
+    "filesSelected": "{{count}} 個のファイルを選択",
+    "clearSelection": "クリア",
+    "copy": "コピー",
+    "copied": "コピーしました",
+    "progress": {
+      "scan": "ディレクトリをスキャンしています...",
+      "extract": "アーカイブを展開しています ({{processed}}/{{total}})...",
+      "parse": "トランスクリプトを解析しています ({{processed}}/{{total}})...",
+      "complete": "インポート完了",
+      "error": "インポート失敗"
+    },
+    "result": {
+      "imported": "インポート済: {{count}}",
+      "backfilled": "既存のデータを強化: {{count}}",
+      "skipped": "すでに最新: {{count}}",
+      "errors": "エラー: {{count}}",
+      "filesScanned": "スキャンしたファイル: {{count}}",
+      "title": "前回のインポート結果"
+    },
+    "errors": {
+      "noFiles": "ファイルが選択されていません",
+      "noJsonl": "アップロードされたコンテンツ内に .jsonl ファイルが見つかりませんでした",
+      "pathRequired": "パスは必須です",
+      "pathInvalid": "パスは絶対パスである必要があります",
+      "pathNotFound": "パスが存在しません",
+      "pathNotDir": "パスはディレクトリではありません",
+      "generic": "インポート失敗: {{message}}"
+    }
+  },
+  "data": {
+    "title": "データ管理",
+    "description": "データベース情報、インポート/エクスポート、およびクリーンアップ。",
+    "dbOverview": "データベース概要",
+    "dbSize": "DBサイズ",
+    "loadingDb": "データベース情報を読み込んでいます...",
+    "sessionCleanup": "セッションクリーンアップ",
+    "cleanupDesc": "古いアクティブセッションを放棄し、古いデータをパージします",
+    "abandonAfter": "指定より古いアクティブセッションを放棄する",
+    "purgeAfter": "指定より古い完了/エラーのセッションをパージする",
+    "confirmCleanup": "クリーンアップの確認",
+    "runCleanup": "クリーンアップを実行",
+    "nothingToClean": "クリーンアップするものがありません",
+    "abandonedResult": " セッションを放棄しました",
+    "purgedResult": " セッションをパージしました ({{events}} イベント, {{agents}} エージェント)"
+  },
+  "danger": {
+    "title": "危険な操作",
+    "description": "データを永久に削除する取り消し不可能な操作",
+    "warning": "これにより、すべてのセッション、エージェント、イベント、およびトークンデータが削除されます。本当によろしいですか？",
+    "yesClearAll": "はい、すべてクリアします",
+    "clearAllData": "すべてのデータをクリア",
+    "clearedResult": "{{count}} 行をクリアしました"
+  },
+  "about": {
+    "title": "情報",
+    "description": "サーバーのランタイム情報。",
+    "uptime": "稼働時間",
+    "nodejs": "Node.js",
+    "platform": "プラットフォーム",
+    "wsClients": "WSクライアント",
+    "loadingInfo": "サーバー情報を読み込んでいます..."
+  },
+  "tables": {
+    "sessions": "セッション",
+    "agents": "エージェント",
+    "events": "イベント",
+    "sessionsWithCost": "コスト付きセッション",
+    "pricingRules": "価格ルール"
+  },
+  "messages": {
+    "failedLoad": "読み込みに失敗しました",
+    "failedSave": "保存に失敗しました",
+    "failedDelete": "削除に失敗しました",
+    "unknownError": "不明なエラー",
+    "actionFailed": "エラー: {{message}}"
+  },
+  "webhooks": {
+    "title": "Webhook 通知",
+    "description": "発火したアラートをSlack、Discord、Microsoft Teams、または任意のHTTPエンドポイントに転送します。配信は自動で行われ、失敗した場合は再試行され、監視をブロックすることはありません。",
+    "count_one": "{{count}} ターゲット",
+    "count_other": "{{count}} ターゲット",
+    "add": "Webhookを追加",
+    "loading": "Webhookを読み込んでいます…",
+    "empty": "設定されたWebhookはありません。アラートをSlack、Discord、Teams、またはカスタムエンドポイントに転送するには追加してください。",
+    "scopedTo_one": "{{count}} ルール",
+    "scopedTo_other": "{{count}} ルール",
+    "enabled": "有効",
+    "test": "テスト",
+    "edit": "編集",
+    "delete": "削除",
+    "confirmDelete": "確認",
+    "testOk": "配信完了 (HTTP {{status}})",
+    "testFail": "失敗: {{error}}",
+    "addTitle": "新規 Webhook",
+    "editTitle": "Webhook を編集",
+    "fieldName": "名前",
+    "fieldNamePlaceholder": "例: Team Slack #alerts",
+    "fieldType": "タイプ",
+    "type": {
+      "slack": "Slack",
+      "discord": "Discord",
+      "teams": "Microsoft Teams",
+      "generic": "汎用 (カスタムJSON)"
+    },
+    "fieldUrl": "Webhook URL",
+    "urlKeepHint": "現在のままにするには空白のままにしてください",
+    "urlKeepPlaceholder": "•••••••• (変更なし)",
+    "urlPlaceholder": {
+      "slack": "https://hooks.slack.com/services/…",
+      "discord": "https://discord.com/api/webhooks/…",
+      "teams": "https://outlook.office.com/webhook/…",
+      "generic": "https://example.com/webhook"
+    },
+    "fieldSecret": "署名シークレット (オプション)",
+    "secretPlaceholder": "HMAC-SHA256 シークレット",
+    "secretKeepPlaceholder": "•••••••• (保持するには空白)",
+    "secretHint": "設定すると、リクエストは X-Webhook-Signature ヘッダーで署名されます。",
+    "fieldHeaders": "カスタムヘッダー (オプション)",
+    "replaceHeaders": "ヘッダーを置換",
+    "headerKey": "ヘッダー",
+    "headerValue": "値",
+    "addHeader": "ヘッダーを追加",
+    "scopeAll": "すべてのルールからアラートを受け取る",
+    "enabledOnSave": "有効化",
+    "save": "保存",
+    "create": "作成",
+    "cancel": "キャンセル",
+    "urlOptional": "オプションの上書き",
+    "urlAuto": "URLは以下の資格情報から自動的に設定されます。",
+    "deleteTitle": "Webhookを削除しますか？",
+    "deleteMessage": "「{{name}}」を削除しますか？ 発火したアラートはこのターゲットへの配信を停止します。この操作は元に戻せません。",
+    "guideToggle": "{{provider}} の設定方法",
+    "guideDocs": "公式 {{provider}} ドキュメント",
+    "guideStaleNote": "プロバイダーの設定画面は頻繁に変更されるため、これらの手順は古くなっている可能性があります - 常に公式ドキュメントで確認してください。"
+  },
+  "alertsHub": {
+    "title": "アラート",
+    "description": "アラートルールの定義、Webhookチャネルへのルーティング、そして発火した内容の確認をすべて1つの場所で行います。",
+    "tabRules": "ルール",
+    "tabChannels": "チャネル",
+    "tabActivity": "アクティビティ",
+    "rulesHint": "アラートをトリガーする条件。ライブイベントストリームに対してサーバー側で評価されます。",
+    "rulesEmptyHint": "ルールを追加して、エラー、非アクティブ状態、スタックしたエージェント、またはトークンのしきい値に関するアラートを開始します。"
+  },
+  "jumpTo": "移動",
+  "webhookGuides": {
+    "slack": {
+      "steps": [
+        "api.slack.com/apps でSlackアプリを作成または開きます。",
+        "「Incoming Webhooks」をオンにし、「Add New Webhook to Workspace」をクリックします。",
+        "投稿先のチャネルを選択して承認します。",
+        "生成されたURL (https://hooks.slack.com/services/…) をコピーし、上に貼り付けます。"
+      ]
+    },
+    "discord": {
+      "steps": [
+        "サーバーを開く → サーバー設定 → 連携 → Webhook。",
+        "「新しいWebhook」をクリックし、チャネルを選択し、任意で名前を変更します。",
+        "「Webhook URLをコピー」をクリックし、上に貼り付けます。"
+      ]
+    },
+    "teams": {
+      "steps": [
+        "対象のTeamsチャネルで、⋯ → 「ワークフロー」をクリックします。",
+        "「Webhook 要求を受信したときにチャネルに投稿する」テンプレートを選択します。",
+        "フローを完了し、生成されたHTTP POST URLをコピーします。",
+        "それを上に貼り付けます。(従来のOffice 365コネクタは2025年に廃止されました - ワークフローを使用してください。)"
+      ]
+    },
+    "google_chat": {
+      "steps": [
+        "Google Chatスペースを開く → スペース名 → 「アプリと統合」。",
+        "「Webhook」→「Webhookを追加」をクリックし、名前を付けます。",
+        "Webhook URLをコピーして上に貼り付けます。"
+      ]
+    },
+    "mattermost": {
+      "steps": [
+        "メインメニュー → 統合 → 内向きのWebhook (管理者が事前にWebhookを有効にする必要があります)。",
+        "「内向きのWebhookを追加する」をクリックし、チャネルを選択します。",
+        "保存し、Webhook URLをコピーして上に貼り付けます。"
+      ]
+    },
+    "rocketchat": {
+      "steps": [
+        "管理 → 統合 → 新規 → 着信。",
+        "有効にし、チャネルを選択して保存します。",
+        "「Webhook URL」をコピーして上に貼り付けます。"
+      ]
+    },
+    "telegram": {
+      "steps": [
+        "@BotFather にメッセージを送り、/newbot を実行して、ボットトークンをコピーします。",
+        "ボットをグループ/チャネルに追加します (または単にDMを送ります)。",
+        "チャットIDを見つけます：メッセージを送信し、https://api.telegram.org/bot<token>/getUpdates を開き、result[].message.chat.id を読み取ります。",
+        "上のボットトークンとチャットIDを入力します - URLは不要です。"
+      ]
+    },
+    "pagerduty": {
+      "steps": [
+        "対象のサービスを開く → 統合 → 「統合の追加」。",
+        "「Events API v2」を選択します。",
+        "統合キー (ルーティングキー) をコピーします。",
+        "それを上のルーティングキーとして入力します - Events API URLは事前に入力されています。"
+      ]
+    },
+    "opsgenie": {
+      "steps": [
+        "設定 → 統合 → 「API」統合を追加。",
+        "生成されたAPIキーをコピーします。",
+        "アカウントのリージョン (US または EU) に注意してください。",
+        "上にAPIキーとリージョンを入力します - アラートURLはリージョンから導出されます。"
+      ]
+    },
+    "splunk_oncall": {
+      "steps": [
+        "統合 → RESTエンドポイントを選択し、有効にします。",
+        "REST URLをコピーします - これにはすでにAPIキーが含まれています。",
+        "末尾の '$routing_key' をご自身のルーティングキーのいずれかに置き換えます。",
+        "完全なURLを上に貼り付けます。"
+      ]
+    },
+    "zapier": {
+      "steps": [
+        "トリガーとして「Webhooks by Zapier」→「Catch Hook」を使用してZapを作成します。",
+        "提供されるカスタムWebhook URLをコピーします。",
+        "上に貼り付けます。アラートは { event, alert } というJSON形式で到着します。"
+      ]
+    },
+    "make": {
+      "steps": [
+        "シナリオの最初のステップとして「Webhooks」→「Custom webhook」モジュールを追加します。",
+        "「追加」をクリックしてフックを作成し、そのURLをコピーします。",
+        "上に貼り付けてから、Makeがペイロードの形状を学習するように1回実行します。"
+      ]
+    },
+    "n8n": {
+      "steps": [
+        "ワークフローに「Webhook」ノードを追加し、メソッドをPOSTに設定します。",
+        "Production URLをコピーします。",
+        "ワークフローをアクティブにし、URLを上に貼り付けます (セルフホストの場合はhttpも許可されます)。"
+      ]
+    },
+    "pipedream": {
+      "steps": [
+        "「HTTP / Webhook」トリガーを使用してワークフローを作成します。",
+        "一意のエンドポイントURLをコピーします。",
+        "上に貼り付けます。Pipedreamのイベントインスペクターで配信状況を確認できます。"
+      ]
+    },
+    "generic": {
+      "steps": [
+        "JSON POSTを受け入れる任意のエンドポイント (https、またはローカルテスト用のhttp) に向けることができます。",
+        "ボディの形式: { event: 'alert.triggered', source, sent_at, alert: { … } }。",
+        "オプション: 署名シークレット (ボディ全体に対するHMAC-SHA256 → X-Webhook-Signature ヘッダー) とカスタムヘッダーを設定します。",
+        "ヒント: webhook.site のような無料のインスペクターを使用して、正確なペイロードを確認してください。"
+      ]
+    }
+  }
+}

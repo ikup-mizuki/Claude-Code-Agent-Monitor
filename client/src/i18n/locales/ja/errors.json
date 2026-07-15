@@ -1,0 +1,31 @@
+{
+  "notFound": {
+    "code": "404",
+    "title": "ページが見つかりません",
+    "description": "リクエストされたルートは存在しません。ナビゲーションを使用して有効なページに戻ってください。",
+    "goDashboard": "ダッシュボードへ",
+    "goBack": "戻る"
+  },
+  "notifications": {
+    "newSession": "新規セッション",
+    "sessionDefault": "セッション ",
+    "sessionError": "セッションエラー",
+    "subagentSpawned": "サブエージェント生成",
+    "finishedResponding": "Claudeの応答完了",
+    "readyForInput": "入力待ち",
+    "sessionCompleted": "セッション完了",
+    "sessionClosed": "セッション終了",
+    "defaultTitle": "Claude Code",
+    "defaultBody": "通知"
+  },
+  "toolLegend": {
+    "read": "Read",
+    "write": "Write",
+    "edit": "Edit",
+    "bash": "Bash",
+    "grep": "Grep",
+    "glob": "Glob",
+    "agent": "Agent",
+    "other": "Other"
+  }
+}

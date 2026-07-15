@@ -1,0 +1,253 @@
+{
+  "title": "Claude Config Explorer",
+  "subtitle": "Claude Codeのセットアップ（プラグイン、スキル、サブエージェント、MCPサーバー、フック、設定）を一覧表示します。",
+  "refresh": "更新",
+  "refreshing": "更新中…",
+  "lastUpdated": "最終更新 {{time}}",
+  "loadError": "読み込みに失敗しました: {{message}}",
+  "scope": {
+    "all": "すべてのスコープ",
+    "user": "ユーザー",
+    "project": "プロジェクト",
+    "projectLocal": "プロジェクト (ローカル)",
+    "home": "ホーム"
+  },
+  "tabs": {
+    "overview": "概要",
+    "skills": "スキル",
+    "agents": "サブエージェント",
+    "commands": "スラッシュコマンド",
+    "outputStyles": "出力スタイル",
+    "plugins": "プラグイン",
+    "marketplaces": "マーケットプレイス",
+    "mcp": "MCPサーバー",
+    "hooks": "フック",
+    "keybindings": "キーバインド",
+    "settings": "設定",
+    "memory": "メモリ"
+  },
+  "overview": {
+    "rootsTitle": "ルート",
+    "claudeHome": "Claudeホーム",
+    "projectClaudeDir": "プロジェクト .claude",
+    "projectRoot": "プロジェクトルート",
+    "claudeJson": "claude.json",
+    "summary": "クイックサマリー",
+    "user": "ユーザー",
+    "project": "プロジェクト",
+    "items": "アイテム"
+  },
+  "common": {
+    "search": "名前で検索…",
+    "empty": "まだ何もありません。",
+    "viewSource": "ソースを表示",
+    "close": "閉じる",
+    "copyPath": "パスをコピー",
+    "copied": "コピーしました",
+    "truncated": "(プレビュー用に切り詰められました)",
+    "size": "サイズ",
+    "modified": "変更日時",
+    "scopeLabel": "スコープ",
+    "noFrontmatter": "フロントマターなし",
+    "redactedNotice": "/token|secret|password|key|auth/i に一致する値はサーバー側で秘匿されます。"
+  },
+  "skills": {
+    "name": "名前",
+    "description": "説明"
+  },
+  "agents": {
+    "name": "名前",
+    "model": "モデル",
+    "tools": "ツール"
+  },
+  "plugins": {
+    "manifest": "マニフェスト",
+    "marketplace": "マーケットプレイス",
+    "version": "バージョン",
+    "installedAt": "インストール済み",
+    "lastUpdated": "更新日時",
+    "installPath": "インストールパス",
+    "missing": "インストールパスが見つかりません",
+    "manifestMissing": "{{path}} に installed_plugins.json が見つかりません",
+    "enabled": "有効",
+    "disabled": "無効",
+    "contributes": "コントリビュート",
+    "skills_one": "{{count}}個のスキル",
+    "skills_other": "{{count}}個のスキル",
+    "agents_one": "{{count}}個のエージェント",
+    "agents_other": "{{count}}個のエージェント",
+    "commands_one": "{{count}}個のコマンド",
+    "commands_other": "{{count}}個のコマンド",
+    "outputStyles_one": "{{count}}個の出力スタイル",
+    "outputStyles_other": "{{count}}個の出力スタイル",
+    "hooks_one": "{{count}}個のフックスクリプト",
+    "hooks_other": "{{count}}個のフックスクリプト",
+    "author": "作成者",
+    "homepage": "ホームページ",
+    "license": "ライセンス",
+    "description": "説明"
+  },
+  "marketplaces": {
+    "manifest": "既知のマーケットプレイスのマニフェスト",
+    "noMarketplaces": "マーケットプレイスが登録されていません。",
+    "source": "ソース",
+    "lastUpdated": "最終同期",
+    "pluginCount": "プラグイン",
+    "owner": "所有者",
+    "installLocation": "インストールパス",
+    "addCmd": "claude plugin marketplace add <repo>"
+  },
+  "keybindings": {
+    "file": "ソースファイル",
+    "missing": "{{path}} に keybindings.json が見つかりません",
+    "context": "コンテキスト",
+    "key": "キー",
+    "action": "アクション",
+    "docsLink": "キーバインドのドキュメントを表示"
+  },
+  "statusline": {
+    "title": "ステータスライン",
+    "configured": "設定されたステータスラインコマンド",
+    "scripts": "CLAUDE_HOMEで見つかったステータスラインスクリプト",
+    "noStatusline": "ステータスラインが設定されていません。"
+  },
+  "hookScripts": {
+    "title": "~/.claude/hooks/ スクリプト",
+    "subtitle": "フックコマンドによって参照されるヘルパースクリプトです。これらは settings.json の `hooks.<event>.hooks[].command` によって呼び出されたときに実行されます。",
+    "empty": "~/.claude/hooks/ にスクリプトがありません。"
+  },
+  "mcp": {
+    "userScope": "ユーザースコープのサーバー",
+    "projectScope": "プロジェクトスコープのサーバー",
+    "command": "コマンド",
+    "args": "引数",
+    "env": "環境変数名",
+    "url": "URL",
+    "headers": "ヘッダー名",
+    "kind": "種類",
+    "source": "ソース",
+    "noServers": "MCPサーバーが見つかりません。"
+  },
+  "hooks": {
+    "noHooks": "フックが設定されていません。",
+    "matcher": "マッチャー",
+    "command": "コマンド",
+    "type": "タイプ",
+    "timeout": "タイムアウト",
+    "fileMissing": "(このスコープには設定ファイルがありません)"
+  },
+  "settings": {
+    "fileMissing": "(このスコープには設定ファイルがありません)"
+  },
+  "memory": {
+    "userScope": "ユーザーメモリ",
+    "projectScope": "プロジェクトメモリ",
+    "missing": "CLAUDE.md が見つかりません。",
+    "autoTitle": "プロジェクトメモリストア",
+    "autoSubtitle": "~/.claude/projects/<project>/memory/ 以下のプロジェクトごとのファイルベースメモリ — MEMORY.md インデックスと、記憶された事実ごとの1つのファイルです。ここでは読み取り専用です。",
+    "noMatches": "検索に一致するメモリファイルがありません。",
+    "indexFiles": "インデックス",
+    "fileCount_one": "{{count}}個のファイル",
+    "fileCount_other": "{{count}}個のファイル",
+    "factFiles_one": "{{count}}個の事実",
+    "factFiles_other": "{{count}}個の事実",
+    "newFile": "新規ファイル",
+    "newFileTitle": "{{project}} の新規メモリファイル",
+    "namePlaceholder": "例: my_fact.md",
+    "nameHelp": ".md で終わるファイル名（省略した場合は .md が追加されます）。",
+    "projectLabel": "プロジェクト",
+    "projectHelp": "このプロジェクトのメモリディレクトリに作成されます。"
+  },
+  "edit": {
+    "newButton": "新規",
+    "editButton": "編集",
+    "deleteButton": "削除",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "saving": "保存中…",
+    "deleting": "削除中…",
+    "newTitle": "新しい{{type}}を作成",
+    "editTitle": "{{name}}を編集",
+    "namePlaceholder": "名前 (ケバブケース、スペースなし)",
+    "nameLabel": "名前",
+    "nameHelp": "文字、数字、ドット、ダッシュ、アンダースコア。最大64文字。",
+    "contentLabel": "コンテンツ",
+    "scopePicker": "スコープ",
+    "writeError": "保存に失敗しました: {{message}}",
+    "deleteError": "削除に失敗しました: {{message}}",
+    "saveSuccess": "保存しました · {{path}} にバックアップ",
+    "saveSuccessNew": "作成しました。",
+    "deleteSuccess": "削除しました · {{path}} にバックアップ",
+    "confirmDelete": "このアイテムを削除しますか？",
+    "confirmDeleteBody": "これにより、ファイル (またはバンドルされたアセットを含むスキルフォルダ) は削除前にタイムスタンプ付きのバックアップに移動されます。バックアップは Claude Code がスキャンするディレクトリの外部にあるため、エントリはCLIから消去されます。",
+    "confirmDeletePath": "パス: {{path}}",
+    "confirmDeleteAction": "はい、バックアップして削除します",
+    "templates": {
+      "skills": "---\nname: my-skill\ndescription: 1行の説明 (Claudeがスキルを選択したときに表示されます)\n---\n\n本文 - スキルの内容、使用タイミング、例など。\n",
+      "agents": "---\nname: my-agent\ndescription: このサブエージェントをいつ呼び出すか\ntools: Read, Grep\nmodel: sonnet\n---\n\nサブエージェントのシステムプロンプト。\n",
+      "commands": "---\ndescription: スラッシュメニューに表示される1行の説明\n---\n\n/my-command の動作内容。\n",
+      "output-styles": "---\nname: my-style\ndescription: 出力スタイルの説明\n---\n\nスタイルの指示。\n",
+      "memory": "# プロジェクトメモリ\n\nClaudeはセッション開始時にこれを読み込みます。\n",
+      "auto-memory": "---\nname: my-fact\ndescription: 記憶された事実の1行サマリー\nmetadata:\n  type: feedback\n---\n\n記憶する事実。\n"
+    }
+  },
+  "backups": {
+    "title": "バックアップ",
+    "empty": "まだバックアップはありません。編集または削除を行うたびに、タイムスタンプ付きのバックアップがここに作成されます。",
+    "viewLink": "バックアップ履歴を表示",
+    "openButton": "バックアップ",
+    "subtitle": "エディタでの保存/削除はすべて、まずここにコピーが書き込まれます。バックアップフォルダは Claude Code がスキャンするディレクトリの外部にあるため、CLIにゴーストとして再表示されることはありません。",
+    "restoreHint": "バックアップを元の名前に変更して復元します:",
+    "size": "サイズ",
+    "created": "作成日時",
+    "type": "タイプ",
+    "scopeLabel": "スコープ",
+    "filterAll": "すべてのタイプ"
+  },
+  "explain": {
+    "hooks": {
+      "title": "フックは意図的に読み取り専用になっています",
+      "body": "フックは Claude Code が常に書き込む `settings.json` ファイルの `hooks` ブロックにあります。ダッシュボードからこれらを編集するとライブCLIと競合し、ダッシュボード自体のインジェスト (以下の `hook-handler.js` エントリ) を気付かずに壊してしまう可能性があります。",
+      "howTo": "以下のいずれかの方法でご自身で編集してください:",
+      "cmd1": "claude config /hooks",
+      "cmd1Note": "Claude Code内のインタラクティブなフックエディター",
+      "cmd2": "$EDITOR ~/.claude/settings.json",
+      "cmd2Note": "ユーザーレベルのフックブロックを手動で編集",
+      "cmd3": "$EDITOR .claude/settings.json",
+      "cmd3Note": "プロジェクトレベルのフックブロックを手動で編集"
+    },
+    "settings": {
+      "title": "設定は意図的に読み取り専用になっています",
+      "body": "これらのJSONファイルは、モデルの変更、テーマの切り替え、プラグインの有効化などのたびにライブ `claude` CLI によって書き換えられます。ダッシュボードの書き込みはCLIと競合し、状態が失われます。",
+      "howTo": "Claude Code自体を使用して設定を編集してください:",
+      "cmd1": "claude config set <key> <value>",
+      "cmd1Note": "個別のキーを安全に設定",
+      "cmd2": "/config",
+      "cmd2Note": "CLI内のインタラクティブな設定UIを開く",
+      "cmd3": "$EDITOR ~/.claude/settings.json",
+      "cmd3Note": "手動で編集 (`claude` プロセスが実行されていない場合のみ)"
+    },
+    "plugins": {
+      "title": "プラグインはCLIで管理されます",
+      "body": "プラグインは独自レジストリを持つバンドルです（`installed_plugins.json` と `plugins/cache/` 下のインストールパス）。ダッシュボードはこれらを読み取りますが、レジストリの一貫性を保つため、インストール/アンインストールは `claude plugin …` に委ねています。",
+      "install": "プラグインをインストール:",
+      "installCmd": "claude plugin install <marketplace>/<plugin>",
+      "uninstall": "このプラグインをアンインストール:",
+      "uninstallButton": "アンインストールコマンドをコピー"
+    },
+    "mcp": {
+      "title": "MCPサーバーはCLIで管理されます",
+      "body": "MCPサーバーの設定は、ライブCLIが常に書き込むファイルである `~/.claude.json` の中にあります。ダッシュボードから同時に書き込むとプロジェクトの状態が破損するため、追加/削除のフローは Claude Code 自体を介して行います。",
+      "list": "設定済みのサーバーを一覧表示:",
+      "listCmd": "claude mcp list",
+      "add": "サーバーを追加:",
+      "addCmd": "claude mcp add <name> <command> [args…]",
+      "remove": "このサーバーを削除:",
+      "removeButton": "削除コマンドをコピー"
+    }
+  },
+  "snippet": {
+    "copy": "コピー",
+    "copied": "コピーしました"
+  }
+}

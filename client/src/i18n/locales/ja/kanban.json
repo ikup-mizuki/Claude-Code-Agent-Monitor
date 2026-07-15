@@ -1,0 +1,45 @@
+{
+  "title": "かんばんボード",
+  "subtitle": "すべてのエージェントのステータス別かんばんビュー",
+  "subtitleSessions": "すべてのセッションのステータス別かんばんビュー",
+  "viewToggle": {
+    "agents": "エージェント",
+    "sessions": "セッション"
+  },
+  "noAgents": "トラッキング中のエージェントはありません",
+  "noAgentsDesc": "フックをインストールした状態でClaude Codeセッションを開始すると、ここにエージェントが表示されます。",
+  "agentCount": "{{count}} エージェントトラッキング中",
+  "agentCount_plural": "{{count}} エージェントトラッキング中",
+  "noAgentsInColumn": "エージェントなし",
+  "noSessions": "トラッキング中のセッションはありません",
+  "noSessionsDesc": "フックをインストールした状態でClaude Codeセッションを開始すると、ここにセッションが表示されます。",
+  "sessionCount": "{{count}} セッショントラッキング中",
+  "sessionCount_plural": "{{count}} セッショントラッキング中",
+  "noSessionsInColumn": "セッションなし",
+  "ran": "実行完了 ",
+  "running": "実行中 ",
+  "session": {
+    "anonymous": "無題のセッション",
+    "agentSummary_one": "{{count}} エージェント",
+    "agentSummary_other": "{{count}} エージェント",
+    "subagentSummary_one": "{{count}} サブエージェント",
+    "subagentSummary_other": "{{count}} サブエージェント",
+    "turnSummary_one": "{{count}} ターン",
+    "turnSummary_other": "{{count}} ターン"
+  },
+  "tooltip": {
+    "agent": {
+      "working": "エージェントは現在、ツール呼び出しをアクティブに実行しています。\n\nPreToolUseまたはUserPromptSubmitで入り、Stop（ターン終了）で出ます。",
+      "waiting": "エージェントはターンを終了し、人間を待っています - Claudeは次のユーザーメッセージを待っているか、ツールの使用許可を求めています。\n\n次のPreToolUse / PostToolUse、またはセッションが終了したときにクリアされます。",
+      "completed": "このセッションのエージェントは完全に終了しました - 通常、SessionEndが発生したか、サブエージェントの場合はSubagentStopが処理されたためです。\n\nこのエージェントに対するこれ以上のアクティビティは記録されません。",
+      "error": "エージェントでエラーが記録され、続行されません。メインエージェントの場合、これはstop_reason=errorのStopから来ます。サブエージェントの場合は実行の失敗からです。"
+    },
+    "session": {
+      "active": "セッションはターン途中です - Claudeは現在実行中で、ユーザーは何もブロックしていません。性質上短時間です: セッションはツール呼び出し中にActiveになり、ターン終了時にWaitingに戻ります。",
+      "waiting": "セッションはユーザーの操作を待機しています。Claudeがターンを終えたか（最も一般的）、許可プロンプトを表示して人間が応答するまでブロックされています。\n\n返信が必要なセッションはここを確認してください。",
+      "completed": "セッションは完全に終了しました - SessionEndが発生したか（CLIが正常に終了）、ユーザーが明示的に閉じました。\n\nこのセッション上のすべてのエージェントも完了しています。",
+      "error": "セッションがエラーで終了しました - Claudeがstop_reason=errorを返したか、回復不可能な障害が発生したか、アップストリームのAPIエラーにより実行が終了しました。",
+      "abandoned": "セッションは正常なSessionEndなしに古くなりました。5分以上アクティビティがない場合（/resumeによる孤立、ネットワーク切断、CLIの強制終了など）、放棄されたとマークされます。完了とは異なり、実際の終了シグナルは見られませんでした。"
+    }
+  }
+}

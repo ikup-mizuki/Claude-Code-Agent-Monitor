@@ -70,6 +70,22 @@ import run_ko from "./locales/ko/run.json";
 import alerts_ko from "./locales/ko/alerts.json";
 import splash_ko from "./locales/ko/splash.json";
 
+import common_ja from "./locales/ja/common.json";
+import nav_ja from "./locales/ja/nav.json";
+import dashboard_ja from "./locales/ja/dashboard.json";
+import sessions_ja from "./locales/ja/sessions.json";
+import activity_ja from "./locales/ja/activity.json";
+import analytics_ja from "./locales/ja/analytics.json";
+import workflows_ja from "./locales/ja/workflows.json";
+import settings_ja from "./locales/ja/settings.json";
+import kanban_ja from "./locales/ja/kanban.json";
+import errors_ja from "./locales/ja/errors.json";
+import updates_ja from "./locales/ja/updates.json";
+import ccConfig_ja from "./locales/ja/ccConfig.json";
+import run_ja from "./locales/ja/run.json";
+import alerts_ja from "./locales/ja/alerts.json";
+import splash_ja from "./locales/ja/splash.json";
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -143,8 +159,25 @@ i18n
         alerts: alerts_ko,
         splash: splash_ko,
       },
+      ja: {
+        common: common_ja,
+        nav: nav_ja,
+        dashboard: dashboard_ja,
+        sessions: sessions_ja,
+        activity: activity_ja,
+        analytics: analytics_ja,
+        workflows: workflows_ja,
+        settings: settings_ja,
+        kanban: kanban_ja,
+        errors: errors_ja,
+        updates: updates_ja,
+        ccConfig: ccConfig_ja,
+        run: run_ja,
+        alerts: alerts_ja,
+        splash: splash_ja,
+      },
     },
-    supportedLngs: ["en", "zh", "vi", "ko"],
+    supportedLngs: ["en", "zh", "vi", "ko", "ja"],
     nonExplicitSupportedLngs: true,
     fallbackLng: "en",
     ns: [

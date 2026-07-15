@@ -1,0 +1,22 @@
+{
+  "title": "ダッシュボード",
+  "subtitle": "Claude Codeエージェントアクティビティのリアルタイム概要",
+  "totalSessions": "総セッション数",
+  "activeAgents": "アクティブエージェント",
+  "activeSubagents": "アクティブサブエージェント",
+  "eventsToday": "今日のイベント",
+  "totalEvents": "総イベント",
+  "totalCost": "総コスト",
+  "viewBoard": "ボードを表示",
+  "viewAll": "すべて表示",
+  "activeAgentsSection": "アクティブなエージェント",
+  "recentActivity": "最近のアクティビティ",
+  "noAgents": "アクティブなエージェントはありません",
+  "noAgentsDesc": "Claude Codeセッションが実行されると、ここにエージェントが表示されます。",
+  "noActivity": "アクティビティはまだありません",
+  "noActivityDesc": "Claude Codeセッションからのイベントがここにリアルタイムでストリーミングされます。",
+  "failedConnect": "サーバーへの接続に失敗しました",
+  "failedLoad": "データの読み込みに失敗しました",
+  "activeTrend": " アクティブ",
+  "totalTrend": " （アクティブなセッション内）"
+}
