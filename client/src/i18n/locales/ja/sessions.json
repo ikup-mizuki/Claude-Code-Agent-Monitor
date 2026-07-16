@@ -21,6 +21,10 @@
   "tableDirectory": "ディレクトリ",
   "defaultName": "セッション ",
   "detail": {
+    "waitingBanner": {
+      "title": "入力待ちです",
+      "generic": "ターミナルで応答するまで、このセッションのClaude Codeは一時停止しています。"
+    },
     "failedLoad": "セッションの読み込みに失敗しました",
     "loading": "セッションを読み込み中...",
     "notFound": "セッションが見つかりません",

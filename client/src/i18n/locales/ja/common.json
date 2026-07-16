@@ -46,6 +46,24 @@
     "active": "アクティブ",
     "abandoned": "放棄"
   },
+  "awaitingReason": {
+    "notification": {
+      "label": "入力待ち",
+      "desc": "許可プロンプトまたは入力要求で停止中 — 応答するまでClaudeは続行できません。"
+    },
+    "stop": {
+      "label": "応答完了",
+      "desc": "Claudeの応答が完了しました。次のプロンプトを送るまでセッションはアイドル状態です。"
+    },
+    "session_start": {
+      "label": "プロンプト待機中",
+      "desc": "セッションが開始・再開され、空のプロンプトで待機中です — まだ何も指示されていません。"
+    },
+    "interrupted": {
+      "label": "中断",
+      "desc": "直前のターンが中断されました(Escまたはフックからの復帰)— Claudeは指示待ちです。"
+    }
+  },
   "time": {
     "justNow": "たった今",
     "mAgo": "{{count}}分前",
