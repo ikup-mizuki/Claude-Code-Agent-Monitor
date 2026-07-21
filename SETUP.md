@@ -67,7 +67,7 @@ CLAUDE_HOME="$HOME/.claude" podman compose up -d --build
 # Plain Docker
 docker build -t agent-monitor .
 docker run -d --name agent-monitor \
-  -p 4820:4820 \
+  -p 127.0.0.1:4820:4820 \
   -v "$HOME/.claude:/root/.claude:ro" \
   -v agent-monitor-data:/app/data \
   agent-monitor
@@ -75,7 +75,7 @@ docker run -d --name agent-monitor \
 # Plain Podman
 podman build -t agent-monitor .
 podman run -d --name agent-monitor \
-  -p 4820:4820 \
+  -p 127.0.0.1:4820:4820 \
   -v "$HOME/.claude:/root/.claude:ro" \
   -v agent-monitor-data:/app/data \
   agent-monitor
@@ -84,6 +84,8 @@ podman run -d --name agent-monitor \
 Container-specific behavior:
 
 - The dashboard is available at `http://localhost:4820`
+- The image sets `DASHBOARD_HOST=0.0.0.0` (bind inside the container — its loopback is a separate namespace the published port cannot reach) and `DASHBOARD_DATA_DIR=/app/data` internally; both are baked into the `Dockerfile`
+- The examples publish on `127.0.0.1` only, so the dashboard is local-only. To expose it on a LAN, publish on `0.0.0.0` (`-p 4820:4820`) **and** set `DASHBOARD_TOKEN`
 - `~/.claude:/root/.claude:ro` is used for history import only
 - `agent-monitor-data:/app/data` persists the SQLite database
 - Claude Code hooks still execute on the host, so install them from the host with `npm run install-hooks`
@@ -228,7 +230,7 @@ This section covers the parts of running the desktop app that matter for setup.
 | `desktop:build` | `npm run desktop:build` | Prebuild guard + `tsc` → `desktop/out/` |
 | `desktop:dev` | `npm run desktop:dev` | Build, then launch Electron against `out/main.js` |
 | `desktop:test` | `npm run desktop:test` | Build, then run the smoke test (spawn Electron, probe `/api/health`) |
-| `desktop:dmg` | `npm run desktop:dmg` | **macOS** — **Universal** (x64 + arm64) DMG → `desktop/release/`. Correct for release. **Slow.** |
+| `desktop:dmg` | `npm run desktop:dmg` | **macOS** — **both** per-arch DMGs (arm64 + x64) → `desktop/release/`. Correct for release. **Slower** (packages each arch). |
 | `desktop:dmg:arm64` | `npm run desktop:dmg:arm64` | **macOS** — Apple-Silicon-only DMG → `desktop/release/`. **Fast (~1 min).** |
 | `desktop:dmg:x64` | `npm run desktop:dmg:x64` | **macOS** — Intel-only DMG → `desktop/release/`. **Fast (~1 min).** |
 | `desktop:win` | `npm run desktop:win` | **Windows** — NSIS installer `.exe` (x64) → `desktop/release/`. |
@@ -482,7 +484,7 @@ These warnings are **harmless**. `better-sqlite3` is an optional dependency — 
 
 You do **not** need Python, Visual Studio Build Tools, or any C++ compiler to run this project on Node 22+.
 
-If you are on Node 18 or 20 and `better-sqlite3` prebuilds are not available for your platform, you have two options:
+If you are on Node 20 or 21 and `better-sqlite3` prebuilds are not available for your platform (there is no `node:sqlite` fallback below Node 22), you have two options:
 
 1. **Upgrade to Node.js 22+** — the built-in `node:sqlite` fallback requires no native compilation at all
 2. **Install build tools** and run `npm rebuild better-sqlite3`:
@@ -612,18 +614,18 @@ If the build fails in Stage 1 with `better-sqlite3` errors, this is expected and
 
 ---
 
-### macOS desktop app — `npm run desktop:dmg` is extremely slow
+### macOS desktop app — `npm run desktop:dmg` is slow
 
-This is expected. The universal DMG build compiles and packages the app **twice** (once per architecture), then `@electron/universal` merges both trees and signs every binary — gigabytes of disk I/O. The silent `packaging arch=universal` step can sit for several minutes; it is not hung.
+This is expected. `desktop:dmg` compiles, packages, and ad-hoc-signs the app **twice** — once for `arm64`, once for `x64` — and emits **both** per-arch DMGs (`…-arm64.dmg` + `…-x64.dmg`). It does not merge them into a single universal binary; the two per-arch DMGs are what ship. Packaging two architectures back-to-back is what takes the time; it is not hung.
 
-For a build that targets your own Mac, use a single-arch command instead — it skips the merge and finishes in roughly a minute:
+For a build that targets your own Mac, use a single-arch command instead — it builds one architecture and finishes in roughly a minute:
 
 ```bash
 npm run desktop:dmg:arm64   # Apple Silicon
 npm run desktop:dmg:x64     # Intel
 ```
 
-CI already produces the universal DMG — pulled either from the [latest GitHub Release](https://github.com/hoangsonww/Claude-Code-Agent-Monitor/releases/latest) (CI auto-publishes a `vX.Y.Z` when `package.json` is bumped on `master`) or from the per-commit `ClaudeCodeMonitor-dmg` workflow artifact — so you rarely need to build it locally.
+CI already produces both DMGs — pulled either from the [latest GitHub Release](https://github.com/hoangsonww/Claude-Code-Agent-Monitor/releases/latest) (CI auto-publishes a `vX.Y.Z` when `package.json` is bumped on `master`) or from the per-commit `ClaudeCodeMonitor-dmg` workflow artifact — so you rarely need to build them locally.
 
 ---
 

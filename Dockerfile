@@ -10,6 +10,13 @@
 FROM node:22-alpine AS server-deps
 WORKDIR /app
 COPY package.json package-lock.json ./
+# The root `postinstall` hook (scripts/postinstall.js) fires during `npm ci`, so
+# the file must exist here or npm aborts with MODULE_NOT_FOUND before installing
+# anything. It self-skips when client/ is absent (as it is in this stage), so
+# copying just the one script keeps this deps-cache layer from busting on
+# unrelated scripts/ edits. Do NOT use --ignore-scripts: that would also skip
+# better-sqlite3's prebuild fetch and silently drop the native SQLite driver.
+COPY scripts/postinstall.js ./scripts/postinstall.js
 RUN npm ci --omit=dev
 
 # ── Stage 2: Build React client ───────────────────────────────────────
@@ -18,6 +25,10 @@ WORKDIR /app/client
 COPY client/package.json client/package-lock.json ./
 RUN npm ci
 COPY client/ ./
+# vite.config.ts stamps the UI version from the repo-root package.json (one level
+# up from the client dir). Provide it here so the built client shows the real
+# release version; the config falls back gracefully if it is ever absent.
+COPY package.json /app/package.json
 RUN npm run build
 
 # ── Stage 3: Production runtime ───────────────────────────────────────
@@ -36,5 +47,17 @@ RUN mkdir -p data
 EXPOSE 4820
 
 ENV NODE_ENV=production
+
+# In a container the app MUST bind all interfaces: the server binds loopback by
+# default (GHSA-gr74-4xfh-6jw9), but a container's loopback is a separate
+# namespace the published port cannot reach, so a loopback bind makes the port
+# unreachable. Inside a container the trust boundary is the *host* port publish
+# (keep it on 127.0.0.1 — see docker-compose.yml / INSTALL.md), not this bind.
+ENV DASHBOARD_HOST=0.0.0.0
+
+# The recommended ~/.claude bind mount is read-only, so the server cannot write
+# its default data dir (~/.claude/agent-dashboard). Persist to the mounted
+# volume at /app/data instead.
+ENV DASHBOARD_DATA_DIR=/app/data
 
 CMD ["node", "server/index.js"]

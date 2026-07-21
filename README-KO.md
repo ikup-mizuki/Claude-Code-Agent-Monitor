@@ -7,7 +7,7 @@ Claude Code 에이전트 세션, 도구 사용, 서브에이전트 오케스트�
 ![Claude Code](https://img.shields.io/badge/Claude_Code-orange?style=flat-square&logo=claude&logoColor=white)
 ![Claude Code Plugins](https://img.shields.io/badge/Claude_Code-Plugins_&_Skills-orange?style=flat-square&logo=anthropic&logoColor=white)
 ![Model Context Protocol](https://img.shields.io/badge/Model_Context_Protocol-1.0-0f766e?style=flat-square&logo=modelcontextprotocol&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-339933?style=flat-square&logo=node.js&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-339933?style=flat-square&logo=node.js&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-%3E%3D3.6-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-4.21-000000?style=flat-square&logo=express&logoColor=white)
 ![ws](https://img.shields.io/badge/ws-WebSocket_server-010101?style=flat-square&logo=socketdotio&logoColor=white)
@@ -42,7 +42,7 @@ Claude Code 에이전트 세션, 도구 사용, 서브에이전트 오케스트�
 ![macOS](https://img.shields.io/badge/macOS-Desktop_App-000000?style=flat-square&logo=apple&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-Desktop_App-0078D6?style=flat-square&logo=windows&logoColor=white)
 ![SMAppService](https://img.shields.io/badge/SMAppService-Login_Items-000000?style=flat-square&logo=apple&logoColor=white)
-![Universal DMG](https://img.shields.io/badge/Universal_DMG-arm64_%2B_x64-7c3aed?style=flat-square&logo=apple&logoColor=white)
+![macOS DMG](https://img.shields.io/badge/macOS_DMG-arm64_%2B_x64-7c3aed?style=flat-square&logo=apple&logoColor=white)
 ![NSIS Installer](https://img.shields.io/badge/Windows-NSIS_%2B_Portable-1f6feb?style=flat-square&logo=windows&logoColor=white)
 ![Vitest](https://img.shields.io/badge/Vitest-1.0-646CFF?style=flat-square&logo=vitest&logoColor=white)
 ![React Testing Library](https://img.shields.io/badge/React_Testing_Library-13.0-FF5733?style=flat-square&logo=testinglibrary&logoColor=white)
@@ -319,7 +319,7 @@ flowchart LR
 
 ### 사전 요구 사항
 
-- **Node.js** >= 18.0.0 (22+ 권장)
+- **Node.js** >= 20.0.0 (22+ 권장)
 - **npm** >= 9.0.0
 
 ### 1. 설치
@@ -426,7 +426,7 @@ CLAUDE_HOME="$HOME/.claude" podman compose up -d --build
 # Docker
 docker build -t agent-monitor .
 docker run -d --name agent-monitor \
-  -p 4820:4820 \
+  -p 127.0.0.1:4820:4820 \
   -v "$HOME/.claude:/root/.claude:ro" \
   -v agent-monitor-data:/app/data \
   agent-monitor
@@ -434,13 +434,13 @@ docker run -d --name agent-monitor \
 # Podman
 podman build -t agent-monitor .
 podman run -d --name agent-monitor \
-  -p 4820:4820 \
+  -p 127.0.0.1:4820:4820 \
   -v "$HOME/.claude:/root/.claude:ro" \
   -v agent-monitor-data:/app/data \
   agent-monitor
 ```
 
-이후 대시보드는 `http://localhost:4820`에서 사용할 수 있습니다. 서버는 기본적으로 `127.0.0.1`에 바인딩되므로, 컨테이너 자체의 루프백 너머에서 접근할 수 있게 하려면 `DASHBOARD_HOST=0.0.0.0` **및** `DASHBOARD_TOKEN`을 설정하세요([설정](#설정)과 [`.github/SECURITY.md`](./.github/SECURITY.md) 참조).
+이후 대시보드는 `http://localhost:4820`에서 사용할 수 있습니다. 이미지는 **컨테이너 내부**에서 `0.0.0.0`에 바인딩하며(`DASHBOARD_HOST`) SQLite를 `/app/data` 볼륨에 기록합니다(`DASHBOARD_DATA_DIR`). 두 설정 모두 `Dockerfile`에 내장되어 있어 Compose와 일반 `docker run`이 그대로 동작합니다. 신뢰 경계는 **호스트** 포트 게시입니다. 예시는 `127.0.0.1`에만 게시하므로 대시보드는 기본적으로 LAN에서 접근할 수 없습니다. LAN에 노출하려면 `0.0.0.0`에 게시하고(`127.0.0.1:` 접두사를 제거, 예: `-p 4820:4820`) **및** `DASHBOARD_TOKEN`을 설정하세요([설정](#설정)과 [`.github/SECURITY.md`](./.github/SECURITY.md) 참조).
 
 **볼륨 마운트:**
 
@@ -547,7 +547,8 @@ stateDiagram-v2
 
 ```mermaid
 stateDiagram-v2
-    [*] --> waiting: SessionStart (status=active + flag)
+    [*] --> waiting: SessionStart startup/resume/clear (status=active + flag)
+    active --> active: SessionStart compact (턴 도중 — 상태 유지, 플래그 없음)
     waiting --> active: UserPromptSubmit / PreToolUse / PostToolUse
     active --> waiting: Stop, non-error (flag re-stamped)
     active --> waiting: Permission Notification (agent → waiting)
@@ -640,7 +641,9 @@ ccam events   [--session id] [--limit n]
 ccam analytics                    # 토큰 총계, 상위 도구, 에이전트 유형
 ccam workflows [--session id]     # 워크플로 인텔리전스 통계 및 패턴
 ccam runs [--session id]          # 동적 Workflow 도구 실행
-ccam cost                         # 모델별 내역이 포함된 총 예상 비용
+ccam cost [--session <id>]        # 모델별 내역이 포함된 총 예상 비용
+                                  # (--session 은 단일 세션으로 범위 지정; 서버 도구 추가 요금 표시;
+                                  #  사용량은 있지만 가격 책정 규칙이 없는 모델에 대해 경고)
 
 # 알림 및 웹훅
 ccam alerts [--unacked]           # 발생한 알림 피드
@@ -650,8 +653,10 @@ ccam webhooks                     # 웹훅 대상 나열
 ccam webhooks test <id>           # 합성 테스트 알림 전송
 
 # 가격 책정
-ccam pricing                      # 모델 가격 책정 규칙 나열
+ccam pricing                      # 모델 가격 책정 규칙 나열(fast-mode 및 intro 컬럼 포함)
 ccam pricing set <pattern> --input N --output N [--cache-read N --cache-write N]
+                 [--cache-write-1h N] [--fast-input N --fast-output N]
+                 [--intro-input N --intro-output N … --intro-until YYYY-MM-DD]
 ccam pricing delete <pattern>
 ccam pricing reset
 
@@ -665,6 +670,7 @@ ccam info                         # 원시 시스템 정보 JSON
 ccam export [file.json]           # 전체 JSON 데이터 내보내기
 ccam cleanup --hours N --days M   # 오래된 세션 abandon 처리 / 이전 세션 삭제
 ccam reinstall-hooks              # Claude Code Hook 재설치
+ccam update-check                 # 체크아웃이 업스트림보다 뒤처져 있는가?(업데이트 명령어 출력)
 ccam clear-data --yes             # 모든 데이터 삭제(--yes 필요)
 ccam open                         # 브라우저에서 대시보드 열기
 ccam version                      # CLI 버전 출력(--version / -v도 가능)
@@ -705,9 +711,10 @@ API 기반 명령어는 서버가 실행 중이어야 합니다 — 서버가 �
 | `npm run desktop:dev`   | 로컬 반복 작업을 위해 Electron 데스크톱 앱을 빌드하고 실행합니다  |
 | `npm run desktop:build` | 데스크톱 TypeScript 소스를 `desktop/out/`으로 컴파일합니다      |
 | `npm run desktop:test`  | 데스크톱 스모크 테스트를 실행합니다 (Electron 실행 후 `/api/health` 확인) |
-| `npm run desktop:dmg`   | **유니버설**(x64 + arm64) macOS DMG를 빌드합니다 — 릴리스에 적합하지만 **느림** |
+| `npm run desktop:dmg`   | **아키텍처별 DMG 둘 다**(arm64 + x64) macOS DMG를 빌드합니다 — 릴리스에 적합하지만 아키텍처마다 한 번씩(두 번) 패키징하므로 **느림** |
 | `npm run desktop:dmg:arm64` | Apple Silicon 전용 DMG를 빌드합니다 — **빠름**, 본인 Mac에서 사용 시 권장 |
 | `npm run desktop:dmg:x64` | Intel 전용 DMG를 빌드합니다 — **빠름**                           |
+| `npm run desktop:dmg:universal` | **하나의** 병합된 유니버설 DMG(arm64 + x86_64, 단일 파일) 빌드 — 선택 사항, **가장 느림**, 릴리스에 포함되는 것은 아님. |
 | `npm run desktop:win`   | Windows **NSIS 설치 프로그램** `.exe`(x64)를 빌드합니다 — Windows에서 실행 |
 | `npm run desktop:win:portable` | Windows **포터블**(무설치) `.exe`(x64)를 빌드합니다 — Windows에서 실행 |
 
@@ -1241,7 +1248,7 @@ stateDiagram-v2
 
 | Hook 유형           | 트리거                         | 대시보드 동작                                                                                 |
 | ------------------- | ------------------------------ | -------------------------------------------------------------------------------------------- |
-| `SessionStart`      | Claude Code 세션 시작          | 세션과 메인 에이전트를 생성합니다. `awaiting_input_since`를(`awaiting_reason=session_start`와 함께) 기록하여 새 세션이 **Waiting** 상태로 시작되게 합니다. 재개된 세션을 다시 활성화합니다. `DASHBOARD_STALE_MINUTES`(기본 180) 동안 활동이 없는 고아 세션은 중단 처리합니다 |
+| `SessionStart`      | Claude Code 세션 시작          | 세션과 메인 에이전트를 생성합니다. `awaiting_input_since`를(`awaiting_reason=session_start`와 함께) 기록하여 새 세션이 **Waiting** 상태로 시작되게 합니다. 단, `compact` 소스 SessionStart(턴 도중 자동 압축)는 플래그를 그대로 두어 작업 중인 세션이 **Active** 상태를 유지합니다. 재개된 세션을 다시 활성화합니다. `DASHBOARD_STALE_MINUTES`(기본 180) 동안 활동이 없는 고아 세션은 중단 처리합니다 |
 | `UserPromptSubmit`  | 사용자가 프롬프트에서 Enter를 누름 | 대기 플래그를 지우고 메인 에이전트를 `working`으로 승격합니다 — 텍스트 전용 어시스턴트 턴은 `PreToolUse`를 발생시키지 않으므로, 이것이 해당 턴이 시작되었음을 알리는 유일한 신호입니다 |
 | `PreToolUse`        | 에이전트가 도구 사용을 시작함  | 대기 플래그를 지우고, 에이전트를 `working`으로 설정하며, `current_tool`을 설정합니다. 도구가 `Agent`인 경우 서브에이전트 레코드를 생성합니다 |
 | `PostToolUse`       | 도구 실행 완료                 | 대기 플래그를 지웁니다(도구 실행 도중 Notification이 플래그를 기록한 권한 프롬프트 승인 상황을 처리). `current_tool`을 지웁니다. 에이전트는 `working` 상태를 유지합니다 |
@@ -1560,7 +1567,7 @@ npm run desktop:win          # Windows: NSIS 설치 프로그램 → desktop/rel
 ```
 
 > [!NOTE]
-> **DMG는 macOS에서, Windows `.exe`는 Windows에서 빌드됩니다** — electron-builder는 호스트 OS용으로 패키징합니다. macOS 유니버설 `npm run desktop:dmg` 빌드는 의도적으로 **느립니다**(앱을 두 번 빌드하고 `@electron/universal`로 병합합니다). 본인의 Mac에서는 단일 아키텍처 `desktop:dmg:arm64` / `desktop:dmg:x64`를 사용하십시오. Windows에서는 `npm run desktop:install`이 `better-sqlite3`을 사전 빌드된 Electron 바이너리로 가져오므로, 일반적인 경우 Visual Studio C++ 툴체인이 필요 없습니다. 그래도 빌드가 실패하면(사전 빌드 바이너리가 없거나 C++ 툴체인이 없는 경우) `desktop:install`은 OS별 정확한 해결 방법과 툴체인이 필요 없는 대안을 출력하고, 손상된 설치를 남기는 대신 명확하게 실패합니다.
+> **DMG는 macOS에서, Windows `.exe`는 Windows에서 빌드됩니다** — electron-builder는 호스트 OS용으로 패키징합니다. macOS `npm run desktop:dmg` 빌드는 의도적으로 **느립니다** — 아키텍처마다 한 번씩(arm64와 x64로 각각) 앱을 빌드하고 임시 서명하여 아키텍처별 DMG 두 개(`ClaudeCodeMonitor-<ver>-arm64.dmg`와 `ClaudeCodeMonitor-<ver>-x64.dmg`)를 만들기 때문입니다. 유니버설 바이너리를 만들거나 `@electron/universal`로 병합하지 않으며, 릴리스에는 이 두 아키텍처별 DMG가 함께 제공됩니다. 본인의 Mac에서는 단일 아키텍처 `desktop:dmg:arm64` / `desktop:dmg:x64`를 사용하십시오. Windows에서는 `npm run desktop:install`이 `better-sqlite3`을 사전 빌드된 Electron 바이너리로 가져오므로, 일반적인 경우 Visual Studio C++ 툴체인이 필요 없습니다. 그래도 빌드가 실패하면(사전 빌드 바이너리가 없거나 C++ 툴체인이 없는 경우) `desktop:install`은 OS별 정확한 해결 방법과 툴체인이 필요 없는 대안을 출력하고, 손상된 설치를 남기는 대신 명확하게 실패합니다.
 
 ### 설치 방법
 
@@ -1612,9 +1619,10 @@ npm run desktop:win          # Windows: NSIS 설치 프로그램 → desktop/rel
 | `npm run desktop:build`     | 데스크톱 TypeScript 소스를 `desktop/out/`으로 컴파일합니다                    |
 | `npm run desktop:dev`       | 로컬 반복 작업을 위해 Electron 앱을 빌드하고 실행합니다                       |
 | `npm run desktop:test`      | 스모크 테스트를 실행합니다(Electron 실행, `/api/health` 확인, 종료)            |
-| `npm run desktop:dmg`       | **macOS:** **유니버설**(x64 + arm64) DMG를 빌드합니다 — 릴리스에 적합하지만 **느림** |
+| `npm run desktop:dmg`       | **macOS:** **아키텍처별 DMG 둘 다**(arm64 + x64)를 빌드합니다 — 릴리스에 적합하지만 아키텍처마다 한 번씩(두 번) 패키징하므로 **느림** |
 | `npm run desktop:dmg:arm64` | **macOS:** Apple Silicon 전용 DMG를 빌드합니다 — **빠름**(~1분), 본인 Mac에 권장 |
 | `npm run desktop:dmg:x64`   | **macOS:** Intel 전용 DMG를 빌드합니다 — **빠름**(~1분)                        |
+| `npm run desktop:dmg:universal` | **macOS:** **하나의** 병합된 유니버설 DMG(arm64 + x86_64, 단일 파일) 빌드 — 선택 사항, **가장 느림**, 릴리스에 포함되는 것은 아님. |
 | `npm run desktop:win`       | **Windows:** NSIS 설치 프로그램 `.exe`를 빌드합니다 (x64)                      |
 | `npm run desktop:win:portable` | **Windows:** 설치가 필요 없는 포터블 `.exe`를 빌드합니다 (x64)              |
 

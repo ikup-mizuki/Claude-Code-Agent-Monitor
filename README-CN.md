@@ -7,7 +7,7 @@
 ![Claude Code](https://img.shields.io/badge/Claude_Code-orange?style=flat-square&logo=claude&logoColor=white)
 ![Claude Code Plugins](https://img.shields.io/badge/Claude_Code-Plugins_&_Skills-orange?style=flat-square&logo=anthropic&logoColor=white)
 ![Model Context Protocol](https://img.shields.io/badge/Model_Context_Protocol-1.0-0f766e?style=flat-square&logo=modelcontextprotocol&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-339933?style=flat-square&logo=node.js&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-339933?style=flat-square&logo=node.js&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-%3E%3D3.6-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-4.21-000000?style=flat-square&logo=express&logoColor=white)
 ![ws](https://img.shields.io/badge/ws-WebSocket_server-010101?style=flat-square&logo=socketdotio&logoColor=white)
@@ -42,7 +42,7 @@
 ![macOS](https://img.shields.io/badge/macOS-Desktop_App-000000?style=flat-square&logo=apple&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-Desktop_App-0078D6?style=flat-square&logo=windows&logoColor=white)
 ![SMAppService](https://img.shields.io/badge/SMAppService-Login_Items-000000?style=flat-square&logo=apple&logoColor=white)
-![Universal DMG](https://img.shields.io/badge/Universal_DMG-arm64_%2B_x64-7c3aed?style=flat-square&logo=apple&logoColor=white)
+![macOS DMG](https://img.shields.io/badge/macOS_DMG-arm64_%2B_x64-7c3aed?style=flat-square&logo=apple&logoColor=white)
 ![NSIS Installer](https://img.shields.io/badge/Windows-NSIS_%2B_Portable-1f6feb?style=flat-square&logo=windows&logoColor=white)
 ![Vitest](https://img.shields.io/badge/Vitest-1.0-646CFF?style=flat-square&logo=vitest&logoColor=white)
 ![React Testing Library](https://img.shields.io/badge/React_Testing_Library-13.0-FF5733?style=flat-square&logo=testinglibrary&logoColor=white)
@@ -321,7 +321,7 @@ Dashboard 提供全面的功能来监控和分析你的 Claude Code 会话和 Ag
 
 ### 前置条件
 
-- **Node.js** >= 18.0.0（推荐 22+）
+- **Node.js** >= 20.0.0（推荐 22+）
 - **npm** >= 9.0.0
 
 ### 1. 安装
@@ -408,7 +408,7 @@ npm run desktop:win            # Windows：NSIS 安装包 .exe（在 Windows 上
 ```
 
 > [!TIP]
-> DMG 在 macOS 上构建，Windows `.exe` 在 Windows 上构建 —— electron-builder 针对宿主操作系统打包。为自己的 Mac 构建时，请使用架构专用命令（`desktop:dmg:arm64` 或 `desktop:dmg:x64`），它们速度快得多；通用版 `desktop:dmg` 会把应用构建两次再合并，仅在制作发布产物时才需要。
+> DMG 在 macOS 上构建，Windows `.exe` 在 Windows 上构建 —— electron-builder 针对宿主操作系统打包。为自己的 Mac 构建时，请使用架构专用命令（`desktop:dmg:arm64` 或 `desktop:dmg:x64`），它们速度快得多；`desktop:dmg` 会按架构把应用构建两次，产出两个按架构的 DMG（arm64 + x64，不做任何合并），仅在制作发布产物时才需要。
 
 完整的生命周期语义、托盘/菜单功能、签名与公证钩子详见下文的 [桌面应用（macOS 与 Windows）](#桌面应用macos-与-windows) 章节，以及 [`DESKTOP.md`](./DESKTOP.md)。
 
@@ -434,7 +434,7 @@ CLAUDE_HOME="$HOME/.claude" podman compose up -d --build
 # Docker
 docker build -t agent-monitor .
 docker run -d --name agent-monitor \
-  -p 4820:4820 \
+  -p 127.0.0.1:4820:4820 \
   -v "$HOME/.claude:/root/.claude:ro" \
   -v agent-monitor-data:/app/data \
   agent-monitor
@@ -442,13 +442,13 @@ docker run -d --name agent-monitor \
 # Podman
 podman build -t agent-monitor .
 podman run -d --name agent-monitor \
-  -p 4820:4820 \
+  -p 127.0.0.1:4820:4820 \
   -v "$HOME/.claude:/root/.claude:ro" \
   -v agent-monitor-data:/app/data \
   agent-monitor
 ```
 
-Dashboard 可通过 `http://localhost:4820` 访问。
+随后即可通过 `http://localhost:4820` 访问 Dashboard。镜像在**容器内部**绑定 `0.0.0.0`（`DASHBOARD_HOST`），并将 SQLite 写入 `/app/data` 卷（`DASHBOARD_DATA_DIR`）—— 两者都已固化在 `Dockerfile` 中，因此 Compose 和纯 `docker run` 都能开箱即用。信任边界在于**宿主机**的端口发布：示例仅发布在 `127.0.0.1` 上，因此 Dashboard 开箱即用时无法从局域网访问。若要在局域网中暴露，请在 `0.0.0.0` 上发布（去掉 `127.0.0.1:` 前缀，例如 `-p 4820:4820`）**并**设置 `DASHBOARD_TOKEN`。
 
 **卷挂载：**
 
@@ -550,7 +550,8 @@ stateDiagram-v2
 
 ```mermaid
 stateDiagram-v2
-    [*] --> waiting: SessionStart(status=active + 标志)
+    [*] --> waiting: SessionStart startup/resume/clear(status=active + 标志)
+    active --> active: SessionStart compact(回合中 — 保留状态,无标志)
     waiting --> active: UserPromptSubmit / PreToolUse / PostToolUse
     active --> waiting: Stop，非错误（标志重新盖上）
     active --> waiting: 权限 Notification（Agent → waiting）
@@ -633,7 +634,9 @@ ccam events   [--session id] [--limit n]
 ccam analytics                    # token 总量、常用工具、agent 类型
 ccam workflows [--session id]     # 工作流智能统计与模式
 ccam runs [--session id]          # 动态 Workflow 工具运行
-ccam cost                         # 按模型细分的总预估成本
+ccam cost [--session <id>]        # 按模型细分的总预估成本
+                                  # （--session 限定为单个会话；显示服务器工具附加费用；
+                                  #  对有用量但无定价规则的模型发出警告）
 
 # 告警 & webhook
 ccam alerts [--unacked]           # 触发告警流
@@ -643,8 +646,10 @@ ccam webhooks                     # webhook 目标列表
 ccam webhooks test <id>           # 发送合成测试告警
 
 # 价格
-ccam pricing                      # 定价规则列表
+ccam pricing                      # 定价规则列表（含 fast-mode 与 intro 列）
 ccam pricing set <pattern> --input N --output N [--cache-read N --cache-write N]
+                 [--cache-write-1h N] [--fast-input N --fast-output N]
+                 [--intro-input N --intro-output N … --intro-until YYYY-MM-DD]
 ccam pricing delete <pattern>
 ccam pricing reset
 
@@ -658,6 +663,7 @@ ccam info                         # 原始系统信息 JSON
 ccam export [file.json]           # 导出全部数据为 JSON
 ccam cleanup --hours N --days M   # 放弃滞留会话 / 清理旧会话
 ccam reinstall-hooks              # 重新安装 Claude Code hook
+ccam update-check                 # 检出是否落后于 upstream？（打印更新命令）
 ccam clear-data --yes             # 删除全部数据（必须 --yes）
 ccam open                         # 在浏览器中打开仪表盘
 ccam version                      # 打印 CLI 版本（也可用 --version / -v）
@@ -694,9 +700,10 @@ ccam version                      # 打印 CLI 版本（也可用 --version / -v
 | `npm run desktop:build` | 预构建校验 + `tsc`，编译 Electron 主进程到 `desktop/out/` |
 | `npm run desktop:dev` | 构建后启动 Electron，加载本地桌面应用 |
 | `npm run desktop:test` | 运行桌面应用冒烟测试（启动 Electron 并探测 `/api/health`） |
-| `npm run desktop:dmg` | **macOS：** 构建**通用版** DMG（x64 + arm64）— 用于发布，**构建较慢** |
+| `npm run desktop:dmg` | **macOS：** 构建**两个按架构的** DMG（arm64 + x64）— 用于发布，**构建较慢** |
 | `npm run desktop:dmg:arm64` | **macOS：** 构建 Apple Silicon 专用 DMG — **快速** |
 | `npm run desktop:dmg:x64` | **macOS：** 构建 Intel 专用 DMG — **快速** |
+| `npm run desktop:dmg:universal` | **macOS：** 构建**一个**合并的通用（universal）DMG（arm64 + x86_64，单个文件）——可选，**最慢**，不是发布版本附带的内容。 |
 | `npm run desktop:win` | **Windows：** 构建 NSIS **安装包** `.exe`（x64）— 在 Windows 上运行 |
 | `npm run desktop:win:portable` | **Windows：** 构建**免安装便携版** `.exe`（x64）— 在 Windows 上运行 |
 
@@ -1154,7 +1161,7 @@ Dashboard 处理以下 Claude Code Hook 类型：
 
 | Hook 类型 | 触发时机 | Dashboard 操作 |
 | -------------- | ------------------------------ | -------------------------------------------------------------------------------------------- |
-| `SessionStart` | Claude Code 会话开始 | 创建会话和主 Agent。盖上 `awaiting_input_since`(附带 `awaiting_reason=session_start`),使新会话立即落入**等待中**。重新激活恢复的会话。废弃无活动超过 `DASHBOARD_STALE_MINUTES`(默认 180)的孤立会话 |
+| `SessionStart` | Claude Code 会话开始 | 创建会话和主 Agent。盖上 `awaiting_input_since`(附带 `awaiting_reason=session_start`),使新会话立即落入**等待中**——但 `compact` 来源的 SessionStart(回合中自动压缩)不改动标志,使正在工作的会话保持**活动**。重新激活恢复的会话。废弃无活动超过 `DASHBOARD_STALE_MINUTES`(默认 180)的孤立会话 |
 | `UserPromptSubmit` | 用户在提示符前按下回车 | 清除等待标志并将主 Agent 提升为 `working` — 文本响应回合开始的唯一可靠信号,因为它们不发出 `PreToolUse` |
 | `PreToolUse` | Agent 开始使用工具 | 清除等待标志,设置 Agent 为 `working`,设置 `current_tool`。如果工具是 `Agent`,创建子 Agent 记录 |
 | `PostToolUse` | 工具执行完成 | 清除等待标志(用于处理用户在工具运行期间批准权限提示的场景)。清除 `current_tool`。Agent 保持 `working` |
@@ -1446,7 +1453,7 @@ npm run desktop:win          # Windows：NSIS 安装包 → desktop/release/Clau
 ```
 
 > [!NOTE]
-> **DMG 在 macOS 上构建，Windows `.exe` 在 Windows 上构建** —— electron-builder 针对宿主操作系统打包。macOS 的通用版 `npm run desktop:dmg` 构建**有意设计得很慢**（它会把应用构建两次，再用 `@electron/universal` 合并）；为自己的 Mac 构建时请使用单架构的 `desktop:dmg:arm64` / `desktop:dmg:x64`。在 Windows 上，`npm run desktop:install` 会把 `better-sqlite3` 作为 Electron 预编译二进制拉取，因此常见情况下无需 Visual Studio C++ 工具链。若构建确实失败（没有预编译二进制，或缺少 C++ 工具链），`desktop:install` 会打印准确的分平台修复步骤外加一个无工具链的替代方案，并**显式失败（fail loudly）**，而非留下一个损坏的安装。
+> **DMG 在 macOS 上构建，Windows `.exe` 在 Windows 上构建** —— electron-builder 针对宿主操作系统打包。macOS 的 `npm run desktop:dmg` 构建**有意设计得很慢**（它会按架构把应用构建两次，产出两个按架构的 DMG——`ClaudeCodeMonitor-<ver>-arm64.dmg` 与 `ClaudeCodeMonitor-<ver>-x64.dmg`，并不做任何合并——发布时即随附这两个按架构的 DMG）；为自己的 Mac 构建时请使用单架构的 `desktop:dmg:arm64` / `desktop:dmg:x64`。在 Windows 上，`npm run desktop:install` 会把 `better-sqlite3` 作为 Electron 预编译二进制拉取，因此常见情况下无需 Visual Studio C++ 工具链。若构建确实失败（没有预编译二进制，或缺少 C++ 工具链），`desktop:install` 会打印准确的分平台修复步骤外加一个无工具链的替代方案，并**显式失败（fail loudly）**，而非留下一个损坏的安装。
 
 #### 原生依赖预检（preflight）
 
@@ -1537,17 +1544,18 @@ flowchart TD
 | `npm run desktop:build` | 预构建校验 + `tsc`，编译主进程到 `desktop/out/` |
 | `npm run desktop:dev` | 构建后启动 Electron 加载本地应用 |
 | `npm run desktop:test` | 冒烟测试（启动 Electron 并探测 `/api/health`），同样在 CI 上运行 |
-| `npm run desktop:dmg` | **macOS：** 构建**通用版** DMG（x64 + arm64）。用于发布。**构建较慢。** |
+| `npm run desktop:dmg` | **macOS：** 构建**两个按架构的** DMG（arm64 + x64）。用于发布。**构建较慢。** |
 | `npm run desktop:dmg:arm64` | **macOS：** 构建 Apple Silicon 专用 DMG。**快速。** |
 | `npm run desktop:dmg:x64` | **macOS：** 构建 Intel 专用 DMG。**快速。** |
+| `npm run desktop:dmg:universal` | **macOS：** 构建**一个**合并的通用（universal）DMG（arm64 + x86_64，单个文件）——可选，**最慢**，不是发布版本附带的内容。 |
 | `npm run desktop:win` | **Windows：** 构建 NSIS 安装包 `.exe`（x64）。 |
 | `npm run desktop:win:portable` | **Windows：** 构建免安装的便携版 `.exe`（x64）。 |
 
 > [!NOTE]
-> **DMG 在 macOS 上构建，Windows `.exe` 在 Windows 上构建** —— electron-builder 针对宿主操作系统打包。macOS 的通用版 `npm run desktop:dmg` 构建**有意设计得很慢**（它会把应用构建两次，再用 `@electron/universal` 合并）；为自己的 Mac 构建时请使用单架构的 `desktop:dmg:arm64` / `desktop:dmg:x64`。在 Windows 上，`npm run desktop:install` 会把 `better-sqlite3` 作为 Electron 预编译二进制拉取，因此常见情况下无需 Visual Studio C++ 工具链。
+> **DMG 在 macOS 上构建，Windows `.exe` 在 Windows 上构建** —— electron-builder 针对宿主操作系统打包。macOS 的 `npm run desktop:dmg` 构建**有意设计得很慢**（它会按架构把应用构建两次，产出两个按架构的 DMG——`ClaudeCodeMonitor-<ver>-arm64.dmg` 与 `ClaudeCodeMonitor-<ver>-x64.dmg`，并不做任何合并——发布时即随附这两个按架构的 DMG）；为自己的 Mac 构建时请使用单架构的 `desktop:dmg:arm64` / `desktop:dmg:x64`。在 Windows 上，`npm run desktop:install` 会把 `better-sqlite3` 作为 Electron 预编译二进制拉取，因此常见情况下无需 Visual Studio C++ 工具链。
 >
 > - 为**自己的 Mac** 构建 → 使用 `desktop:dmg:arm64`（Apple Silicon）或 `desktop:dmg:x64`（Intel）。单架构、无合并，大约 1 分钟即可完成。
-> - 为**所有人构建发布产物** → 使用通用版 `desktop:dmg`，并预期它会耗时较久。CI 已经会构建 macOS DMG 与 Windows `.exe` 并分别上传为 `ClaudeCodeMonitor-dmg` 与 `ClaudeCodeMonitor-win` 产物，因此你很少需要在本地构建它们。
+> - 为**所有人构建发布产物** → 使用 `desktop:dmg`（产出两个按架构的 DMG：arm64 + x64），并预期它会耗时较久。CI 已经会构建 macOS DMG 与 Windows `.exe` 并分别上传为 `ClaudeCodeMonitor-dmg` 与 `ClaudeCodeMonitor-win` 产物，因此你很少需要在本地构建它们。
 > - 无论哪种方式，macOS DMG 体积约为 **80 MB / 安装后约 250 MB**，Windows 安装包体积相当 —— 这是标准的 Electron 体积成本。
 
 ### 原生模块与签名
@@ -1559,7 +1567,7 @@ flowchart TD
 
 ### 持续集成
 
-`.github/workflows/ci.yml` 中有两个经过**路径过滤**的桌面作业（一个 `changes` 作业用 `dorny/paths-filter` 检测 `desktop/**` 的改动；这些作业也会在任何 `push` 时、或 PR 带有 `desktop` 标签时运行）：运行在 `macos-latest` 上的 `🍎 macOS Desktop (DMG)` 作业会构建**通用版 DMG**（对偶发的 `hdiutil detach` 失败会重试）并上传为 `ClaudeCodeMonitor-dmg` 产物（两个单架构 DMG）；运行在 `windows-latest` 上的 `🪟 Windows Desktop (EXE)` 作业会构建并上传为 `ClaudeCodeMonitor-win` 产物（NSIS 安装包 + 便携版）。在向 `master` 推送版本号提升时，`release` 作业会把 macOS DMG 与 Windows `.exe` **都**附加到所发布的 `vX.Y.Z` GitHub Release。Windows 图标（`desktop/assets/icon.ico`）已提交到仓库中（可用 `npm run build:win-icon` 从 `icon.png` 重新生成，基于 PowerShell + .NET，无需额外工具）。
+`.github/workflows/ci.yml` 中有两个经过**路径过滤**的桌面作业（一个 `changes` 作业用 `dorny/paths-filter` 检测 `desktop/**` 的改动；这些作业也会在任何 `push` 时、或 PR 带有 `desktop` 标签时运行）：运行在 `macos-latest` 上的 `🍎 macOS Desktop (DMG)` 作业会构建**两个按架构的 DMG**（arm64 + x64；对偶发的 `hdiutil detach` 失败会重试）并上传为 `ClaudeCodeMonitor-dmg` 产物（两个单架构 DMG）；运行在 `windows-latest` 上的 `🪟 Windows Desktop (EXE)` 作业会构建并上传为 `ClaudeCodeMonitor-win` 产物（NSIS 安装包 + 便携版）。在向 `master` 推送版本号提升时，`release` 作业会把 macOS DMG 与 Windows `.exe` **都**附加到所发布的 `vX.Y.Z` GitHub Release。Windows 图标（`desktop/assets/icon.ico`）已提交到仓库中（可用 `npm run build:win-icon` 从 `icon.png` 重新生成，基于 PowerShell + .NET，无需额外工具）。
 
 ### 桌面应用故障排查
 

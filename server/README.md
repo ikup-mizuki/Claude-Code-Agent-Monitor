@@ -3,7 +3,7 @@
 Enterprise-grade Node.js backend for Claude Code agent monitoring with real-time WebSocket updates.
 
 ![Claude Code](https://img.shields.io/badge/Claude_Code-orange?style=flat-square&logo=claude&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-339933?style=flat-square&logo=node.js&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-339933?style=flat-square&logo=node.js&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-4.21-000000?style=flat-square&logo=express&logoColor=white)
 ![Javascript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?style=flat-square&logo=javascript&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-3-003B57?style=flat-square&logo=sqlite&logoColor=white)
@@ -469,7 +469,7 @@ Request body shape:
 | `GET`    | `/api/pricing/cost`       | Total cost across all sessions         |
 | `GET`    | `/api/pricing/cost/:id`   | Cost breakdown for one session         |
 
-`PUT /api/pricing` also accepts optional **time-limited introductory rates** (`intro_*_per_mtok` + an `intro_until` `YYYY-MM-DD` cutoff): usage on/before the cutoff is priced at the intro rate, after it at the standard rate. Intro columns are written only when the caller sends them, so a standard-rate edit never disturbs a promo. The agent-list endpoints (`GET /api/agents`, `GET /api/sessions/:id/agents`) attach a per-agent `cost` — each subagent's OWN cost, computed from its `metadata.tokens` at current rates (0 for main agents, whose cost is the session total).
+`PUT /api/pricing` also accepts optional **time-limited introductory rates** (`intro_*_per_mtok` + an `intro_until` `YYYY-MM-DD` cutoff): usage on/before the cutoff is priced at the intro rate, after it at the standard rate. Intro columns are written only when the caller sends them, so a standard-rate edit never disturbs a promo. Every rate field present must be a non-negative finite number — `NaN`/negative values are rejected with `400 INVALID_INPUT` before anything is written. The agent-list endpoints (`GET /api/agents`, `GET /api/sessions/:id/agents`) attach a per-agent `cost` — each subagent's OWN cost, computed from its `metadata.tokens` at current rates (0 for main agents, whose cost is the session total).
 
 ### Workflows
 
@@ -563,7 +563,7 @@ rewrites `parent_agent_id`) and runs in `importSession` and the live
 | ------------------------------ | ------------------------------------------------------------------------------------------------------ |
 | `server/routes/import.js`      | Express router, request validation, temp-dir lifecycle, progress broadcasts                            |
 | `server/lib/archive.js`        | Safe archive extractors (`.zip` / `.tar(.gz)` / `.gz`) with path-traversal and size-cap enforcement    |
-| `scripts/import-history.js`    | Generalized directory walker (`importFromDirectory`) + shared `parseSessionFile` / `importSession`. Re-import is fully incremental: per-event-type high-water mark (`MAX(created_at) GROUP BY event_type` per session) drives `ts > cutoff[type]` dedup for Stop / PostToolUse / TurnDuration / ToolError, and `sessions.ended_at` is rolled forward when the JSONL has progressed past the stored value |
+| `scripts/import-history.js`    | Generalized directory walker (`importFromDirectory`) + shared `parseSessionFile` / `importSession`. Re-import is fully incremental: per-event-type high-water mark (`MAX(created_at) GROUP BY event_type` per session) drives `ts > cutoff[type]` dedup for Stop / PostToolUse / TurnDuration / ToolError, and `sessions.ended_at` is rolled forward when the JSONL has progressed past the stored value. After each batch imports, it calls `ingestWorkflowsForSession` (`server/lib/workflow-ingest.js`) per session — outside the SQLite transaction — so an offline/headless/CI/cluster **Workflow-tool** run (whose journal never reached a live server) has its inner agents linked to their `run_id` on a plain rescan / path import, not left orphaned (`workflow_run_id = NULL`) |
 | `server/lib/transcript-cache.js` | Chunked 4 MiB sync byte-stream reader for JSONL transcripts — never materializes the whole file as a JS string, so files larger than V8's max string length (~512 MiB on 64-bit Node 20) parse without aborting Node with `FATAL ERROR: v8::ToLocalChecked Empty MaybeLocal` |
 
 **Request flow (upload)**
@@ -875,7 +875,8 @@ const DEFAULT_PRICING = [
 
 ```mermaid
 stateDiagram-v2
-    [*] --> waiting: SessionStart (status=active + flag)
+    [*] --> waiting: SessionStart startup/resume/clear (status=active + flag)
+    active --> active: SessionStart compact (mid-turn — state preserved, no flag)
     waiting --> active: UserPromptSubmit / PreToolUse / PostToolUse
     active --> waiting: Stop (non-error, flag re-stamped)
     active --> waiting: Permission Notification (agent → waiting)
@@ -1263,7 +1264,7 @@ test("POST /api/hooks/event ingests hook payload", async () => {
 
 ## Terminal Access (`ccam` CLI)
 
-Everything this server exposes over REST is also reachable from a terminal via the repo's dependency-free `ccam` CLI (`bin/ccam.js`, linked by `npm run setup`): monitoring (`health`/`stats`/`kanban`/`tail`), data browsing, analytics/workflows/cost, alerts + webhook tests, pricing CRUD, imports, and administration (`doctor`/`export`/`cleanup`/`reinstall-hooks`/`clear-data --yes`). It resolves the live server through the same `~/.claude/.agent-dashboard.json` registry the hook handler uses. See [docs/CLI.md](../docs/CLI.md).
+Everything this server exposes over REST is also reachable from a terminal via the repo's dependency-free `ccam` CLI (`bin/ccam.js`, linked by `npm run setup`): monitoring (`health`/`stats`/`kanban`/`tail`), data browsing, analytics/workflows/cost, alerts + webhook tests, pricing CRUD, imports, and administration (`doctor`/`export`/`cleanup`/`reinstall-hooks`/`update-check`/`clear-data --yes`). It resolves the live server through the same `~/.claude/.agent-dashboard.json` registry the hook handler uses. See [docs/CLI.md](../docs/CLI.md).
 
 ## Deployment
 
@@ -1340,7 +1341,7 @@ sudo systemctl start agent-dashboard
 
 ```dockerfile
 # Dockerfile (root of project)
-FROM node:18-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 

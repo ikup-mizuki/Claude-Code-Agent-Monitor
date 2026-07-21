@@ -7,7 +7,7 @@ A professional dashboard to track and visualize your Claude Code agent sessions,
 ![Claude Code](https://img.shields.io/badge/Claude_Code-orange?style=flat-square&logo=claude&logoColor=white)
 ![Claude Code Plugins](https://img.shields.io/badge/Claude_Code-Plugins_&_Skills-orange?style=flat-square&logo=anthropic&logoColor=white)
 ![Model Context Protocol](https://img.shields.io/badge/Model_Context_Protocol-1.0-0f766e?style=flat-square&logo=modelcontextprotocol&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-339933?style=flat-square&logo=node.js&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-339933?style=flat-square&logo=node.js&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-%3E%3D3.6-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-4.21-000000?style=flat-square&logo=express&logoColor=white)
 ![ws](https://img.shields.io/badge/ws-WebSocket_server-010101?style=flat-square&logo=socketdotio&logoColor=white)
@@ -42,7 +42,7 @@ A professional dashboard to track and visualize your Claude Code agent sessions,
 ![macOS](https://img.shields.io/badge/macOS-Desktop_App-000000?style=flat-square&logo=apple&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-Desktop_App-0078D6?style=flat-square&logo=windows&logoColor=white)
 ![SMAppService](https://img.shields.io/badge/SMAppService-Login_Items-000000?style=flat-square&logo=apple&logoColor=white)
-![Universal DMG](https://img.shields.io/badge/Universal_DMG-arm64_%2B_x64-7c3aed?style=flat-square&logo=apple&logoColor=white)
+![macOS DMG](https://img.shields.io/badge/macOS_DMG-arm64_%2B_x64-7c3aed?style=flat-square&logo=apple&logoColor=white)
 ![NSIS Installer](https://img.shields.io/badge/Windows-NSIS_%2B_Portable-1f6feb?style=flat-square&logo=windows&logoColor=white)
 ![Vitest](https://img.shields.io/badge/Vitest-1.0-646CFF?style=flat-square&logo=vitest&logoColor=white)
 ![React Testing Library](https://img.shields.io/badge/React_Testing_Library-13.0-FF5733?style=flat-square&logo=testinglibrary&logoColor=white)
@@ -319,7 +319,7 @@ The dashboard offers a comprehensive set of features to monitor and analyze your
 
 ### Prerequisites
 
-- **Node.js** >= 18.0.0 (22+ recommended)
+- **Node.js** >= 20.0.0 (22+ recommended)
 - **npm** >= 9.0.0
 
 ### 1. Install
@@ -426,7 +426,7 @@ CLAUDE_HOME="$HOME/.claude" podman compose up -d --build
 # Docker
 docker build -t agent-monitor .
 docker run -d --name agent-monitor \
-  -p 4820:4820 \
+  -p 127.0.0.1:4820:4820 \
   -v "$HOME/.claude:/root/.claude:ro" \
   -v agent-monitor-data:/app/data \
   agent-monitor
@@ -434,13 +434,13 @@ docker run -d --name agent-monitor \
 # Podman
 podman build -t agent-monitor .
 podman run -d --name agent-monitor \
-  -p 4820:4820 \
+  -p 127.0.0.1:4820:4820 \
   -v "$HOME/.claude:/root/.claude:ro" \
   -v agent-monitor-data:/app/data \
   agent-monitor
 ```
 
-The dashboard is then available at `http://localhost:4820`. The server binds `127.0.0.1` by default, so to make it reachable beyond the container's own loopback set `DASHBOARD_HOST=0.0.0.0` **and** `DASHBOARD_TOKEN` (see [Configuration](#configuration) and [`.github/SECURITY.md`](./.github/SECURITY.md)).
+The dashboard is then available at `http://localhost:4820`. The image binds `0.0.0.0` **inside the container** (`DASHBOARD_HOST`) and writes SQLite to the `/app/data` volume (`DASHBOARD_DATA_DIR`) — both baked into the `Dockerfile` so Compose and plain `docker run` work as-is. The trust boundary is the **host** port publish: the examples publish on `127.0.0.1` only, so the dashboard is not LAN-reachable out of the box. To expose it on a LAN, publish on `0.0.0.0` (drop the `127.0.0.1:` prefix, e.g. `-p 4820:4820`) **and** set `DASHBOARD_TOKEN` (see [Configuration](#configuration) and [`.github/SECURITY.md`](./.github/SECURITY.md)).
 
 **Volume mounts:**
 
@@ -547,7 +547,8 @@ Persisted statuses: `active | completed | error | abandoned`. The
 
 ```mermaid
 stateDiagram-v2
-    [*] --> waiting: SessionStart (status=active + flag)
+    [*] --> waiting: SessionStart startup/resume/clear (status=active + flag)
+    active --> active: SessionStart compact (mid-turn — state preserved, no flag)
     waiting --> active: UserPromptSubmit / PreToolUse / PostToolUse
     active --> waiting: Stop, non-error (flag re-stamped)
     active --> waiting: Permission Notification (agent → waiting)
@@ -640,7 +641,9 @@ ccam events   [--session id] [--limit n]
 ccam analytics                    # token totals, top tools, agent types
 ccam workflows [--session id]     # workflow intelligence stats and patterns
 ccam runs [--session id]          # dynamic Workflow-tool runs
-ccam cost                         # total estimated cost with per-model breakdown
+ccam cost [--session <id>]        # total estimated cost with per-model breakdown
+                                  # (--session scopes to one; shows tool surcharges;
+                                  #  warns about models with usage but no pricing rule)
 
 # Alerts & webhooks
 ccam alerts [--unacked]           # fired-alert feed
@@ -650,8 +653,10 @@ ccam webhooks                     # list webhook targets
 ccam webhooks test <id>           # send a synthetic test alert
 
 # Pricing
-ccam pricing                      # list model pricing rules
+ccam pricing                      # list model pricing rules (incl. fast-mode & intro columns)
 ccam pricing set <pattern> --input N --output N [--cache-read N --cache-write N]
+                 [--cache-write-1h N] [--fast-input N --fast-output N]
+                 [--intro-input N --intro-output N … --intro-until YYYY-MM-DD]
 ccam pricing delete <pattern>
 ccam pricing reset
 
@@ -665,6 +670,7 @@ ccam info                         # raw system info JSON
 ccam export [file.json]           # full JSON data export
 ccam cleanup --hours N --days M   # abandon stale / purge old sessions
 ccam reinstall-hooks              # reinstall Claude Code hooks
+ccam update-check                 # is the checkout behind upstream? (prints the update command)
 ccam clear-data --yes             # delete ALL data (requires --yes)
 ccam open                         # open the dashboard in your browser
 ccam version                      # print the CLI version (also --version / -v)
@@ -705,9 +711,10 @@ API-backed commands need the server running — when it isn't, **read-only comma
 | `npm run desktop:dev`   | Build and launch the Electron desktop app for local iteration  |
 | `npm run desktop:build` | Compile the desktop TypeScript sources into `desktop/out/`      |
 | `npm run desktop:test`  | Run the desktop smoke test (spawn Electron, probe `/api/health`) |
-| `npm run desktop:dmg`   | Build the **universal** (x64 + arm64) macOS DMG — correct for release, **slow** |
+| `npm run desktop:dmg`   | Build **both** macOS DMGs (arm64 + x64) — correct for release, **slower** (packages each arch) |
 | `npm run desktop:dmg:arm64` | Build an Apple-Silicon-only DMG — **fast**, recommended for your own Mac |
 | `npm run desktop:dmg:x64` | Build an Intel-only DMG — **fast**                           |
+| `npm run desktop:dmg:universal` | Build one merged **universal** DMG (arm64 + x86_64) — optional, **slowest**, not what the release ships |
 | `npm run desktop:win`   | Build a Windows **NSIS installer** `.exe` (x64) — run on Windows |
 | `npm run desktop:win:portable` | Build a Windows **portable** (no-install) `.exe` (x64) — run on Windows |
 
@@ -1241,7 +1248,7 @@ The dashboard processes these Claude Code hook types:
 
 | Hook Type           | Trigger                        | Dashboard Action                                                                             |
 | ------------------- | ------------------------------ | -------------------------------------------------------------------------------------------- |
-| `SessionStart`      | Claude Code session begins     | Creates session and main agent. Stamps `awaiting_input_since` (with `awaiting_reason=session_start`) so a fresh session lands in **Waiting**. Reactivates resumed sessions. Abandons orphaned sessions with no activity for `DASHBOARD_STALE_MINUTES` (default 180) |
+| `SessionStart`      | Claude Code session begins     | Creates session and main agent. Stamps `awaiting_input_since` (with `awaiting_reason=session_start`) so a fresh session lands in **Waiting** — except a `compact`-source SessionStart (mid-turn auto-compaction), which leaves the flag untouched so a working session stays **Active**. Reactivates resumed sessions. Abandons orphaned sessions with no activity for `DASHBOARD_STALE_MINUTES` (default 180) |
 | `UserPromptSubmit`  | User hits enter on a prompt    | Clears the waiting flag and promotes the main agent to `working` — the only signal that text-only assistant turns have started, since they emit no `PreToolUse` |
 | `PreToolUse`        | Agent starts using a tool      | Clears the waiting flag, sets agent to `working`, sets `current_tool`. If tool is `Agent`, creates a subagent record |
 | `PostToolUse`       | Tool execution completed       | Clears the waiting flag (handles permission-prompt approvals where the Notification stamped it mid-tool). Clears `current_tool`. Agent stays `working` |
@@ -1560,7 +1567,7 @@ npm run desktop:win          # Windows: NSIS installer → desktop/release/Claud
 ```
 
 > [!NOTE]
-> **DMGs build on macOS; Windows `.exe`s build on Windows** — electron-builder packages for the host OS. The macOS universal `npm run desktop:dmg` build is intentionally **slow** (it builds the app twice and merges with `@electron/universal`); for your own Mac use the single-arch `desktop:dmg:arm64` / `desktop:dmg:x64`. On Windows, `better-sqlite3` is fetched as a prebuilt Electron binary by `npm run desktop:install`, so no Visual Studio C++ toolchain is needed in the common case. If the build does fail (no prebuilt binary, or a missing C++ toolchain), `desktop:install` prints the exact per-OS fix plus a no-toolchain alternative and fails loudly instead of leaving a broken install.
+> **DMGs build on macOS; Windows `.exe`s build on Windows** — electron-builder packages for the host OS. The macOS `npm run desktop:dmg` build packages the app **twice** (once per architecture) and emits **both** per-arch DMGs (`arm64` + `x64`) — the release build; it does not merge them into one universal binary. For your own Mac use the single-arch `desktop:dmg:arm64` / `desktop:dmg:x64`. On Windows, `better-sqlite3` is fetched as a prebuilt Electron binary by `npm run desktop:install`, so no Visual Studio C++ toolchain is needed in the common case. If the build does fail (no prebuilt binary, or a missing C++ toolchain), `desktop:install` prints the exact per-OS fix plus a no-toolchain alternative and fails loudly instead of leaving a broken install.
 
 ### Install it
 
@@ -1612,9 +1619,10 @@ All commands run from the **repo root**:
 | `npm run desktop:build`     | Compile the desktop TypeScript sources into `desktop/out/`                    |
 | `npm run desktop:dev`       | Build and launch the Electron app for local iteration                         |
 | `npm run desktop:test`      | Run the smoke test (spawn Electron, probe `/api/health`, shut down)            |
-| `npm run desktop:dmg`       | **macOS:** build the **universal** (x64 + arm64) DMG — correct for release, **slow** |
+| `npm run desktop:dmg`       | **macOS:** build **both** DMGs (arm64 + x64) — correct for release, **slower** (packages each arch) |
 | `npm run desktop:dmg:arm64` | **macOS:** build an Apple-Silicon-only DMG — **fast** (~1 min), recommended for your own Mac |
 | `npm run desktop:dmg:x64`   | **macOS:** build an Intel-only DMG — **fast** (~1 min)                         |
+| `npm run desktop:dmg:universal` | **macOS:** build one merged **universal** DMG (arm64 + x86_64) — optional, **slowest**, not what the release ships |
 | `npm run desktop:win`       | **Windows:** build the NSIS installer `.exe` (x64)                             |
 | `npm run desktop:win:portable` | **Windows:** build the no-install portable `.exe` (x64)                     |
 

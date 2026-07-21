@@ -7,7 +7,7 @@ Bảng điều khiển chuyên nghiệp để theo dõi và trực quan hóa cá
 ![Claude Code](https://img.shields.io/badge/Claude_Code-orange?style=flat-square&logo=claude&logoColor=white)
 ![Claude Code Plugins](https://img.shields.io/badge/Claude_Code-Plugins_&_Skills-orange?style=flat-square&logo=anthropic&logoColor=white)
 ![Model Context Protocol](https://img.shields.io/badge/Model_Context_Protocol-1.0-0f766e?style=flat-square&logo=modelcontextprotocol&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-%3E%3D18-339933?style=flat-square&logo=node.js&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-339933?style=flat-square&logo=node.js&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-%3E%3D3.6-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-4.21-000000?style=flat-square&logo=express&logoColor=white)
 ![ws](https://img.shields.io/badge/ws-WebSocket_server-010101?style=flat-square&logo=socketdotio&logoColor=white)
@@ -42,7 +42,7 @@ Bảng điều khiển chuyên nghiệp để theo dõi và trực quan hóa cá
 ![macOS](https://img.shields.io/badge/macOS-Desktop_App-000000?style=flat-square&logo=apple&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-Desktop_App-0078D6?style=flat-square&logo=windows&logoColor=white)
 ![SMAppService](https://img.shields.io/badge/SMAppService-Login_Items-000000?style=flat-square&logo=apple&logoColor=white)
-![Universal DMG](https://img.shields.io/badge/Universal_DMG-arm64_%2B_x64-7c3aed?style=flat-square&logo=apple&logoColor=white)
+![macOS DMG](https://img.shields.io/badge/macOS_DMG-arm64_%2B_x64-7c3aed?style=flat-square&logo=apple&logoColor=white)
 ![NSIS Installer](https://img.shields.io/badge/Windows-NSIS_%2B_Portable-1f6feb?style=flat-square&logo=windows&logoColor=white)
 ![Vitest](https://img.shields.io/badge/Vitest-1.0-646CFF?style=flat-square&logo=vitest&logoColor=white)
 ![React Testing Library](https://img.shields.io/badge/React_Testing_Library-13.0-FF5733?style=flat-square&logo=testinglibrary&logoColor=white)
@@ -319,7 +319,7 @@ Bảng điều khiển cung cấp một bộ tính năng toàn diện để giá
 
 ### Điều kiện tiên quyết
 
-- **Node.js** >= 18.0.0 (khuyến nghị 22+)
+- **Node.js** >= 20.0.0 (khuyến nghị 22+)
 - **npm** >= 9.0.0
 
 ### 1. Cài đặt
@@ -407,7 +407,7 @@ CLAUDE_HOME="$HOME/.claude" podman compose up -d --build
 # Docker
 docker build -t agent-monitor .
 docker run -d --name agent-monitor \
-  -p 4820:4820 \
+  -p 127.0.0.1:4820:4820 \
   -v "$HOME/.claude:/root/.claude:ro" \
   -v agent-monitor-data:/app/data \
   agent-monitor
@@ -415,16 +415,13 @@ docker run -d --name agent-monitor \
 # Podman
 podman build -t agent-monitor .
 podman run -d --name agent-monitor \
-  -p 4820:4820 \
+  -p 127.0.0.1:4820:4820 \
   -v "$HOME/.claude:/root/.claude:ro" \
   -v agent-monitor-data:/app/data \
   agent-monitor
 ```
 
-Bảng điều khiển sau đó có sẵn tại `http://localhost:4820`.
-
-> [!QUAN TRỌNG]
-> **Phơi bày mạng:** Theo mặc định, máy chủ chỉ bind `127.0.0.1` (loopback) nên không truy cập được từ mạng (GHSA-gr74-4xfh-6jw9). Để mở ra LAN, đặt cả `DASHBOARD_HOST` (ví dụ `0.0.0.0`) **và** `DASHBOARD_TOKEN` — khi token được đặt, mọi yêu cầu `/api/*` cùng kết nối WebSocket đều phải xuất trình nó. Liệt kê các hostname LAN trong `DASHBOARD_ALLOWED_HOSTS` (phân tách bằng dấu phẩy). Xem `.env.example` và [`.github/SECURITY.md`](./.github/SECURITY.md) để biết chi tiết.
+Bảng điều khiển sau đó có sẵn tại `http://localhost:4820`. Image bind `0.0.0.0` **bên trong container** (`DASHBOARD_HOST`) và ghi SQLite vào volume `/app/data` (`DASHBOARD_DATA_DIR`) — cả hai đều được nướng sẵn vào `Dockerfile` nên Compose và `docker run` đơn giản đều hoạt động ngay lập tức. Ranh giới tin cậy là việc publish cổng trên **host**: các ví dụ chỉ publish trên `127.0.0.1`, nên bảng điều khiển không truy cập được từ mạng LAN theo mặc định. Để mở ra LAN, hãy publish trên `0.0.0.0` (bỏ tiền tố `127.0.0.1:`, ví dụ `-p 4820:4820`) **và** đặt `DASHBOARD_TOKEN` (xem [Cấu hình](#cấu-hình) và [`.github/SECURITY.md`](./.github/SECURITY.md)).
 
 **Gắn kết âm lượng:**
 
@@ -551,7 +548,8 @@ Trạng thái lưu trữ: `active | completed | error | abandoned`. Trạng thá
 
 ```mermaid
 stateDiagram-v2
-    [*] --> waiting: SessionStart (status=active + cờ)
+    [*] --> waiting: SessionStart startup/resume/clear (status=active + cờ)
+    active --> active: SessionStart compact (giữa lượt — giữ nguyên trạng thái, không cờ)
     waiting --> active: UserPromptSubmit / PreToolUse / PostToolUse
     active --> waiting: Stop, không lỗi (cờ được đóng dấu lại)
     active --> waiting: Notification xin quyền (agent → waiting)
@@ -634,7 +632,9 @@ ccam events   [--session id] [--limit n]
 ccam analytics                    # tổng token, công cụ hàng đầu, loại agent
 ccam workflows [--session id]     # thống kê workflow-intelligence và các mẫu
 ccam runs [--session id]          # các lần chạy Workflow động
-ccam cost                         # tổng chi phí ước tính theo model
+ccam cost [--session <id>]        # tổng chi phí ước tính theo model
+                                  # (--session giới hạn ở một phiên; hiển thị phụ phí công cụ máy chủ;
+                                  #  cảnh báo model có mức dùng nhưng chưa có quy tắc định giá)
 
 # Cảnh báo & webhook
 ccam alerts [--unacked]           # luồng cảnh báo đã kích hoạt
@@ -644,8 +644,10 @@ ccam webhooks                     # danh sách đích webhook
 ccam webhooks test <id>           # gửi cảnh báo thử tổng hợp
 
 # Giá
-ccam pricing                      # danh sách quy tắc định giá
+ccam pricing                      # danh sách quy tắc định giá (gồm cột fast-mode & intro)
 ccam pricing set <pattern> --input N --output N [--cache-read N --cache-write N]
+                 [--cache-write-1h N] [--fast-input N --fast-output N]
+                 [--intro-input N --intro-output N … --intro-until YYYY-MM-DD]
 ccam pricing delete <pattern>
 ccam pricing reset
 
@@ -659,6 +661,7 @@ ccam info                         # JSON thông tin hệ thống thô
 ccam export [file.json]           # xuất toàn bộ dữ liệu dạng JSON
 ccam cleanup --hours N --days M   # bỏ phiên treo / dọn phiên cũ
 ccam reinstall-hooks              # cài lại hook Claude Code
+ccam update-check                 # bản checkout có chậm hơn upstream? (in lệnh cập nhật)
 ccam clear-data --yes             # xóa TOÀN BỘ dữ liệu (bắt buộc --yes)
 ccam open                         # mở dashboard trong trình duyệt
 ccam version                      # in phiên bản CLI (cũng có --version / -v)
@@ -695,9 +698,10 @@ Các lệnh dựa trên API cần server đang chạy — khi chưa chạy, **c�
 | `npm run desktop:dev`   | Build TypeScript rồi khởi chạy ứng dụng máy tính để bàn Electron |
 | `npm run desktop:build` | Biên dịch tiến trình chính của ứng dụng máy tính để bàn thành `desktop/out/` |
 | `npm run desktop:test`  | Chạy kiểm thử smoke (spawn Electron rồi thăm dò `/api/health`) |
-| `npm run desktop:dmg`   | **macOS:** Tạo DMG **universal** (x64 + arm64) — đúng cho bản phát hành. **Chậm.** |
+| `npm run desktop:dmg`   | **macOS:** Tạo **cả hai** DMG theo kiến trúc (arm64 + x64) — đúng cho bản phát hành. **Chậm.** |
 | `npm run desktop:dmg:arm64` | **macOS:** Tạo DMG chỉ cho Apple Silicon. **Nhanh.** |
 | `npm run desktop:dmg:x64`   | **macOS:** Tạo DMG chỉ cho Intel. **Nhanh.** |
+| `npm run desktop:dmg:universal` | **macOS:** Tạo **một** DMG universal hợp nhất (arm64 + x86_64 trong một tệp) — tùy chọn, **chậm nhất**, không phải thứ bản phát hành đi kèm. |
 | `npm run desktop:win`   | **Windows:** Tạo trình cài **NSIS** `.exe` (x64) — chạy trên Windows |
 | `npm run desktop:win:portable` | **Windows:** Tạo bản **portable** (không cần cài) `.exe` (x64) — chạy trên Windows |
 
@@ -1162,7 +1166,7 @@ Bảng điều khiển xử lý các loại hook Claude Code này:
 
 | Loại hook         | Trigger                        | Hành động trên dashboard                                                                             |
 | ----------------- | ------------------------------ | --------------------------------------------------------------------------------------------------- |
-| `SessionStart`    | Phiên Claude Code bắt đầu      | Tạo phiên và Agent chính. Đóng dấu `awaiting_input_since` (với `awaiting_reason=session_start`) để phiên mới rơi vào **Đang chờ**. Kích hoạt lại các phiên đã tiếp tục. Bỏ các phiên mồ côi không hoạt động trong `DASHBOARD_STALE_MINUTES` (mặc định 180) |
+| `SessionStart`    | Phiên Claude Code bắt đầu      | Tạo phiên và Agent chính. Đóng dấu `awaiting_input_since` (với `awaiting_reason=session_start`) để phiên mới rơi vào **Đang chờ** — trừ SessionStart nguồn `compact` (nén giữa lượt), vốn giữ nguyên cờ để phiên đang chạy vẫn **Hoạt động**. Kích hoạt lại các phiên đã tiếp tục. Bỏ các phiên mồ côi không hoạt động trong `DASHBOARD_STALE_MINUTES` (mặc định 180) |
 | `UserPromptSubmit`| Người dùng nhấn enter          | Xóa cờ chờ và đẩy Agent chính sang `working` — tín hiệu duy nhất cho biết các lượt văn bản thuần đã bắt đầu, vì chúng không phát ra `PreToolUse` |
 | `PreToolUse`      | Agent bắt đầu sử dụng tool     | Xóa cờ chờ, đặt Agent thành `working`, đặt `current_tool`. Nếu tool là `Agent`, tạo bản ghi Subagent |
 | `PostToolUse`     | Tool hoàn tất                  | Xóa cờ chờ (xử lý các phê duyệt prompt xin quyền mà Notification đã đóng dấu giữa lúc tool đang chạy). Xóa `current_tool`. Agent ở lại `working` |
@@ -1406,7 +1410,7 @@ npm run desktop:win          # Windows: tạo trình cài NSIS .exe (chạy trê
 ```
 
 > [!QUAN TRỌNG]
-> **DMG dựng trên macOS, `.exe` Windows dựng trên Windows** — electron-builder đóng gói theo hệ điều hành chủ. Bản dựng universal `npm run desktop:dmg` của macOS **cố tình chậm** (build hai lần rồi hợp nhất bằng `@electron/universal`); khi xây dựng cho **chính máy Mac của bạn**, hãy dùng `npm run desktop:dmg:arm64` (Apple Silicon) hoặc `npm run desktop:dmg:x64` (Intel) — chỉ một kiến trúc, hoàn tất trong khoảng một phút. Trên Windows, `npm run desktop:install` tải `better-sqlite3` dưới dạng nhị phân Electron dựng sẵn, nên trường hợp thông thường không cần bộ công cụ Visual Studio C++. Nếu việc dựng có thất bại (không có nhị phân dựng sẵn, hoặc thiếu bộ công cụ C++), `desktop:install` in ra đúng cách khắc phục theo từng hệ điều hành cùng một phương án không cần bộ công cụ rồi báo lỗi rõ ràng thay vì để lại bản cài hỏng. CI đã dựng sẵn cả DMG macOS lẫn `.exe` Windows và tải lên dưới dạng artifact `ClaudeCodeMonitor-dmg` / `ClaudeCodeMonitor-win`, nên bạn hiếm khi cần tự dựng. DMG macOS khoảng ~80 MB (~250 MB khi giải nén trên đĩa) và trình cài Windows tương đương.
+> **DMG dựng trên macOS, `.exe` Windows dựng trên Windows** — electron-builder đóng gói theo hệ điều hành chủ. Bản dựng `npm run desktop:dmg` của macOS **cố tình chậm** (đóng gói hai lần — mỗi kiến trúc một lần — rồi xuất ra **cả hai** DMG theo kiến trúc `ClaudeCodeMonitor-<ver>-arm64.dmg` và `ClaudeCodeMonitor-<ver>-x64.dmg`, không có bước hợp nhất); khi xây dựng cho **chính máy Mac của bạn**, hãy dùng `npm run desktop:dmg:arm64` (Apple Silicon) hoặc `npm run desktop:dmg:x64` (Intel) — chỉ một kiến trúc, hoàn tất trong khoảng một phút. Trên Windows, `npm run desktop:install` tải `better-sqlite3` dưới dạng nhị phân Electron dựng sẵn, nên trường hợp thông thường không cần bộ công cụ Visual Studio C++. Nếu việc dựng có thất bại (không có nhị phân dựng sẵn, hoặc thiếu bộ công cụ C++), `desktop:install` in ra đúng cách khắc phục theo từng hệ điều hành cùng một phương án không cần bộ công cụ rồi báo lỗi rõ ràng thay vì để lại bản cài hỏng. CI đã dựng sẵn cả DMG macOS lẫn `.exe` Windows và tải lên dưới dạng artifact `ClaudeCodeMonitor-dmg` / `ClaudeCodeMonitor-win`, nên bạn hiếm khi cần tự dựng. DMG macOS khoảng ~80 MB (~250 MB khi giải nén trên đĩa) và trình cài Windows tương đương.
 
 ### Điều gì xảy ra khi bạn khởi chạy ứng dụng
 
@@ -1484,24 +1488,25 @@ Tất cả lệnh chạy được từ **thư mục gốc kho mã**. Mọi lện
 | `npm run desktop:build` | Prebuild guard + `tsc` → `desktop/out/`. |
 | `npm run desktop:dev` | Build, rồi khởi chạy Electron. |
 | `npm run desktop:test` | Build, rồi chạy kiểm thử smoke (spawn Electron + thăm dò `/api/health`). |
-| `npm run desktop:dmg` | **macOS:** DMG **universal** (x64 + arm64). Đúng cho bản phát hành. **Chậm.** |
+| `npm run desktop:dmg` | **macOS:** **cả hai** DMG theo kiến trúc (arm64 + x64). Đúng cho bản phát hành. **Chậm.** |
 | `npm run desktop:dmg:arm64` | **macOS:** DMG chỉ cho Apple Silicon. **Nhanh (~1 phút).** |
 | `npm run desktop:dmg:x64` | **macOS:** DMG chỉ cho Intel. **Nhanh (~1 phút).** |
+| `npm run desktop:dmg:universal` | **macOS:** **một** DMG universal hợp nhất (arm64 + x86_64 trong một tệp) — tùy chọn, **chậm nhất**, không phải thứ bản phát hành đi kèm. |
 | `npm run desktop:win` | **Windows:** trình cài NSIS `.exe` (x64). |
 | `npm run desktop:win:portable` | **Windows:** bản portable không cần cài `.exe` (x64). |
 
 ### Hiệu năng xây dựng — hãy đọc mục này
 
-Bản dựng DMG **universal** cố tình chậm — đó là chi phí đóng gói Electron tiêu chuẩn, nhân lên bởi bước hợp nhất universal:
+Bản dựng `npm run desktop:dmg` cố tình chậm — đó là chi phí đóng gói Electron tiêu chuẩn, nhân đôi vì phải đóng gói hai lần (mỗi kiến trúc một lần), chứ không phải vì bất kỳ bước hợp nhất nào:
 
 ```mermaid
 flowchart TD
-    u["npm run desktop:dmg (universal)"] --> b1["build full x64 app tree"]
+    u["npm run desktop:dmg (arm64 + x64)"] --> b1["build full x64 app tree"]
     u --> b2["build full arm64 app tree"]
-    b1 --> merge["@electron/universal merge<br/>lipo every native binary - dedup"]
-    b2 --> merge
-    merge --> sign["ad-hoc sign every binary"]
-    sign --> dmgstep["hdiutil -> .dmg"]
+    b1 --> sign1["ad-hoc sign every binary"]
+    sign1 --> dmg1["hdiutil -> x64 .dmg"]
+    b2 --> sign2["ad-hoc sign every binary"]
+    sign2 --> dmg2["hdiutil -> arm64 .dmg"]
 
     a["npm run desktop:dmg:arm64 (single arch)"] --> sb["build one app tree"]
     sb --> ssign["sign"]
@@ -1511,8 +1516,8 @@ flowchart TD
     style a fill:#238636,stroke:#196c2e,color:#fff
 ```
 
-- Xây dựng cho **chính máy Mac của bạn** → dùng `desktop:dmg:arm64` (Apple Silicon) hoặc `desktop:dmg:x64` (Intel). Một kiến trúc, không hợp nhất, hoàn tất trong khoảng một phút.
-- Xây dựng **artifact phát hành cho mọi người** → dùng `desktop:dmg` universal và chờ lâu hơn. CI đã dựng DMG universal và tải lên dưới dạng artifact `ClaudeCodeMonitor-dmg` nên bạn hiếm khi cần tự dựng.
+- Xây dựng cho **chính máy Mac của bạn** → dùng `desktop:dmg:arm64` (Apple Silicon) hoặc `desktop:dmg:x64` (Intel). Chỉ một kiến trúc, hoàn tất trong khoảng một phút.
+- Xây dựng **artifact phát hành cho mọi người** → dùng `desktop:dmg` (cả hai kiến trúc) và chờ lâu hơn. CI đã dựng cả hai DMG theo kiến trúc và tải lên dưới dạng artifact `ClaudeCodeMonitor-dmg` nên bạn hiếm khi cần tự dựng.
 
 ### Ký mã và công chứng
 
@@ -1536,7 +1541,7 @@ Hoặc mở  → *System Settings → Privacy & Security*, cuộn tới ứng d�
 
 ### Tích hợp liên tục (CI)
 
-`.github/workflows/ci.yml` có hai job desktop được **lọc theo đường dẫn** (một job `changes` dùng `dorny/paths-filter` phát hiện thay đổi trong `desktop/**`; các job này cũng chạy trên mọi `push`, hoặc khi PR gắn nhãn `desktop`): job `🍎 macOS Desktop (DMG)` chạy trên `macos-latest` dựng DMG universal rồi tải lên dưới dạng artifact `ClaudeCodeMonitor-dmg` (hai DMG một-kiến-trúc); job `🪟 Windows Desktop (EXE)` chạy trên `windows-latest` dựng rồi tải lên dưới dạng artifact `ClaudeCodeMonitor-win` (trình cài NSIS + bản portable). Khi đẩy bản nâng phiên bản lên `master`, job `release` đính kèm **cả** DMG macOS lẫn `.exe` Windows vào bản GitHub Release `vX.Y.Z` đã phát hành. Biểu tượng Windows (`desktop/assets/icon.ico`) được commit vào kho mã (tạo lại từ `icon.png` bằng `npm run build:win-icon`, dùng PowerShell + .NET, không cần công cụ phụ).
+`.github/workflows/ci.yml` có hai job desktop được **lọc theo đường dẫn** (một job `changes` dùng `dorny/paths-filter` phát hiện thay đổi trong `desktop/**`; các job này cũng chạy trên mọi `push`, hoặc khi PR gắn nhãn `desktop`): job `🍎 macOS Desktop (DMG)` chạy trên `macos-latest` dựng cả hai DMG theo kiến trúc rồi tải lên dưới dạng artifact `ClaudeCodeMonitor-dmg` (hai DMG một-kiến-trúc); job `🪟 Windows Desktop (EXE)` chạy trên `windows-latest` dựng rồi tải lên dưới dạng artifact `ClaudeCodeMonitor-win` (trình cài NSIS + bản portable). Khi đẩy bản nâng phiên bản lên `master`, job `release` đính kèm **cả** DMG macOS lẫn `.exe` Windows vào bản GitHub Release `vX.Y.Z` đã phát hành. Biểu tượng Windows (`desktop/assets/icon.ico`) được commit vào kho mã (tạo lại từ `icon.png` bằng `npm run build:win-icon`, dùng PowerShell + .NET, không cần công cụ phụ).
 
 ### Thay đổi duy nhất ngoài `desktop/`
 
