@@ -21,6 +21,8 @@ Enterprise-grade React + TypeScript dashboard for real-time Claude Code agent mo
 ![ESLint](https://img.shields.io/badge/ESLint-8.44-4B32C3?style=flat-square&logo=eslint&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-20.10-2496ED?style=flat-square&logo=docker&logoColor=white)
 ![Podman](https://img.shields.io/badge/Podman-4.0-CC342D?style=flat-square&logo=podman&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Prometheus-2.x-E6522C?style=flat-square&logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-10.x-F46800?style=flat-square&logo=grafana&logoColor=white)
 ![Vitest](https://img.shields.io/badge/Vitest-1.0-646CFF?style=flat-square&logo=vitest&logoColor=white)
 ![React Testing Library](https://img.shields.io/badge/React_Testing_Library-13.0-FF5733?style=flat-square&logo=testinglibrary&logoColor=white)
 ![MIT License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
@@ -178,6 +180,7 @@ client/
 │   │   ├── EmptyState.tsx
 │   │   ├── Sidebar.tsx
 │   │   ├── Layout.tsx
+│   │   ├── RemoteSources.tsx  # Remote Data Sources settings panel (SSH multi-machine collection)
 │   │   └── workflows/      # D3.js workflow visualization components (12 files)
 │   │
 │   ├── pages/              # Route pages
@@ -195,6 +198,7 @@ client/
 │   │   ├── __tests__/      # Utility tests
 │   │   ├── api.ts          # REST API client
 │   │   ├── eventBus.ts     # WebSocket pub/sub + connection state
+│   │   ├── dataScope.ts    # Global data-scope store (app-wide ?sources= selection)
 │   │   ├── format.ts       # Formatters (formatTime, timeAgo, fmtCost)
 │   │   └── types.ts        # TypeScript type definitions
 │   │
@@ -277,7 +281,9 @@ sequenceDiagram
 
 ## State Management
 
-The client uses **local component state** and **React hooks** for state management. No global state library (Redux, Zustand) is used to keep the architecture simple.
+The client uses **local component state** and **React hooks** for state management. No global state library (Redux, Zustand) is used to keep the architecture simple. The one small exception is the **data-scope store** (`lib/dataScope.ts`): a lightweight app-wide store holding the current set of data sources (`local` plus any configured [Remote Data Sources](../server/README.md#remote-data-sources)). Pages read it and append `?sources=` to their API requests, so a single selector narrows the whole app to one or more machines' data. Remote sources are managed from the Settings page via the `RemoteSources` component (`components/RemoteSources.tsx`), which drives the `/api/remote-sources` CRUD/test/sync endpoints and reflects live `remote_source.status` WebSocket updates. When a sync finishes, stats pages refetch via `lib/remoteDataEvents.ts` (`remote_data.updated`, `remote_source.status` with `ok`, or remote `import.progress` complete).
+
+**Cursor sessions (informational):** Settings surfaces a subtle note on the CLAUDE_HOME, Import History, and Remote Data Sources panels — **Cursor** agent sessions count too because Cursor stores transcripts under the same `~/.claude` paths as Claude Code locally (and on synced remotes).
 
 ### State Strategy
 
@@ -392,6 +398,8 @@ Server broadcasts these event types over WebSocket:
 | `agent.updated` | Agent object | PostToolUse/Stop hooks |
 | `tool.executed` | Tool execution record | PostToolUse hook |
 | `notification.received` | Notification object | Notification hook |
+| `remote_source.status` | `{ id, status, error?, last_sync_at? }` (`status`: `idle`/`syncing`/`ok`/`error`/`deleted`) | Remote Data Source sync poller + `/api/remote-sources` routes |
+| `remote_data.updated` | `{ sourceId, source, label?, counters?, last_sync_at? }` | Emitted once per successful remote sync; triggers stats/cost/session refetches. The server also broadcasts `session_created` / `session_updated` (and main-agent frames) for each mirrored session so Kanban/Sessions update immediately |
 
 ### EventBus Pattern
 

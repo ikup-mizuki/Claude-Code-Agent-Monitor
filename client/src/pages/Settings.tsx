@@ -3,6 +3,64 @@
  * @description Provides a settings page for managing model pricing rules, notification preferences, and system information with real-time updates and actionable controls for data management and hook configuration.
  * @author Son Nguyen <hoangson091104@gmail.com>
  */
+/* =============================================================================
+ * MODULE_GUIDE — extended in-file reference (comments only; safe to read, never executed)
+ * =============================================================================
+ * **Path:** `/Users/davidnguyen/WebstormProjects/Claude-Code-Agent-Monitor/client/src/pages/Settings.tsx`
+ * **Purpose:** Dashboard module consumed by the React client, MCP tools, or desktop shell depending on deployment mode.
+ *
+ * ## Design constraints
+ * - Local-first: no telemetry leaves the machine unless the user configures webhooks.
+ * - Fail-safe hooks path on the server must never block Claude Code; UI mirrors that
+ *   philosophy by degrading gracefully (empty states, stale badges, reconnect loops).
+ * - Destructive flows stay behind explicit confirmation modals and server-side gates.
+ * - Internationalization: user-visible strings belong in i18n JSON, not literals here.
+ *
+ * ## Remote data & SSH
+ * Remote Data Sources let operators aggregate multiple machines. SSH entries describe
+ * how to reach a peer dashboard; the global data scope (`dataScope.ts`) narrows every
+ * scoped GET via `?sources=`. Health checks and import history surface in Settings.
+ *
+ * ## Observability
+ * Prometheus scrapes `GET /api/metrics` (see `monitoring/`). Grafana ships four
+ * provisioned boards (overview, sessions, tools, alerts). Native npm scripts and
+ * Docker Compose profiles are documented in `monitoring/README.md`.
+ *
+ * ## Internal dependencies
+ * - `../lib/api`
+ * - `../lib/eventBus`
+ * - `../components/Tabby/prefs`
+ * - `../lib/format`
+ * - `../lib/push`
+ * - `../components/Tip`
+ * - `../components/ImportHistory`
+ * - `../components/RemoteSources`
+ * - `../components/Skeleton`
+ * - `../components/AlertsNotifications`
+ * - `../lib/types`
+ *
+ * ## Public surface
+ * - `Settings` — exported API; see TSDoc on the symbol for behavior.
+ *
+ * ## Testing pointers
+ * - Prefer colocated `__tests__` with Vitest + Testing Library for UI.
+ * - Server contract changes require `npm run test:server` and OpenAPI sync.
+ * - MCP edits: `npm run mcp:typecheck` and `npm run mcp:build`.
+ *
+ * ## Related docs
+ * - `ARCHITECTURE.md` — hooks → API → SQLite → WebSocket → UI pipeline.
+ * - `docs/API.md` — REST reference.
+ * - `.claude/skills/file-headers/` — mandatory `@author` header policy.
+ * ============================================================================= */
+/* -----------------------------------------------------------------------------
+ * EXPORT CATALOG — quick index of symbols defined below (documentation only).
+ * -----------------------------------------------------------------------------
+ * **Settings**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * ----------------------------------------------------------------------------- */
 
 import { useEffect, useState, useCallback, useRef, useSyncExternalStore, Fragment } from "react";
 import { useTranslation } from "react-i18next";
@@ -50,14 +108,17 @@ import {
   History,
   ChevronLeft,
   ChevronRight,
+  Cloud,
 } from "lucide-react";
 import { api } from "../lib/api";
 import { eventBus } from "../lib/eventBus";
+import { isRemoteDataRefreshMessage } from "../lib/remoteDataEvents";
 import { tabbyPrefs } from "../components/Tabby/prefs";
 import { fmt, fmtCost, getCurrentLocale } from "../lib/format";
 import { subscribeToPush, unsubscribeFromPush } from "../lib/push";
 import { Tip } from "../components/Tip";
 import { ImportHistory } from "../components/ImportHistory";
+import { RemoteSources } from "../components/RemoteSources";
 import { Skeleton } from "../components/Skeleton";
 import { AlertsNotifications } from "../components/AlertsNotifications";
 import type { ModelPricing, WSMessage } from "../lib/types";
@@ -74,6 +135,12 @@ const SETTINGS_SECTIONS: {
   { id: "hooks", labelKey: "hooks.title", Icon: Plug },
   { id: "claude-home", labelKey: "claudeHome.title", Icon: FolderOpen },
   { id: "import", labelKey: "import.title", fallback: "Import", Icon: History },
+  {
+    id: "remote-sources",
+    labelKey: "remoteSources.title",
+    fallback: "Remote Data Sources",
+    Icon: Cloud,
+  },
   { id: "tabby", labelKey: "tabby.title", fallback: "Tabby", Icon: Cat },
   { id: "notifications", labelKey: "notifications.title", Icon: Bell },
   { id: "alerts", labelKey: "alertsHub.title", Icon: BellRing },
@@ -158,7 +225,13 @@ const emptyRow: EditRow = {
 interface SystemInfo {
   db: { path: string; size: number; counts: Record<string, number> };
   hooks: { installed: boolean; path: string; hooks: Record<string, boolean> };
-  server: { uptime: number; node_version: string; platform: string; ws_connections: number };
+  server: {
+    version: string;
+    uptime: number;
+    node_version: string;
+    platform: string;
+    ws_connections: number;
+  };
 }
 
 function formatTimestamp(iso: string): string {
@@ -501,8 +574,11 @@ export function Settings() {
           .then(setSysInfo)
           .catch(() => {});
       }
+      if (isRemoteDataRefreshMessage(msg)) {
+        load();
+      }
     });
-  }, []);
+  }, [load]);
 
   useEffect(() => {
     if (!actionResult) return;
@@ -1282,7 +1358,8 @@ export function Settings() {
           <FolderOpen className="w-4 h-4 text-gray-500" />
           {t("claudeHome.title")}
         </h3>
-        <p className="text-xs text-gray-500 mb-4">{t("claudeHome.description")}</p>
+        <p className="text-xs text-gray-500 mb-1">{t("claudeHome.description")}</p>
+        <p className="text-[11px] text-gray-600 italic mb-4 leading-snug">{t("cursorPathsNote")}</p>
 
         <div className="card p-5 space-y-4">
           <div className="flex items-center gap-3">
@@ -1316,6 +1393,11 @@ export function Settings() {
       {/* ─── IMPORT HISTORY ─── */}
       <section id="import" className="scroll-mt-24">
         <ImportHistory />
+      </section>
+
+      {/* ─── REMOTE DATA SOURCES ─── */}
+      <section id="remote-sources" className="scroll-mt-24">
+        <RemoteSources />
       </section>
 
       {/* ─── TABBY COMPANION ─── */}
@@ -1709,7 +1791,23 @@ export function Settings() {
 
         {sysInfo ? (
           <div className="card p-5">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+              <div className="bg-surface-2 rounded-lg px-4 py-3">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Server className="w-4 h-4 text-indigo-400" />
+                  <p className="text-[11px] text-gray-500 uppercase tracking-wider">
+                    {t("about.release")}
+                  </p>
+                </div>
+                <p className="text-sm font-semibold text-gray-200 font-mono">
+                  v{sysInfo.server.version}
+                </p>
+                {sysInfo.server.version !== __APP_VERSION__ && (
+                  <p className="text-[10px] text-amber-400/90 mt-1">
+                    {t("about.uiBuild", { version: __APP_VERSION__ })}
+                  </p>
+                )}
+              </div>
               <div className="bg-surface-2 rounded-lg px-4 py-3">
                 <div className="flex items-center gap-2 mb-1.5">
                   <Clock className="w-4 h-4 text-blue-400" />

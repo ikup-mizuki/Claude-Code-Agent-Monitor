@@ -13,8 +13,10 @@ Complete REST API and WebSocket documentation for Agent Dashboard.
   - [Sessions](#sessions)
   - [Agents](#agents)
   - [Tools](#tools)
+  - [Metrics](#metrics)
   - [Pricing](#pricing)
   - [Notifications](#notifications)
+  - [Remote Data Sources](#remote-data-sources)
 - [WebSocket API](#websocket-api)
 - [Error Handling](#error-handling)
 - [Rate Limiting](#rate-limiting)
@@ -66,6 +68,8 @@ Authentication is **off by default** (the loopback bind is the trust boundary). 
 
 These paths stay exempt even when a token is configured: `/api/health`, `/api/openapi.json`, `/api/docs`, and `/api/hooks` (local Claude Code hook ingestion). Requests that fail the check get `401` with error code `EUNAUTHORIZED`.
 
+`GET /api/settings/info` includes `server.version` (the running dashboard release). Pair with `ccam version` or the Settings About panel to confirm client and server builds match after deploy.
+
 ```mermaid
 sequenceDiagram
     participant Client
@@ -116,6 +120,7 @@ Returns all sessions, ordered by most recent activity.
 | `limit` | integer | 50 | Maximum sessions to return (1-1000) |
 | `offset` | integer | 0 | Pagination offset |
 | `status` | string | - | Filter by persisted status: `active`, `completed`, `error`, `abandoned`. The UI **Waiting** state is derived from the `awaiting_input_since` column and is not a queryable enum — filter `status=active` and inspect `awaiting_input_since` (non-null = Waiting) |
+| `sources` | string | - | Comma-separated data-source ids to include (the built-in local history is `local`; remote SSH machines use their `remote_sources.id`). Omit for all sources. Also accepted on `/api/events`, `/api/agents`, `/api/stats`, `/api/analytics`, and `/api/pricing/cost`. See [Remote Data Sources](#remote-data-sources) |
 
 **Example Request:**
 
@@ -499,6 +504,49 @@ curl http://localhost:4820/api/tools?limit=50&tool_name=bash
 
 ---
 
+### Metrics
+
+#### Prometheus exposition
+
+```
+GET /api/metrics
+```
+
+Exposes the dashboard's live counters in the [Prometheus text-exposition format](https://prometheus.io/docs/instrumenting/exposition_formats/) (v0.0.4) so this monitoring dashboard can itself be scraped into Prometheus / Grafana. Read-only. Values are read from the same prepared statements the REST API uses, so they match the UI.
+
+Response `Content-Type: text/plain; version=0.0.4; charset=utf-8`.
+
+| Metric | Type | Labels | Meaning |
+| --- | --- | --- | --- |
+| `ccam_up` | gauge | — | `1` when the API served the scrape |
+| `ccam_build_info` | gauge | `version` | Always `1`; dashboard version rides on the label |
+| `ccam_process_uptime_seconds` | gauge | — | Server process uptime |
+| `ccam_process_resident_memory_bytes` | gauge | — | Server process RSS |
+| `ccam_sessions` | gauge | `status` (`active`/`completed`/`error`/`abandoned`) | Sessions by status |
+| `ccam_agents` | gauge | `status` (`working`/`waiting`/`completed`/`error`) | Agents by status |
+| `ccam_events_total` | counter | — | Total events recorded |
+| `ccam_websocket_clients` | gauge | — | Connected realtime clients |
+| `ccam_remote_sources` | gauge | `enabled` (`true`/`false`) | Configured Remote Data Sources |
+| `ccam_tokens_total` | counter | `kind` (`input`/`output`/`cache_read`/`cache_write`) | Cumulative token usage |
+
+Status series are always emitted (even at `0`) so a series never disappears from the exposition. The endpoint is mounted under `/api`, so it sits behind the same two guards as every other route: the **Host-header (DNS-rebinding) guard** and the optional **`DASHBOARD_TOKEN`** guard. A scraper that reaches the server as anything other than loopback (e.g. Prometheus in Docker hitting `host.docker.internal`) must be allowlisted with `DASHBOARD_ALLOWED_HOSTS`, or the scrape returns `403 EBADHOST`; if a token is set, the scrape must also send it.
+
+Example scrape config (start the server with `DASHBOARD_ALLOWED_HOSTS=host.docker.internal`):
+
+```yaml
+scrape_configs:
+  - job_name: ccam
+    metrics_path: /api/metrics
+    static_configs:
+      - targets: ["host.docker.internal:4820"]
+    # authorization:              # only if DASHBOARD_TOKEN is set
+    #   credentials: "<DASHBOARD_TOKEN>"
+```
+
+A ready-to-run Prometheus + Grafana stack (four auto-provisioned dashboards; default home **CCAM — Overview**) lives in [`monitoring/`](../monitoring/README.md). **npm path (no Docker):** `npm run monitoring:install` then `npm run monitoring:up` (binaries are pulled via the monitoring package's `postinstall` — there is no official `grafana`/`prometheus` server package on npm). **Docker path:** `npm run monitoring:docker:up` or `npm run docker:full:up` (set `DASHBOARD_ALLOWED_HOSTS=host.docker.internal` on the dashboard when Prometheus runs in a container). Pre-built Prometheus console: `http://localhost:9090/consoles/index.html`.
+
+---
+
 ### Pricing
 
 #### List Pricing Rules
@@ -722,6 +770,157 @@ curl http://localhost:4820/api/sessions/sess_abc123/notifications
 }
 ```
 
+### Remote Data Sources
+
+The `/api/remote-sources/*` namespace configures **remote SSH machines** the dashboard pulls Claude Code history from, so one dashboard can consolidate sessions from several machines. **No secrets are stored** — SSH authentication defers entirely to the host's SSH stack (ssh-agent, `~/.ssh/config`, key files). Every imported session is tagged with the source's id in the `sessions.source` column (the built-in local history uses the id `local`), which powers the `sources` filter below.
+
+**RemoteSource shape:**
+
+```json
+{
+  "id": "4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11",
+  "label": "Work laptop",
+  "host": "son@studio.local",
+  "ssh_port": 22,
+  "identity_file": "~/.ssh/id_ed25519",
+  "remote_home": "~/.claude",
+  "enabled": true,
+  "status": "ok",
+  "last_error": null,
+  "last_sync_at": "2026-07-22T18:41:55.117Z",
+  "last_sync_counts": {
+    "imported": 9,
+    "skipped": 41,
+    "backfilled": 0,
+    "errors": 0,
+    "sessions_seen": 50,
+    "sessions_tagged": 50
+  },
+  "created_at": "2026-07-20T09:15:00.000Z",
+  "updated_at": "2026-07-22T18:41:55.117Z"
+}
+```
+
+`ssh_port`, `identity_file`, `remote_home`, `last_error`, `last_sync_at`, and `last_sync_counts` are nullable. `status` is one of `idle`, `syncing`, `ok`, `error`.
+
+#### List Remote Sources
+
+```http
+GET /api/remote-sources
+```
+
+Returns all configured remote sources. Response: `{ "sources": RemoteSource[] }`.
+
+#### Create Remote Source
+
+```http
+POST /api/remote-sources
+```
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `label` | string | Yes | Human-readable name |
+| `host` | string | Yes | SSH destination (`user@host`) or a `~/.ssh/config` alias |
+| `ssh_port` | integer | No | SSH port (defers to SSH default / config when omitted) |
+| `identity_file` | string | No | Private-key path passed to ssh (`-i`) |
+| `remote_home` | string | No | Remote Claude home (defaults to remote `~/.claude`) |
+
+> **Cursor (informational):** Sessions imported from `~/.claude` include **Cursor** agent usage on that machine too — Cursor happens to use the same paths as Claude Code. CCAM does not tag which app created a session.
+
+| `enabled` | boolean | No | Whether the source is eligible for syncs (default `true`) |
+
+Returns `{ "source": RemoteSource }` with HTTP **201**.
+
+**Error Responses (400):** `{ "error": { "code", "message" } }` with one of:
+
+| Code | Meaning |
+|------|---------|
+| `INVALID_LABEL` | Missing/blank `label` |
+| `INVALID_HOST` | Missing/invalid `host` |
+| `INVALID_PORT` | `ssh_port` out of range |
+| `INVALID_IDENTITY_FILE` | Invalid `identity_file` value |
+| `INVALID_REMOTE_HOME` | Invalid `remote_home` value |
+
+#### Update Remote Source
+
+```http
+PATCH /api/remote-sources/:id
+```
+
+Partial update — only the keys present in the body change. Same fields (and the same validation codes) as create; both `label` and `host` are optional here. Returns `{ "source": RemoteSource }`, or **404** if the id is unknown.
+
+#### Delete Remote Source
+
+```http
+DELETE /api/remote-sources/:id
+```
+
+**Query Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `purge` | boolean | `false` | When `true`, also delete this source's imported sessions. When omitted/`false`, those sessions are **detached** — reassigned to the `local` source so history is preserved |
+
+Returns `{ "ok": true, "purged": <bool> }` (`purged` is `true` only when `?purge=true` deleted the sessions). **404** if the id is unknown.
+
+#### Test Remote Source
+
+```http
+POST /api/remote-sources/:id/test
+```
+
+Runs an SSH connectivity probe. Returns `{ "ok": <bool>, "message": <string>, "remoteProjects?": string[] }` — `remoteProjects` lists the discovered remote project directories on success. Does not import anything. **404** if the id is unknown.
+
+#### Sync Remote Source
+
+```http
+POST /api/remote-sources/:id/sync
+```
+
+Pulls Claude Code history from the remote over SSH now, through the same idempotent import pipeline used locally, tagging imported sessions with this source's id. Progress/completion is also broadcast over the WebSocket as [`remote_source.status`](#remote_sourcestatus) frames.
+
+**Example Response:**
+
+```json
+{
+  "ok": true,
+  "imported": 9,
+  "skipped": 41,
+  "backfilled": 0,
+  "errors": 0,
+  "sessions_seen": 50,
+  "sessions_tagged": 50
+}
+```
+
+**404** if the id is unknown; **500** with `{ error: { code: "SYNC_FAILED", message } }` on SSH/import failure.
+
+#### Sync All Remote Sources
+
+```http
+POST /api/remote-sources/sync-all
+```
+
+Pulls history from **every enabled** source sequentially (one SSH connection at a time). Per-source failures are isolated — one unreachable machine never aborts the others — and each outcome is returned in `results`. Always **200**.
+
+**Example Response:**
+
+```json
+{ "ok": true, "synced": 2, "results": [{ "id": "src_a", "ok": true }, { "id": "src_b", "ok": false, "error": "ssh exited with code 255" }] }
+```
+
+#### The `sources` filter
+
+`GET /api/sessions`, `/api/events`, `/api/agents`, `/api/stats`, and `/api/analytics` accept an optional `sources` query parameter: a comma-separated list of source ids to include (omit for all). `GET /api/sessions/facets` correspondingly returns a `sources: string[]` array (alongside `cwds`) listing the distinct `sessions.source` values so the UI can build the filter dropdown.
+
+```bash
+curl "http://localhost:4820/api/sessions?sources=local,4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11"
+```
+
+---
+
 ### Claude Config Explorer
 
 The `/api/cc-config/*` namespace powers the Claude Config Explorer page. All read endpoints are pure file reads under `CLAUDE_HOME` and the project's `.claude/` dir; mutations are limited to low-risk text-file artifacts (skills, subagents, slash commands, output styles, memory) and always create a timestamped backup before writing. Plugins, MCP servers, hooks-in-settings, and live `settings.json` files stay read-only because they are written concurrently by the running Claude Code CLI.
@@ -738,6 +937,7 @@ GET /api/cc-config/mcp
 GET /api/cc-config/hooks
 GET /api/cc-config/hook-scripts
 GET /api/cc-config/keybindings
+PUT /api/cc-config/keybindings Body: { groups: [{ context, bindings: [{ key, action }] }] }
 GET /api/cc-config/statusline
 GET /api/cc-config/settings
 GET /api/cc-config/memory
@@ -750,6 +950,8 @@ DELETE /api/cc-config/file     Body: { scope, type, name? }
 `scope` is `"user"`, `"project"`, or `"auto-memory"`. `type` is one of `skills`, `agents`, `commands`, `output-styles`, `memory`, `auto-memory`. `name` is required for everything except `memory` (which is `CLAUDE.md` itself). On `PUT`, `name` is validated against `^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$` (for `auto-memory` it must instead be a flat `*.md` filename). Settings are returned with secret-like keys (matching `/token|secret|password|api[_-]?key|auth/i`) replaced by `"<redacted>"`.
 
 `GET /api/cc-config/memory` also surfaces the per-project file-based memory store — every `*.md` under `~/.claude/projects/<slug>/memory/` (the common pattern of a `MEMORY.md` index plus one file per remembered fact). Those items have `scope: "auto-memory"` and carry `project` (the `projects/<slug>` dir name), `name` (filename), `isIndex` (true for `MEMORY.md` / `INDEX-*.md`, which sort first), and parsed `frontmatter`. They are **editable**: `PUT`/`DELETE /api/cc-config/file` accept `{ scope: "auto-memory", type: "auto-memory", project, name, content? }` and create a timestamped backup under `<memory-dir>/.cc-config-backups/auto-memory/` before mutating (an invalid `project` slug returns `EBADPROJECT`). `GET /api/cc-config/backups` lists these with `scope: "auto-memory"` and `project` set. Bodies are also readable via `GET /api/cc-config/file` (they live under `CLAUDE_HOME`).
+
+`PUT /api/cc-config/keybindings` edits `~/.claude/keybindings.json` from a structured list of context groups (`{ groups: [{ context, bindings: [{ key, action }] }] }`). The server backs the file up first (under `<CLAUDE_HOME>/cc-config-backups/keybindings/`), preserves any top-level metadata (`$schema`/`$docs`), and replaces only the `bindings` array; duplicate contexts or duplicate keys within a context return `EBADCONTENT`. Unlike `settings.json` (which the live CLI rewrites mid-session and is therefore read-only here), `keybindings.json` is safe to edit from the dashboard.
 
 Backup paths look like `<root>/cc-config-backups/<type>/<base>.<ISO>.bak[.dir]` — outside the directories Claude Code scans, so a deleted skill cannot resurface as a backup-named one. The Backups modal in the UI auto-builds `mv` restore commands.
 
@@ -968,6 +1170,34 @@ Broadcast whenever Claude Code configuration changes — either by dashboard mut
 ```json
 { "type": "cc_config_changed", "data": { "source": "dashboard", "action": "write", "scope": "user", "type": "skill", "name": "my-skill" } }
 { "type": "cc_config_changed", "data": { "source": "fs", "paths": ["/Users/foo/.claude/settings.json"] } }
+```
+
+#### remote_data.updated
+
+Broadcast once per successful remote sync (background poller, manual **Sync now**, or immediate pull after add/re-enable). Clients use this — and the per-session `session_created` / `session_updated` frames emitted in the same pass — to refetch sessions, costs, and analytics without polling.
+
+```json
+{
+  "type": "remote_data.updated",
+  "data": {
+    "sourceId": "src_a1b2c3",
+    "source": "src_a1b2c3",
+    "label": "dev-box",
+    "counters": { "imported": 1, "skipped": 0, "sessions_tagged": 3 },
+    "last_sync_at": "2026-07-26T21:15:00.000Z"
+  }
+}
+```
+
+#### remote_source.status
+
+Broadcast when a remote data source changes sync state (during/after `POST /api/remote-sources/:id/sync`) or is deleted. `status` is one of `idle`, `syncing`, `ok`, `error`, or `deleted`. `error` and `last_sync_at` are optional and present when relevant. See [Remote Data Sources](#remote-data-sources).
+
+```json
+{ "type": "remote_source.status", "data": { "id": "4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11", "status": "syncing" } }
+{ "type": "remote_source.status", "data": { "id": "4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11", "status": "ok", "last_sync_at": "2026-07-22T18:41:55.117Z" } }
+{ "type": "remote_source.status", "data": { "id": "4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11", "status": "error", "error": "ssh exited with code 255" } }
+{ "type": "remote_source.status", "data": { "id": "4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11", "status": "deleted" } }
 ```
 
 ### Event Flow

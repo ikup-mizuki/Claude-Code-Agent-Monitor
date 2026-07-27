@@ -38,6 +38,7 @@ const EXPECTED_API_PATHS = [
   "/api/events",
   "/api/events/facets",
   "/api/stats",
+  "/api/metrics",
   "/api/analytics",
   "/api/hooks/event",
   "/api/pricing",
@@ -169,6 +170,7 @@ describe("GET /api/health", () => {
     const res = await fetch("/api/health");
     assert.equal(res.status, 200);
     assert.equal(res.body.status, "ok");
+    assert.equal(res.body.version, pkg.version);
     assert.ok(res.body.timestamp);
   });
 });
@@ -1855,6 +1857,12 @@ describe("Transcript cache integration", () => {
     assert.ok(Array.isArray(res.body.transcript_cache.keys), "should have keys array");
   });
 
+  it("should include server version in settings info", async () => {
+    const res = await fetch("/api/settings/info");
+    assert.strictEqual(res.status, 200);
+    assert.equal(res.body.server.version, pkg.version);
+  });
+
   it("should evict cache entry on SessionEnd", async () => {
     const tmpTranscript = path.join(os.tmpdir(), `test-evict-${Date.now()}.jsonl`);
     fs.writeFileSync(
@@ -2189,6 +2197,50 @@ describe("Watchdog API-error detection", () => {
         after.status,
         "error",
         "watchdog must flip session to error when a new transcript error is detected"
+      );
+    } finally {
+      try {
+        fs.unlinkSync(tmpTranscript);
+      } catch {
+        // ignore
+      }
+    }
+  });
+
+  it("must NOT flip a remote-source session to error from its mirrored transcript", async () => {
+    // Remote Data Source sessions are monitored via a delayed rsync mirror on
+    // this host, so the transcript-tail error heuristic must never act on them —
+    // their lifecycle is owned by remote-sync's reconciliation, not the watchdog.
+    const tmpTranscript = path.join(os.tmpdir(), `watchdog-remote-${Date.now()}.jsonl`);
+    fs.writeFileSync(tmpTranscript, "");
+    const sessionId = `watchdog-remote-${Date.now()}`;
+    const hooks = require("../routes/hooks");
+
+    try {
+      await post("/api/hooks/event", {
+        hook_type: "PreToolUse",
+        data: {
+          session_id: sessionId,
+          transcript_path: tmpTranscript,
+          tool_name: "Read",
+          cwd: "/tmp",
+        },
+      });
+      // Tag it as remote AFTER creation (mirrors what remote-sync does).
+      db.prepare("UPDATE sessions SET source = ? WHERE id = ?").run("src_remotebox", sessionId);
+
+      writeTranscriptWithError(tmpTranscript);
+      db.prepare("UPDATE sessions SET updated_at = ? WHERE id = ?").run(
+        new Date(Date.now() - 60_000).toISOString(),
+        sessionId
+      );
+      hooks.transcriptCache.invalidate(tmpTranscript);
+      hooks.watchdogCheck();
+
+      assert.strictEqual(
+        stmts.getSession.get(sessionId).status,
+        "active",
+        "watchdog must leave remote-source sessions untouched"
       );
     } finally {
       try {

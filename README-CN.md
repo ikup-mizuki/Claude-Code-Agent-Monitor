@@ -50,13 +50,13 @@
 ![Prettier](https://img.shields.io/badge/Prettier-3.8-F7B93E?style=flat-square&logo=prettier&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-20.10-2496ED?style=flat-square&logo=docker&logoColor=white)
 ![Podman](https://img.shields.io/badge/Podman-4.0-CC342D?style=flat-square&logo=podman&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Prometheus-2.x-E6522C?style=flat-square&logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-10.x-F46800?style=flat-square&logo=grafana&logoColor=white)
 ![Terraform](https://img.shields.io/badge/Terraform-%3E%3D1.5-844FBA?style=flat-square&logo=terraform&logoColor=white)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-%3E%3D1.24-326CE5?style=flat-square&logo=kubernetes&logoColor=white)
 ![Helm](https://img.shields.io/badge/Helm-3-0F1689?style=flat-square&logo=helm&logoColor=white)
 ![Kustomize](https://img.shields.io/badge/Kustomize-5.0-326CE5?style=flat-square&logo=kubernetes&logoColor=white)
 ![Nginx](https://img.shields.io/badge/Nginx-Ingress-009639?style=flat-square&logo=nginx&logoColor=white)
-![Prometheus](https://img.shields.io/badge/Prometheus-2.x-E6522C?style=flat-square&logo=prometheus&logoColor=white)
-![Grafana](https://img.shields.io/badge/Grafana-10.x-F46800?style=flat-square&logo=grafana&logoColor=white)
 ![Coralogix](https://img.shields.io/badge/Coralogix-Observability-1a1a2e?style=flat-square&logo=datadog&logoColor=white)
 ![OpenTelemetry](https://img.shields.io/badge/OpenTelemetry-Collector-4f46e5?style=flat-square&logo=opentelemetry&logoColor=white)
 ![AWS](https://img.shields.io/badge/AWS-ECS%20%7C%20RDS-232F3E?style=flat-square&logo=task&logoColor=white)
@@ -121,14 +121,6 @@ graph LR
     style C fill:#1a1a28,stroke:#2a2a3d,color:#e4e4ed
     style D fill:#10b981,stroke:#34d399,color:#fff
 ```
-
-<a href="https://www.star-history.com/?repos=hoangsonww%2FClaude-Code-Agent-Monitor&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=hoangsonww/Claude-Code-Agent-Monitor&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=hoangsonww/Claude-Code-Agent-Monitor&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=hoangsonww/Claude-Code-Agent-Monitor&type=date&legend=top-left" />
- </picture>
-</a>
 
 ### 多语言支持（i18n）
 
@@ -240,7 +232,13 @@ flowchart LR
 <p align="center">
   <img src="images/config.png" alt="Claude 配置浏览器" width="100%">
   <br>
-  <em>🧰 <strong>Claude 配置浏览器</strong> — 12 标签页检查器，涵盖 Claude Code 知道的一切：技能、子代理、斜杠命令、输出样式、插件（含每个插件的贡献计数）、市场、MCP 服务器、Hook、设置（密钥脱敏）、记忆（用户与项目 `CLAUDE.md` 文件，外加按项目分组、可搜索的文件型记忆存储 —— `~/.claude/projects/<slug>/memory/` 下的每个 `*.md`）、快捷键与状态行。低风险文本文件表面支持创建/编辑/删除（含按项目的 auto-memory 文件），带强制时间戳备份</em>
+  <em>🧰 <strong>Claude 配置浏览器</strong> — 12 标签页检查器，涵盖 Claude Code 知道的一切：技能、子代理、斜杠命令、输出样式、插件（含每个插件的贡献计数）、市场、MCP 服务器、Hook、设置（密钥脱敏）、记忆（用户与项目 `CLAUDE.md` 文件，外加按项目分组、可搜索的文件型记忆存储 —— `~/.claude/projects/<slug>/memory/` 下的每个 `*.md`）、快捷键（含内联结构化编辑器）与状态行。在低风险表面支持创建/编辑/删除 —— 文本文件工件、按项目的 auto-memory 文件，以及 `keybindings.json` —— 带强制时间戳备份</em>
+</p>
+
+<p align="center">
+  <img src="images/config-skills.png" alt="Claude 配置浏览器 — 技能标签页" width="100%">
+  <br>
+  <em>🧩 <strong>Claude 配置浏览器 · 技能</strong> — 技能标签页列出所有已发现的技能（用户、项目与插件），显示其描述与来源，可在整个集合中搜索，并可打开任意技能文件进行带时间戳备份的安全编辑</em>
 </p>
 
 <p align="center">
@@ -267,6 +265,12 @@ flowchart LR
   <em>🔔 <strong>设置 · 告警</strong> — 基于规则的告警引擎与出站 Webhook 集于一处：告警规则（事件模式 / 不活动 / agent 卡住 / token 阈值）支持按规则冷却，实时的已触发告警流，以及 14 个一等公民 Webhook 提供方（Slack、Discord、Teams、Google Chat、Mattermost、Rocket.Chat、Telegram、PagerDuty、Opsgenie、Splunk On-Call、Zapier、Make、n8n、Pipedream）加一个支持可选 HMAC 签名的通用 JSON 端点</em>
 </p>
 
+<p align="center">
+  <img src="images/remote.png" alt="设置 — 远程数据源" width="100%">
+  <br>
+  <em>🛰️ <strong>设置 · 远程数据源</strong> — 通过 SSH 从其他机器拉取 Claude Code 活动：按目标地址添加数据源、测试连通性、手动或通过后台轮询器同步，并在本地、全部数据源或指定机器之间切换全局数据范围，每个会话都带有来源徽章</em>
+</p>
+
 侧边栏提供快速访问 Dashboard、看板、会话列表、活动流、分析、工作流和设置。每个页面旨在通过实时更新和丰富的可视化，为你提供对 Claude Code Agent 活动的深度洞察。
 
 ---
@@ -274,6 +278,8 @@ flowchart LR
 ## 功能特性
 
 Dashboard 提供全面的功能来监控和分析你的 Claude Code 会话和 Agent：
+
+> **Cursor 会话（仅供参考）：** CCAM 会导入落在 `~/.claude` 下的所有 Agent 转录——本机以及已同步的远程机器。**Cursor** 的用量同样计入：Cursor 恰好与 Claude Code 使用相同的路径存放 Agent 会话。CCAM 不会区分是哪个应用写入了文件。
 
 | 功能 | 描述 |
 |------|------|
@@ -293,13 +299,14 @@ Dashboard 提供全面的功能来监控和分析你的 Claude Code 会话和 Ag
 | **Transcript 缓存** | 从 JSONL Transcript 实时提取：Token、压缩、API 错误（`isApiErrorMessage` 条目存储为 `APIError` 事件）、回合耗时（存储为 `TurnDuration` 事件）、思考块计数和用量附加信息（service_tier、speed、inference_geo）。会话元数据实时丰富这些字段 |
 | **通知** | 基于 Web Push (VAPID) 的持久化浏览器通知。即使 Dashboard 标签页未聚焦或浏览器已关闭也能送达。特别针对 macOS 音效支持进行了配置。支持按事件配置开关及订阅管理 |
 | **更新提醒** | 服务端定期以非阻塞方式执行 `git fetch`，将本地检出与所选规范远程的默认分支对比。**支持分支与 fork：** 若同时存在 `upstream` 和 `origin`，优先使用 `upstream`（fork 的常规约定）；命令也会根据用户处境调整——只有在本地分支真正跟踪规范引用时才建议 `git pull --ff-only`，否则给出 `git fetch`（fork 场景下加上 fast-forward 合并），让命令永不撒谎。侧边栏还有常驻的"检查更新"按钮及状态徽标。Dashboard **不会**自行拉取或重启——用户在终端中手动执行命令——因此该机制不会破坏开发会话、pm2/systemd/Docker 进程管理，也不会留下孤立进程 |
-| **设置** | 系统信息、Hook 状态、模型定价管理、通知偏好、数据导出、会话清理。**模型定价**区块在标题旁提供一个信息浮层（`i` 图标），讲解规则匹配方式（首条匹配的模式生效）、SQL 风格 `%` 通配符的语法及具体示例（`claude-opus-4-7%`、`claude-%-haiku`、精确 id），并提醒：当 Anthropic 公布新价格时必须手动更新——已存储的会话仍保留入库时所用价格。每条规则的编辑器还带有一个可折叠的 Introductory rates 区块（一个 YYYY-MM-DD 促销截止日期 + 按类别的介绍性价格）；将日期留空表示没有促销，而空日期会清除任何已存储的介绍性价格。CLAUDE_HOME 区块与 Import History 面板已完整覆盖 en/vi/zh 三语 i18n |
+| **设置** | 系统信息、Hook 状态、模型定价管理、通知偏好、数据导出**与恢复**（Import History 面板的 **Restore backup** 模式可重新导入完整的导出 `.json`——幂等且非破坏性，因此可将多台机器的历史合并到一个仪表盘）、会话清理。**模型定价**区块在标题旁提供一个信息浮层（`i` 图标），讲解规则匹配方式（首条匹配的模式生效）、SQL 风格 `%` 通配符的语法及具体示例（`claude-opus-4-7%`、`claude-%-haiku`、精确 id），并提醒：当 Anthropic 公布新价格时必须手动更新——已存储的会话仍保留入库时所用价格。每条规则的编辑器还带有一个可折叠的 Introductory rates 区块（一个 YYYY-MM-DD 促销截止日期 + 按类别的介绍性价格）；将日期留空表示没有促销，而空日期会清除任何已存储的介绍性价格。CLAUDE_HOME 区块与 Import History 面板已完整覆盖 en/vi/zh 三语 i18n |
 | **MCP 服务器（本地）** | 位于 `mcp/` 的企业级本地 MCP 服务器，支持三种传输模式（stdio、HTTP+SSE、交互式 REPL），6 个域共 25 个类型化工具，严格输入 Schema、重试/退避、仅限本地 API 强制执行，以及分层变更/破坏性安全门控。HTTP 模式在可配置端口上提供 Streamable HTTP（2025-11-25）和传统 SSE（2024-11-05）。REPL 模式提供带 Tab 补全和彩色输出的交互式工具调用 |
 | **工作流** | 基于 D3.js 的可视化页面，包含 11 个交互式模块：Agent 编排 DAG、工具执行 Sankey 图、协作网络、子 Agent 有效性（按周 sparkline 通过 portal 渲染——可越过卡片的 `overflow:hidden`，并自动夹在视口内不再被裁切）、检测到的流程模式、模型委派流、错误传播图（带比率徽章的水平条形图、Agent 类型分解、API/会话错误卡片）、并发时间线、会话复杂度散点图、压缩影响分析和按会话下钻。**全方位、多语言的丰富 tooltip：** 每个图表标题旁都有一个 `i` 图标，可弹出结构化的「此图展示了什么 / 如何阅读 / 为何重要」浮层；悬停节点、边、条、气泡都会显示带有确定性、值相关解读的多段 tooltip（例如占源/占目标比例、成功率健康分级、Opus / Sonnet / Haiku 模型系列说明，以及前段/中段/后段等时间模式）。六张总览统计卡片各自在右下角带一个信息浮层，用自然语言解释指标的计算方式与当前数值含义。Tooltip 通过每张图唯一的 DOM ref 直接更新，并附带容器级 `mouseleave` 兜底，绝不会落后于光标或在重新渲染后残留。点击 **检测到的工作流模式** 中的任意一行会就地展开详情面板，包含完整步骤序列、统计网格、确定性叙述（循环检测、频率分级）和一条务实的建议。状态筛选标签（仅活跃 / 已完成 / 全部）可筛选全部 11 个模块。支持交叉筛选、JSON 导出和 3 秒防抖的实时 WebSocket 自动刷新。**工作流运行**面板呈现「动态工作流」——由 `Workflow` 工具（及自定节奏的 `/loop`）派生的 sub-agent 群组——它们不触发任何 hook，因此改为依据磁盘上的运行日志（`workflows/wf_<runId>.json`）重建：每次运行展示其阶段以及按 Agent 的 token / 工具调用 / 时长分解，并在日志写入前实时检测 `running` 状态，同时在每个会话详情页提供一个关联子区块 |
 | **压缩追踪** | 从 JSONL Transcript 检测 `/compact` 事件,创建压缩 Agent 和事件。启动时回填历史压缩。周期性扫描器(频率从 `DASHBOARD_STALE_MINUTES` 派生)在无 Hook 触发时也能捕获压缩。共享 Transcript 缓存,避免重复文件读取 |
 | **子会话/恢复会话** | 新事件到达时自动重新激活会话,正确处理 `/resume` 和孤立会话。周期性清理(每 ¼ 个 `DASHBOARD_STALE_MINUTES`,夹在 60 秒–5 分钟之间)标记遗漏事件检测的废弃会话 |
 | **预存会话检测** | 服务器启动时已在运行的会话以"活跃"状态导入（基于近期 JSONL 文件修改时间）。Stop 事件也会重新激活已导入的完成/废弃会话，因此进行中的会话的第一个 Hook 始终会显示在 Dashboard 上 |
 | **持续项目同步** | 启动时对 `~/.claude/projects` 的自动导入是一次性的（由标记位把关），因此在首次启动**之后**才创建的项目文件夹——其会话从不经过 Hook 流入（例如 host-only Hook 被禁用）——在手动重新扫描之前都将不可见。后台同步（`startSessionSync`）通过三个共享同一个 mtime 缓存 + 单次合并扫描的触发器弥补了这个空隙：启动时的**立即**扫描、一个去抖的 **`fs.watch`**（新会话文件 / 项目文件夹一出现就触发；在 macOS/Windows 上递归监听，在 Linux 上监听根目录 + 直接子文件夹，以规避用户态递归监听器的隐患），以及一个**周期性轮询**（`DASHBOARD_SESSION_SYNC_MS`，默认 30 秒）。每次扫描只重新解析 mtime 前进过的文件，并广播 `session_created`/`session_updated`（外加主 Agent），让 UI 实时刷新；DB 中已有且未变更的会话会被跳过、不再重新解析，因此重启成本保持为 O(新增/变更文件) |
+| **远程数据源** | 通过 SSH 实时从其他机器收集 Claude Code 数据。Dashboard 通过 **scp**（Windows SSH 上 WSL 托管的 Claude 使用 `wsl.exe` + `tar`）将每台机器的 `~/.claude/projects` 镜像到按源隔离的沙箱暂存目录，经与本地历史**相同的导入器**处理，并为导入会话打上来源标签（`sessions.source`）。后台轮询器（`DASHBOARD_REMOTE_SYNC_MS`，默认 15 秒；`0` 禁用）保持近实时——新增或重新启用源也会立即拉取——成功同步会广播 `remote_data.updated` 及逐会话的 `session_created` / `session_updated` 帧，打开页面无需手动 Sync 即可刷新。全局**数据范围**选择器（仅本地 / 全部 / 指定源）可收窄整个应用。在 **Settings → Remote Data Sources** 和 `ccam remote-sources` 中管理；状态经 `remote_source.status` 推送，Sessions 行显示来源徽章。远程会话**不接收本地实时 Hook**，因此被排除在所有本地存活性/过期启发式之外；其**实时状态在每次同步时依据镜像 Transcript 重新核对**——JSONL 内最新事件时间戳（回退到镜像 mtime）落在 `DASHBOARD_REMOTE_ACTIVE_WINDOW_MS`（默认 10 分钟）内则视为远程 CLI 仍在运行（⇒ `active`），镜像停止推进则核对为 `completed` |
 | **响应式设计** | 适配移动端的布局，堆叠网格、可滚动表格和可折叠侧边栏 |
 | **界面本地化** | 内置语言切换，UI 文案与无障碍标签已覆盖英文（`en`）、中文（`zh`）、越南语（`vi`）和韩语（`ko`）。覆盖范围现已贯穿 Workflows 页面的所有 tooltip：统计卡片的计算说明与按值分桶的解读、每个图表的「此图展示什么 / 如何阅读 / 为何重要」浮层、所有图形悬停 tooltip（编排 DAG、工具流、Pipeline、模型委派、并发时间线）、Workflow Patterns 详情面板的叙述与建议、设置页 → 模型定价的信息浮层、CLAUDE_HOME 面板，以及完整的 Import History 流程 |
 | **种子数据** | 内置种子脚本，用于演示和开发 |
@@ -309,7 +316,7 @@ Dashboard 提供全面的功能来监控和分析你的 Claude Code 会话和 Ag
 | **运行 Claude** | 直接从仪表盘启动 `claude` 子进程,带聊天式流式 UI。两种模式:**对话**(多轮 — stdin 持续打开,后续轮次以 stream-json 信封通过 stdin 传送)与 **单次**(headless,一个 prompt → 一个响应)。对话模式还支持通过 `claude --resume <id>` **恢复任何已有会话** — 使用可搜索选择器从你的完整会话历史中挑选。标题栏的进行中运行切换器允许你将运行留在后台、启动另一个、稍后重新附加。重新附加是持久的:客户端会把派生进程的内存信封日志(`?envelopes=1`)与会话磁盘上的 JSONL 转录文件协调,优先选择 user/assistant 消息更多的那一份,因此从已恢复的运行离开再回来会保留全部历史(派生进程只看到 spawn 之后的轮次;转录文件包含先前 + 当前)。模型下拉(Opus 4.7 / 1M / Sonnet 4.6 / Haiku 4.5 / 自定义)、permission-mode 选择器(对 `bypassPermissions` 显式警告)、**思考强度**字段(low / medium / high — 映射到 `--effort`)、cwd 自动补全(预填用户的**主目录** — 一个中性的启动位置,不会继承仪表盘仓库自身的 `.claude` 项目上下文(agents、skills、rules、`CLAUDE.md`、`.mcp.json`);若没有 home 建议则回退到仪表盘 cwd,建议分组以 home 优先(home → dashboard → 最近))。通过 `--include-partial-messages` 实现真正的逐字符流式渲染,加上客户端 **打字机平滑层** 通过 `requestAnimationFrame` 让每个 `text_delta` / `thinking_delta` 逐字浮现 — 即便是短回复(claude 把整个回答打成一两块 chunk 的情况)也呈现为打字效果。合并代码在 claude 中途送达 canonical `assistant` 信封时保留 `_streaming` 标志和增量累积的 `content` 数组,所以 thinking 块不会在完成时丢失。WebSocket 分发为每个信封包裹 `flushSync`,避免 React 18 自动批处理把多个 deltas 合并成一次渲染。**TUI 对齐(Tier 1)**:**限制说明横幅** 可最小化为细条(永不消失)解释 stream-json 模式相对终端 TUI 能做和不能做什么;**带斜杠命令自动补全的提示编辑器** 使用分级评分(精确名称 → 前缀匹配 → 词边界 → 包含 → 子序列 → 描述匹配)列出用户 / 项目 / 插件命令(发送前在客户端按模板展开执行),并以"仅 CLI — 此处不会执行"标记呈现 `/clear`、`/model`、`/config` 等内置 CLI 命令;**`@` 文件引用** 通过对该 run 的 cwd 进行去抖模糊搜索(跳过 `node_modules`、`.git`、`dist`、`build` 等);**实时上下文窗口 / token 计** 显示输入 + 输出 + 缓存命中 token 与运行成本 — 实时流式时从 `stream_event` / `result.usage` 计算,从转录恢复 / 查看 / 重新附加时也从已完结的 assistant `usage` 块(input / output / cache-read / cache-creation)读取,因此不会卡在 0/200k;**状态头** 显示当前 model、effort、permission mode、cwd、session ID、信封计数与已运行时间。自动补全下拉框向上展开,避免与下方 cwd 选择器冲突。标题旁有 Live / Offline 指示器。路由上的同源守卫防止浏览器 drive-by spawn。并发实际上不设上限(默认安全上限 10000,与终端 TUI 一致 — 仅作为防止有缺陷客户端 fork-bomb 的兜底;通过 `RUN_MAX_CONCURRENT` 设置真正的上限)。统一的活动运行 / 历史模态框还提供两个一键跳转按钮:对话型历史行的 **Resume** 按钮立即派生 `claude --resume <id>` 并把过去的对话记录预填入聊天视图(无需重新输入 prompt — 派生的进程会在 stdin 上空转直到你发送跟进消息);单次型历史行的 **View** 按钮把已捕获的转录内联加载到 run 查看器中作只读展示(不派生进程 — 同一面板,无 Stop / 跟进控件)。生成的会话触发与任何 `claude` 进程相同的 hooks,因此自动出现在 Sessions / Analytics / Kanban / Workflows — 而 Sessions / SessionDetail 会为当前正由 Run 页驱动的会话显示绿色 **▶ Run** 徽标 / 横幅,可点击跳回 Run 页 |
 | **Tabby** | 固定在每个页面右下角的可爱 SVG 小猫伴侣,会订阅实时会话 WebSocket 流并据此做出反应。**会做出反应的吉祥物**:基于实时会话流呈现 8 种情绪——空闲、观察、开心、担忧、卡住、思考、睡觉、断开连接;眼睛会追踪光标,每种情绪都有专属动画。**气泡台词**在值得关注的事件发生时弹出(会话开始/结束、出现错误、运行完成),带节流且可静音。点击小猫或按 **⌘B / Ctrl+B** 打开**面板**(Esc 关闭):实时状态行(N 个进行中 · M 个出错 · 连接状态)、快捷操作(跳转到 Run Claude / 活动 / 会话 / 出错的会话,静音,清除提醒)以及一个 **Ask** 提问框。Ask 提问框在本地回答简单的状态类问题;其他问题则交给现有的 **Run Claude** 页面(`/run?prompt=...`)以启动一个真正的 Claude Code 会话——**无需新增后端、无需 API 密钥**。完全构建在现有的 WebSocket 流之上,支持无障碍(键盘、`aria-live`、尊重 `prefers-reduced-motion`),可在「设置」中开关。代码位于 `client/src/components/Tabby/` |
 | **告警与 Webhook** | 基于规则的告警引擎在服务端评估实时事件流,支持四种条件类型:**事件模式**(匹配事件类型 / 工具名 / 摘要子串,可选要求在时间窗口内出现 N 次匹配——例如「2 分钟内超过 5 个错误」)、**闲置**(活跃会话 N 分钟无事件)、**卡住的代理**(代理在 `working`/`waiting` 状态下 N 分钟无活动)和**令牌阈值**(会话总令牌超过上限)。每条规则都按 (规则、会话、代理) 维度做冷却去重。触发的告警显示在实时列表中(支持确认 / 全部确认),并扇出到 **14 个一等公民 Webhook 提供方**——**Slack**、**Discord**、**Microsoft Teams**(通过 Power Automate Workflows 的 Adaptive Card)、**Google Chat**、**Mattermost**、**Rocket.Chat**、**Telegram**(Bot API)、**PagerDuty**(Events API v2)、**Opsgenie**(Alert API)、**Splunk On-Call**(VictorOps)、**Zapier**、**Make**、**n8n**、**Pipedream**——以及任意通用 JSON 端点(可选 **HMAC-SHA256** 签名 + 自定义请求头)。每个提供方都有各自的原生负载格式,可按规则限定范围。投递与告警流程分离且完全失败安全:请求超时、有界重试/退避、响应体校验(Splunk On-Call 返回 200 但 `result:"failure"`)、同步的**「发送测试」**按钮以及每个目标的投递日志。URL、密钥和凭据均存储在服务端,**绝不**通过 API 返回(在所有响应中被掩码/脱敏)。规则与渠道在 **设置 → 告警** 中统一管理,每个字段都有解释性提示,并提供按提供方的设置指南(附说明:这些步骤可能已过时——请查阅官方文档) |
-| **Claude 配置浏览器** | `/cc-config` 上的 12 标签页检查器,涵盖 Claude Code 知道的一切:技能、子代理、斜杠命令、输出样式、插件(每个插件包含贡献计数 + 来自 `plugin.json` 的作者/许可证/主页)、市场(包含从每个 `marketplace.json` 读取的插件计数)、MCP 服务器、Hook(含 `~/.claude/hooks/` 脚本列表)、设置(一目了然的**当前配置**摘要,跨 用户/项目/项目本地 作用域解析 `/config` 控制的选项——model、verbose、主题、输出样式、effort、自动压缩、通知 ……,未设置项显示为默认值,外加按文件的结构化键值视图 + 原始 JSON 切换、密钥脱敏)、记忆(用户与项目 `CLAUDE.md` 文件,外加按项目的文件型记忆存储 —— `~/.claude/projects/<slug>/memory/` 下的每个 `*.md`,即一个 `MEMORY.md` 索引加上每条记忆事实一个文件,通常 100+ 个;Memory 标签页按项目分组(可折叠)、将索引文件与逐条事实文件分开,并带搜索框)、快捷键(按上下文分组,使用 `<kbd>` 字符)、状态行(配置 + 脚本内容)。对低风险文本文件表面(技能 / 代理 / 命令 / 输出样式 / 记忆,含按项目的 auto-memory 文件),页面支持**带强制时间戳备份的创建/编辑/删除**(auto-memory 备份落在 `<memory-dir>/.cc-config-backups/auto-memory/`),原子写入到 Claude Code 不扫描的目录之外,加上带自动构建 `mv` 恢复命令的备份模态框。插件、MCP、settings 中的 hooks 和 `settings.json` 文件保持只读,带说明横幅 + 可复制的 CLI 命令,以便用户知道要自行运行的确切命令。**实时更新**:服务端运行的 `cc-watcher` 通过 `fs.watch` 监听 `~/.claude/`(平台支持时递归)以及 `~/.claude.json`,以 500 ms 去抖,在 Claude Code 配置变化时(无论是仪表盘修改还是外部工具如 CLI 安装插件、手动编辑 `settings.json`、放入新技能)广播 `cc_config_changed` WebSocket 消息。页面订阅并自动重新拉取;标题旁的 Live / Offline 标识显示 WebSocket 连接状态 |
+| **Claude 配置浏览器** | `/cc-config` 上的 12 标签页检查器,涵盖 Claude Code 知道的一切:技能、子代理、斜杠命令、输出样式、插件(每个插件包含贡献计数 + 来自 `plugin.json` 的作者/许可证/主页)、市场(包含从每个 `marketplace.json` 读取的插件计数)、MCP 服务器、Hook(含 `~/.claude/hooks/` 脚本列表)、设置(一目了然的**当前配置**摘要,跨 用户/项目/项目本地 作用域解析 `/config` 控制的选项——model、verbose、主题、输出样式、effort、自动压缩、通知 ……,未设置项显示为默认值,外加按文件的结构化键值视图 + 原始 JSON 切换、密钥脱敏)、记忆(用户与项目 `CLAUDE.md` 文件,外加按项目的文件型记忆存储 —— `~/.claude/projects/<slug>/memory/` 下的每个 `*.md`,即一个 `MEMORY.md` 索引加上每条记忆事实一个文件,通常 100+ 个;Memory 标签页按项目分组(可折叠)、将索引文件与逐条事实文件分开,并带搜索框,以及可点击的 `MEMORY.md` 索引链接——点击后跳转到(滚动并高亮)对应的事实文件)、快捷键(按上下文分组,使用 `<kbd>` 字符)、状态行(配置 + 脚本内容)。对低风险文本文件表面(技能 / 代理 / 命令 / 输出样式 / 记忆,含按项目的 auto-memory 文件),页面支持**带强制时间戳备份的创建/编辑/删除**(auto-memory 备份落在 `<memory-dir>/.cc-config-backups/auto-memory/`),原子写入到 Claude Code 不扫描的目录之外,加上带自动构建 `mv` 恢复命令的备份模态框。插件、MCP、settings 中的 hooks 和 `settings.json` 文件保持只读,带说明横幅 + 可复制的 CLI 命令,以便用户知道要自行运行的确切命令。**实时更新**:服务端运行的 `cc-watcher` 通过 `fs.watch` 监听 `~/.claude/`(平台支持时递归)以及 `~/.claude.json`,以 500 ms 去抖,在 Claude Code 配置变化时(无论是仪表盘修改还是外部工具如 CLI 安装插件、手动编辑 `settings.json`、放入新技能)广播 `cc_config_changed` WebSocket 消息。页面订阅并自动重新拉取;标题旁的 Live / Offline 标识显示 WebSocket 连接状态 |
 | **启动画面** | 应用加载时每个浏览器会话显示一次的品牌开场画面:根据时间的问候语（早上好 / 下午好 / 晚上好 / 夜深了）、一句醒目的本地化标语与两行副文案,以及深色背景（径向光晕、星座连线、颗粒质感）上带动画的节点图品牌标记。从首帧起即**不透明**（应用内容不会闪现）,停留约 2.5 秒后淡出,点击任意处可跳过,尊重 `prefers-reduced-motion`,已本地化 en/zh/vi/ko |
 | **渐进式 Web 应用 (PWA)**          | 三个独立的 PWA — 仪表盘、着陆页和维基 — 每个都有自己的 Web App Manifest 和 Service Worker。将任意一个安装到主屏幕/Dock,获得无浏览器边框的独立应用体验。仪表盘 SW 对 Vite 哈希化的 `/assets/*` 资源采用 cache-first(URL 每次构建都不可变,缓存命中始终正确),其他所有内容(导航、SW 自身、`manifest.json`、图标、根 `/`)采用 network-first 并以缓存兜底。配合生产环境 Express 静态中间件上的显式 `Cache-Control` 头(`/assets/*` 用 `immutable, max-age=31536000`,`index.html`、`sw.js`、`manifest.json` 用 `no-cache, must-revalidate`),重新构建后浏览器中的代码始终自动刷新,无需硬刷新;`client/src/main.tsx` 中的 `controllerchange` 监听器会在新 SW 接管已被控制的页面时恰好重新加载一次(首次安装不会)。VAPID 推送通知管道完全保留。着陆页和维基 SW 预缓存各自的 shell 并在首次访问时延迟缓存图片,单次加载后即可离线访问。所有 manifest 使用 SVG 图标(`favicon.svg`,`sizes="any"`),包含 `apple-mobile-web-app-capable` + `apple-touch-icon` meta 标签以支持 iOS 独立模式 |
 | **自托管资源（无 CDN）**           | 所有字体与脚本均**本地托管,零第三方 CDN 请求**。React 应用通过 `@fontsource` 打包 Inter + JetBrains Mono(latin 子集;由 Vite 输出为带内容哈希的 WOFF2 至 `dist/assets/`)。着陆页与维基加载本地的 `fonts/fonts.css` `@font-face` 样式表(维基用 `../fonts/`)。维基的 Mermaid 改为本地内置(`wiki/mermaid.min.js`,`mermaid@10.9.6`)而非 jsDelivr。VS Code 扩展的错误页改用系统字体栈。移除了所有 `fonts.googleapis.com` / `gstatic` / CDN 调用,因此仪表盘与文档可**完全离线**渲染,不向第三方泄露任何信息 |
@@ -436,7 +443,7 @@ docker build -t agent-monitor .
 docker run -d --name agent-monitor \
   -p 127.0.0.1:4820:4820 \
   -v "$HOME/.claude:/root/.claude:ro" \
-  -v agent-monitor-data:/app/data \
+  -v "$HOME/.claude/agent-dashboard:/app/data" \
   agent-monitor
 
 # Podman
@@ -444,7 +451,7 @@ podman build -t agent-monitor .
 podman run -d --name agent-monitor \
   -p 127.0.0.1:4820:4820 \
   -v "$HOME/.claude:/root/.claude:ro" \
-  -v agent-monitor-data:/app/data \
+  -v "$HOME/.claude/agent-dashboard:/app/data" \
   agent-monitor
 ```
 
@@ -455,7 +462,7 @@ podman run -d --name agent-monitor \
 | 挂载 | 用途 |
 |---|---|
 | `~/.claude:/root/.claude:ro` | 读取历史会话用于导入 |
-| `agent-monitor-data:/app/data` | 跨重启持久化 SQLite 数据库 |
+| `~/.claude/agent-dashboard:/app/data` | **规范 SQLite 数据库**（与原生安装共享） |
 
 > [!IMPORTANT]
 > **注意：** Claude Code Hook 仍需指向宿主机上运行的 hook-handler 进程。容器本身不接收 Hook — 在宿主机上运行 `npm run install-hooks` 以配置 Hook 将数据 POST 到 `http://localhost:4820`。
@@ -509,8 +516,8 @@ sequenceDiagram
    - 从 JSONL Transcript 提取 API 错误(`isApiErrorMessage` 条目:配额限制、速率限制、invalid_request)和原始 `type: "error"` 响应,存储为 `APIError` 事件。回合耗时(`system` 子类型 `turn_duration`)存储为 `TurnDuration` 事件。工具结果错误(`toolUseResult.is_error`)追踪为 `ToolError` 事件
    - **错误检测看门狗** — 后台定时器每 15 秒运行一次，扫描没有近期 Hook 事件（>10 秒）的活跃会话。它重新读取 Transcript 文件查找 API 错误（认证失败、速率限制、配额耗尽），从会话 `cwd` 推导 Transcript 路径（用于没有 `transcript_path` 的导入会话），并在发现 API 错误时将会话/Agent 标记为 `error`。这可以捕获 Claude CLI 在 API 错误后不触发 Hook 的情况（例如 401 认证失败时 CLI 只显示错误并等待）
    - **用户中断（Esc）恢复** — 用户按 `Esc` 取消回合时**不会触发任何 Hook**（Claude Code 已知的限制），因此若不加干预，主 Agent 会永远卡在 `working` 状态。同一个 15 秒看门狗以两种方式恢复这些会话：(1) 当取消在 Transcript 中留下 `[Request interrupted by user]` 标记时（Esc 发生在已有部分输出之后），Transcript 缓存通过 `pendingInterrupt` 标记它 —— 该标志纯粹由 Transcript 顺序推导得出（最新的中断与最新的真实回合活动相比，使用同一时钟，因此即便是亚秒级取消也有效）—— 会话在约 15 秒内转入**等待中**；(2) 当 Esc 在**任何输出之前**按下时，Claude Code 完全不写入标记，因此应用空闲超时回退 —— 当主 Agent 处于 `working`、**没有进行中的工具**（`current_tool` 为 null），且 `DASHBOARD_WORKING_IDLE_SECONDS`（默认 `120`）期间**既无 Hook 事件也无 Transcript 推进**时，该回合被视为已死，会话转入**等待中**。两条路径都记录一个 `Interrupted` 事件，并将会话置于与正常 `Stop` 相同的等待中状态。流式输出（Transcript 仍在增长）和进行中的工具调用（`current_tool` 已设置）不受影响；罕见的误判会在下一次真实 Hook 时自愈
-   - **死亡会话存活性回收（liveness reap）** — 退出 Claude Code（Ctrl+C、关闭终端）会触发 `SessionEnd` Hook，但如果此刻仪表盘没有运行，该事件将永远丢失，会话会一直停留在**等待中**，直到废弃清理（默认 3 小时）。同一个 15 秒看门狗通过**进程存活性探测**弥补这一缺口：列出正在运行的 `claude` CLI 进程（macOS 上 `ps` + `lsof`，Linux 上 `/proc`），并将 `cwd` 中不存在任何存活 claude 进程的 `active` 会话标记为完成——落入与真实 `SessionEnd` 相同的 `completed` 状态，并在时间线上留下一条合成的 `SessionEnd` 事件。保护条件：在看门狗节拍上，会话的 Transcript 必须至少有 `DASHBOARD_LIVENESS_IDLE_SECONDS`（默认 `60`）未被写入（磁盘上没有 Transcript 时以最后一次 Hook 写入为后备时钟）——启动时的回收**跳过该门槛**，因此即使在启动前一秒退出的会话也会立即清除；探测在 Windows 上、容器内（看不到宿主机进程）、`ps`/`lsof` 失败时，或通过 `DASHBOARD_LIVENESS_PROBE=0` 显式禁用时会报告"无法回答"（不做任何更改）。在**混合**部署中，回收还会自动跳过任何 `cwd` 不是 POSIX 绝对路径的会话——通过家庭 Hook（household hooks）从另一台机器转发来的会话会报告来源机器自己的路径（例如 Windows 的 `D:\Git\ai-deck`），本地的 `ps`/`lsof`/`/proc` 扫描永远无法匹配它，因此远程会话得到保护，而无需为真正本地的会话禁用探测。误判的完成会自愈：下一个 Hook 事件会重新激活会话。除 15 秒看门狗节奏外，回收还会在**启动时立即运行**（清除上次运行遗留在 DB 中的死亡会话，让它们根本来不及渲染），并在**约 5 秒后再运行一次**（覆盖启动同步刚导入的会话），因此仪表盘停机期间死亡的会话绝不会显示为等待中
-   - 周期性服务器清理捕获遗漏事件检测的废弃会话和新压缩(例如 `/compact` 不触发 Hook、会话创建后几秒内 `/resume`)。频率从 `DASHBOARD_STALE_MINUTES` 派生(¼ 阈值,夹在 60 秒–5 分钟之间)。清理共享 Hook Handler 的 Transcript 缓存,避免重复 I/O。废弃会话清理还会驱逐 Transcript 缓存条目以限制内存使用
+   - **死亡会话存活性回收（liveness reap）** — 退出 Claude Code（Ctrl+C、关闭终端）会触发 `SessionEnd` Hook，但如果此刻仪表盘没有运行，该事件将永远丢失，会话会一直停留在**等待中**，直到废弃清理（默认 3 小时）。同一个 15 秒看门狗通过**进程存活性探测**弥补这一缺口：列出正在运行的 `claude` CLI 进程（macOS 上 `ps` + `lsof`，Linux 上 `/proc`），并将 `cwd` 中不存在任何存活 claude 进程的 `active` 会话标记为完成——落入与真实 `SessionEnd` 相同的 `completed` 状态，并在时间线上留下一条合成的 `SessionEnd` 事件。保护条件：在看门狗节拍上，会话的 Transcript 必须至少有 `DASHBOARD_LIVENESS_IDLE_SECONDS`（默认 `60`）未被写入（磁盘上没有 Transcript 时以最后一次 Hook 写入为后备时钟）——启动时的回收**跳过该门槛**，因此即使在启动前一秒退出的会话也会立即清除；探测在 Windows 上、容器内（看不到宿主机进程）、`ps`/`lsof` 失败时，或通过 `DASHBOARD_LIVENESS_PROBE=0` 显式禁用时会报告"无法回答"（不做任何更改）。在**混合**部署中，回收还会自动跳过任何 `cwd` 不是 POSIX 绝对路径的会话——通过家庭 Hook（household hooks）从另一台机器转发来的会话会报告来源机器自己的路径（例如 Windows 的 `D:\Git\ai-deck`），本地的 `ps`/`lsof`/`/proc` 扫描永远无法匹配它，因此远程会话得到保护，而无需为真正本地的会话禁用探测。远程数据源会话（`sessions.source` ≠ `local`）同样始终被跳过——它们的 `cwd` 在另一台机器上本就是合法的 POSIX 绝对路径，因此本地进程探测对它们无从判断；它们的生命周期由远程同步核对流程掌管。误判的完成会自愈：下一个 Hook 事件会重新激活会话。除 15 秒看门狗节奏外，回收还会在**启动时立即运行**（清除上次运行遗留在 DB 中的死亡会话，让它们根本来不及渲染），并在**约 5 秒后再运行一次**（覆盖启动同步刚导入的会话），因此仪表盘停机期间死亡的会话绝不会显示为等待中
+   - 周期性服务器清理捕获遗漏事件检测的废弃会话和新压缩(例如 `/compact` 不触发 Hook、会话创建后几秒内 `/resume`)。频率从 `DASHBOARD_STALE_MINUTES` 派生(¼ 阈值,夹在 60 秒–5 分钟之间)。清理共享 Hook Handler 的 Transcript 缓存,避免重复 I/O。废弃会话清理还会驱逐 Transcript 缓存条目以限制内存使用。此周期性清理与启动时的 1 小时清理都会跳过远程数据源会话(`source` ≠ `local`),因为它们的 `updated_at` 跟踪的是 `scp` 同步节奏,而非远程 CLI 的真实活动——它们的状态改为依据镜像重新核对,以 JSONL 内最新事件时间戳为准
    - **持续项目同步**（`startSessionSync`）让 `~/.claude/projects` 在一次性、由标记位把关的启动回填之外仍可被发现：之后才加入、其会话从不经过 Hook 流入的项目，否则在手动重新扫描之前都将不可见。启动时的立即扫描、一个去抖的 `fs.watch`（在 macOS/Windows 上递归监听，在 Linux 上监听根目录 + 直接子文件夹），以及一个 `DASHBOARD_SESSION_SYNC_MS` 轮询（默认 30 秒；`0` 禁用轮询，但监听器保持运行），三者共享同一个 mtime 缓存与一次合并扫描，只重新解析 mtime 前进过的文件 —— 并跳过已导入且未变更的会话、不再重新解析，因此重启成本保持为 O(新增/变更文件)。每个新发现/增长的会话都会广播 `session_created`/`session_updated` 外加其主 Agent，与 Hook 发出的帧相同
 4. **WebSocket** 将变更广播到所有已连接客户端
 5. **UI** 接收更新并重新渲染受影响的组件
@@ -604,6 +611,10 @@ flowchart LR
 | `DASHBOARD_LIVENESS_PROBE` | `1`（开启） | 设为 `0` 可禁用看门狗的**死亡会话存活性回收**（基于 `ps`/`lsof` 的探测，将 `claude` 进程已不存在的 `active` 会话标记为完成——恢复仪表盘停机期间丢失的 `SessionEnd`）。从**另一台机器**（家庭 Hook）转发来的会话会报告非 POSIX 的 `cwd`，会被回收自动跳过，因此混合的本地 + 转发部署不再需要关闭此项；仅在纯远程部署（本地进程无法证明任何事情）时才禁用它。在 Windows 和容器内自动禁用 |
 | `DASHBOARD_LIVENESS_IDLE_SECONDS` | `60` | **看门狗节拍**存活性回收的空闲门槛：只有当会话的 Transcript 至少有这么长时间未被写入时（磁盘上没有 Transcript 时以最后一次 Hook 写入为后备时钟），才会将其标记为完成，因此回合中或刚 resume 的会话绝不会因一次瞬时的探测偏差而消失。启动时的回收跳过该门槛——boot 时由探测单独决定，因此启动前一刻退出的会话会立即清除 |
 | `DASHBOARD_SESSION_SYNC_MS` | `30000` | 持续 `~/.claude/projects` 后台同步的轮询间隔（毫秒），用于显示启动后才加入、其会话从不经过 Hook 流入的项目。无论如何 `fs.watch` 监听器都会近乎即时触发；该轮询是安全兜底（监听器可能错过事件 / 在网络文件系统上不触发）。设为 `0` 可禁用轮询，同时让监听器保持运行 |
+| `DASHBOARD_REMOTE_SYNC_MS` | `15000` | 通过 `scp` 拉取远程数据源的间隔（毫秒）。新增或重新启用数据源时会立即同步一次。设为 `0` 可禁用远程源轮询 |
+| `DASHBOARD_REMOTE_ACTIVE_WINDOW_MS` | `600000`（10 分钟） | 一个**远程数据源**会话实时状态的新鲜度窗口。每次同步时，镜像 Transcript 的 **JSONL 最后事件** 在此窗口内的远程会话会被视为仍在运行（`active`）；一旦镜像停止推进的时间超过此窗口，会话就被核对为 `completed`。远程会话不接收实时 Hook，因此本项取代了对它们跳过的本地存活性/过期扫描。链路较慢或空闲回合很长时可调大 |
+| `DASHBOARD_REMOTE_SYNC_TIMEOUT_MS` | `600000` | 每个远程源 `scp` 的超时时间 |
+| `DASHBOARD_REMOTE_TEST_TIMEOUT_MS` | `15000` | 到源的 SSH 连接探测超时时间 |
 | `NODE_ENV` | `development` | 设为 `production` 以提供构建后的客户端 |
 
 ---
@@ -661,6 +672,7 @@ ccam import path <dir>            # 导入目录下所有 .jsonl
 ccam doctor                       # 连接、hook 与数据库诊断
 ccam info                         # 原始系统信息 JSON
 ccam export [file.json]           # 导出全部数据为 JSON
+ccam import-data <file.json>      # 恢复导出（幂等、非破坏性）
 ccam cleanup --hours N --days M   # 放弃滞留会话 / 清理旧会话
 ccam reinstall-hooks              # 重新安装 Claude Code hook
 ccam update-check                 # 检出是否落后于 upstream？（打印更新命令）
@@ -706,6 +718,13 @@ ccam version                      # 打印 CLI 版本（也可用 --version / -v
 | `npm run desktop:dmg:universal` | **macOS：** 构建**一个**合并的通用（universal）DMG（arm64 + x86_64，单个文件）——可选，**最慢**，不是发布版本附带的内容。 |
 | `npm run desktop:win` | **Windows：** 构建 NSIS **安装包** `.exe`（x64）— 在 Windows 上运行 |
 | `npm run desktop:win:portable` | **Windows：** 构建**免安装便携版** `.exe`（x64）— 在 Windows 上运行 |
+| `npm run monitoring:install` | 在 `monitoring/` 中运行 `npm install` — 通过 `postinstall` 下载 Prometheus + Grafana |
+| `npm run monitoring:setup` | `monitoring:install` 的别名 |
+| `npm run monitoring:up` | 在后台启动 Prometheus（:9090）+ Grafana（:3000）（无需 Docker） |
+| `npm run monitoring:down` | 停止 npm 管理的监控栈 |
+| `npm run monitoring:start` | 前台启动监控栈（Ctrl+C 停止两者） |
+| `npm run monitoring:docker:up` | 通过 Docker Compose 启动 Prometheus + Grafana |
+| `npm run monitoring:docker:down` | 关闭 Docker 监控栈 |
 
 ---
 
@@ -947,7 +966,46 @@ OpenAPI 文档由 `server/openapi.js` 生成，Swagger UI 由后端直接提供�
 
 仓库根目录还提交了一份 `openapi.yaml`，它镜像实时规范，并通过 `npm run openapi:yaml` 重新生成（唯一可信来源为 `server/openapi.js`，切勿手动编辑）。
 
-API 文档现已**全面覆盖**：每个后端路由都有文档说明（共 75 个路径条目），包含参数、Schema、字段描述与示例；新增文档的路由组包括 `/api/push`、`/api/cc-config`、`/api/run`、`/api/workflows/runs`、`/api/sessions/facets` 与 `/api/settings/claude-home`。
+API 文档现已**全面覆盖**：每个后端路由都有文档说明（共 82 个路径条目），包含参数、Schema、字段描述与示例；新增文档的路由组包括 `/api/push`、`/api/cc-config`、`/api/run`、`/api/workflows/runs`、`/api/sessions/facets` 与 `/api/settings/claude-home`。
+
+### Prometheus 指标与 Grafana
+
+`GET /api/metrics` 以 Prometheus 文本暴露格式（text-exposition format）导出 Dashboard 的实时计数器——按状态划分的会话/Agent、事件与 Token 总数、已连接的实时客户端、已配置的远程数据源、进程运行时长/内存，以及构建版本——因此 CCAM 可被抓取（scrape）到你自己的可观测性栈中。一套开箱即用的 Prometheus + Grafana 组合，**自动配置四个仪表盘**（默认首页：**CCAM — Overview**），位于 [`monitoring/`](./monitoring/README.md)。
+
+**npm（无需 Docker / Homebrew）：**
+
+```bash
+npm start                      # dashboard on :4820
+npm run monitoring:install       # 一次性：npm postinstall 拉取二进制
+npm run monitoring:up          # Grafana on :3000 (admin/admin)，自动配置
+```
+
+**Docker / Podman**（当 Dashboard 在容器中运行，或你偏好 Compose 时）：
+
+```bash
+DASHBOARD_ALLOWED_HOSTS=host.docker.internal npm start   # 或在 agent-monitor 服务上设置
+npm run monitoring:docker:up
+```
+
+<p align="center">
+  <img src="images/grafana.png" alt="Grafana CCAM — Overview 仪表盘，展示实时会话、事件与 Token 指标" width="100%">
+  <br>
+  <em>📊 <strong>Grafana · CCAM — Overview</strong> — 默认首页仪表盘（自动配置四个看板）：舰队快照、数据库累计总量、分解图与速率 — 全部来自实时 <code>/api/metrics</code> 抓取</em>
+</p>
+
+<p align="center">
+  <img src="images/prometheus-console.png" alt="Prometheus CCAM 控制台，展示指标卡片与会话表" width="100%">
+  <br>
+  <em>🔥 <strong>Prometheus · CCAM 控制台</strong> — <code>/consoles/index.html</code> 预置落地页，直接查询 Prometheus 显示抓取状态、会话/事件/Token 总量及 Graph 钻取链接</em>
+</p>
+
+<p align="center">
+  <img src="images/prometheus-query.png" alt="Prometheus Graph 界面中的 CCAM PromQL 查询" width="100%">
+  <br>
+  <em>📈 <strong>Prometheus · Graph</strong> — 对已抓取的 CCAM 指标运行 PromQL（如 <code>sum(ccam_sessions)</code>、<code>ccam_events_total</code>），可从 CCAM 控制台与 <a href="./monitoring/README.md">monitoring/README.md</a> 的快捷链接打开</em>
+</p>
+
+完整指标列表以及抓取/认证细节，请参见 [docs/API.md → Metrics](./docs/API.md#metrics)。
 
 <p align="center">
   <img src="images/swagger.png" alt="Swagger UI" width="100%">
@@ -1047,7 +1105,19 @@ API 文档现已**全面覆盖**：每个后端路由都有文档说明（共 75
 | `POST` | `/api/settings/reinstall-hooks` | 重新安装 Claude Code Hook |
 | `POST` | `/api/settings/reset-pricing` | 重置定价为默认值 |
 | `GET` | `/api/settings/export` | 以 JSON 下载方式导出所有数据 |
+| `POST` | `/api/settings/import` | 从 `/export` 恢复导出包（multipart `file` 或 JSON `{ path }`）。幂等且非破坏性——已存在的会话会被整体跳过 |
 | `POST` | `/api/settings/cleanup` | 废弃过期会话、清除旧数据 |
+
+### 远程数据源
+
+| 方法 | 路径 | 描述 |
+| -------- | -------------------------------- | ---------------------------- |
+| `GET`    | `/api/remote-sources`            | 列出已配置的远程数据源 |
+| `POST`   | `/api/remote-sources`            | 添加新的远程源 |
+| `PATCH`  | `/api/remote-sources/:id`        | 更新某个远程源 |
+| `DELETE` | `/api/remote-sources/:id`        | 删除某个远程源 |
+| `POST`   | `/api/remote-sources/:id/test`   | 测试到该源的 SSH 连接 |
+| `POST`   | `/api/remote-sources/:id/sync`   | 立即触发该源的 `scp` + 导入 |
 
 ### 导入历史（Import History）
 
@@ -1141,7 +1211,7 @@ skipped / errors 计数）。
 }
 ```
 
-**消息类型：** `session_created`、`session_updated`、`agent_created`、`agent_updated`、`new_event`
+**消息类型：** `session_created`、`session_updated`、`agent_created`、`agent_updated`、`new_event`、`remote_source.status`
 
 ```mermaid
 stateDiagram-v2

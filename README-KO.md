@@ -50,13 +50,13 @@ Claude Code 에이전트 세션, 도구 사용, 서브에이전트 오케스트�
 ![Prettier](https://img.shields.io/badge/Prettier-3.8-F7B93E?style=flat-square&logo=prettier&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-20.10-2496ED?style=flat-square&logo=docker&logoColor=white)
 ![Podman](https://img.shields.io/badge/Podman-4.0-CC342D?style=flat-square&logo=podman&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Prometheus-2.x-E6522C?style=flat-square&logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-10.x-F46800?style=flat-square&logo=grafana&logoColor=white)
 ![Terraform](https://img.shields.io/badge/Terraform-%3E%3D1.5-844FBA?style=flat-square&logo=terraform&logoColor=white)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-%3E%3D1.24-326CE5?style=flat-square&logo=kubernetes&logoColor=white)
 ![Helm](https://img.shields.io/badge/Helm-3-0F1689?style=flat-square&logo=helm&logoColor=white)
 ![Kustomize](https://img.shields.io/badge/Kustomize-5.0-326CE5?style=flat-square&logo=kubernetes&logoColor=white)
 ![Nginx](https://img.shields.io/badge/Nginx-Ingress-009639?style=flat-square&logo=nginx&logoColor=white)
-![Prometheus](https://img.shields.io/badge/Prometheus-2.x-E6522C?style=flat-square&logo=prometheus&logoColor=white)
-![Grafana](https://img.shields.io/badge/Grafana-10.x-F46800?style=flat-square&logo=grafana&logoColor=white)
 ![Coralogix](https://img.shields.io/badge/Coralogix-Observability-1a1a2e?style=flat-square&logo=datadog&logoColor=white)
 ![OpenTelemetry](https://img.shields.io/badge/OpenTelemetry-Collector-4f46e5?style=flat-square&logo=opentelemetry&logoColor=white)
 ![AWS](https://img.shields.io/badge/AWS-ECS%20%7C%20RDS-232F3E?style=flat-square&logo=task&logoColor=white)
@@ -123,14 +123,6 @@ graph LR
 ```
 
 실시간 모니터링 대시보드 외에도, `mcp/`에 대시보드 자체를 조사하고 관리하기 위한 도구 카탈로그를 노출하는 로컬 MCP 서버 구현이 포함되어 있어 대시보드 작업을 Claude Code 워크플로에 직접 통합하기 쉽습니다. 또한 대시보드 상호작용, 분석, 워크플로 인텔리전스를 위한 Claude Code 플러그인, 스킬, 서브에이전트를 제공하는 에이전트 확장 레이어도 있습니다.
-
-<a href="https://www.star-history.com/?repos=hoangsonww%2FClaude-Code-Agent-Monitor&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=hoangsonww/Claude-Code-Agent-Monitor&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=hoangsonww/Claude-Code-Agent-Monitor&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=hoangsonww/Claude-Code-Agent-Monitor&type=date&legend=top-left" />
- </picture>
-</a>
 
 ### 국제화 (i18n)
 
@@ -238,7 +230,13 @@ flowchart LR
 <p align="center">
   <img src="images/config.png" alt="Claude Config Explorer" width="100%">
   <br>
-  <em>🧰 <strong>Claude 설정 탐색기</strong> — Claude Code가 알고 있는 모든 것을 위한 12탭 인스펙터: 스킬, 서브에이전트, 슬래시 명령, 출력 스타일, 플러그인(플러그인별 기여 항목 포함), 마켓플레이스, MCP 서버, Hook, 설정(비밀 키 마스킹 포함), 메모리(사용자 + 프로젝트 `CLAUDE.md` 파일과 프로젝트별 파일 기반 메모리 저장소 — `~/.claude/projects/<slug>/memory/` 아래의 모든 `*.md` 파일을 프로젝트별로 그룹화하고 검색 가능), 키바인딩, Statusline. 저위험 텍스트 파일 표면 — 프로젝트별 자동 메모리 파일 포함 — 에서 필수 타임스탬프 백업과 함께 생성 / 편집 / 삭제 가능</em>
+  <em>🧰 <strong>Claude 설정 탐색기</strong> — Claude Code가 알고 있는 모든 것을 위한 12탭 인스펙터: 스킬, 서브에이전트, 슬래시 명령, 출력 스타일, 플러그인(플러그인별 기여 항목 포함), 마켓플레이스, MCP 서버, Hook, 설정(비밀 키 마스킹 포함), 메모리(사용자 + 프로젝트 `CLAUDE.md` 파일과 프로젝트별 파일 기반 메모리 저장소 — `~/.claude/projects/<slug>/memory/` 아래의 모든 `*.md` 파일을 프로젝트별로 그룹화하고 검색 가능), 키바인딩(인라인 구조화 편집기 포함), Statusline. 저위험 표면 — 텍스트 파일 아티팩트, 프로젝트별 자동 메모리 파일, `keybindings.json` — 에서 필수 타임스탬프 백업과 함께 생성 / 편집 / 삭제 가능</em>
+</p>
+
+<p align="center">
+  <img src="images/config-skills.png" alt="Claude 설정 탐색기 — 스킬 탭" width="100%">
+  <br>
+  <em>🧩 <strong>Claude 설정 탐색기 · 스킬</strong> — 스킬 탭은 발견된 모든 스킬(사용자, 프로젝트, 플러그인)을 설명과 출처와 함께 나열하고, 전체 목록에서 검색할 수 있으며, 안전한 타임스탬프 백업과 함께 스킬 파일을 열어 편집할 수 있습니다</em>
 </p>
 
 <p align="center">
@@ -265,6 +263,12 @@ flowchart LR
   <em>🔔 <strong>설정 · 알림</strong> — 규칙 기반 알림 엔진과 아웃바운드 웹훅을 한곳에서: 규칙별 쿨다운이 있는 알림 규칙(이벤트 패턴 / 비활성 / 멈춘 에이전트 / 토큰 임계값), 실시간 발동 알림 피드, 14개의 퍼스트클래스 웹훅 제공자(Slack, Discord, Teams, Google Chat, Mattermost, Rocket.Chat, Telegram, PagerDuty, Opsgenie, Splunk On-Call, Zapier, Make, n8n, Pipedream)와 선택적 HMAC 서명을 지원하는 범용 JSON 엔드포인트</em>
 </p>
 
+<p align="center">
+  <img src="images/remote.png" alt="설정 — 원격 데이터 소스" width="100%">
+  <br>
+  <em>🛰️ <strong>설정 · 원격 데이터 소스</strong> — SSH로 다른 머신의 Claude Code 활동을 가져옵니다: 대상별로 소스 추가, 연결 테스트, 수동 또는 백그라운드 폴러로 동기화, 그리고 전역 데이터 범위를 로컬 · 전체 소스 · 특정 머신 사이에서 전환하며 세션별 소스 배지 표시</em>
+</p>
+
 사이드바에서 대시보드, Kanban 보드, 세션 목록, 활동 피드, 분석, 워크플로, 설정에 빠르게 접근할 수 있습니다. 각 페이지는 실시간 업데이트와 풍부한 시각화로 Claude Code 에이전트 활동에 대한 깊이 있는 인사이트를 제공하도록 설계되었습니다.
 
 ---
@@ -272,6 +276,8 @@ flowchart LR
 ## 기능
 
 대시보드는 Claude Code 세션과 에이전트를 모니터링하고 분석하기 위한 포괄적인 기능 세트를 제공합니다:
+
+> **Cursor 세션(안내):** CCAM은 이 머신과 동기화된 원격 머신에서 `~/.claude` 아래에 쌓이는 에이전트 트랜스크립트를 모두 가져옵니다. **Cursor** 사용량도 동일하게 집계됩니다. Cursor는 Claude Code와 같은 경로에 에이전트 세션을 저장하기 때문입니다. CCAM은 어떤 앱이 파일을 썼는지 구분하지 않습니다.
 
 | 기능                               | 설명                                                                                                                                                                                                                                                                          |
 |------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -292,13 +298,14 @@ flowchart LR
 | **푸시 알림**                     | 안정적인 전달을 위한 완전한 Web Push(VAPID) 파이프라인. 탭이 백그라운드에 있거나 브라우저가 닫혀 있어도 도착합니다. macOS 오디오 지원을 위해 명시적으로 구성되어 있습니다. 구독 관리와 함께 이벤트별 토글을 구성할 수 있습니다 |
 | **알림**                          | 규칙 기반 알림 엔진 — 전적으로 **설정 → 알림 및 푸시 알림**에서 구성되는, 탭 형태의 **규칙 / 채널 / 활동** 컨트롤 센터입니다(별도 페이지 없음). 네 가지 조건 유형으로 알림 규칙을 정의합니다 — **이벤트 패턴**(이벤트 유형 / 도구 이름 / 요약 텍스트를 매칭하며, 선택적으로 시간 창 안에 N개의 매칭 이벤트를 요구, 예: "2분 안에 오류 5개 초과"), **비활성**(N분 동안 이벤트가 없는 활성 세션), **멈춘 에이전트**(N분 동안 활동 없이 `working`/`waiting`에 머무는 에이전트), **토큰 임계값**(세션 총 토큰이 한도를 초과). 이벤트 기반 규칙은 모든 Hook 수집 시 서버 측에서 평가되고(수집 트랜잭션 이후 — 알림이 Hook 전달을 느리게 하거나 실패시킬 수 없음), 시간 기반 규칙은 60초 주기의 스윕으로 실행됩니다. 발동된 알림은 규칙별 + 세션별 **쿨다운 중복 제거**(기본 300초)와 함께 `alert_events`에 저장되고, `alert_triggered` WebSocket 메시지로 브로드캐스트되며, **활동** 탭의 실시간 피드에 확인 / 모두 확인, 미확인 전용 필터, 알림별 "세션 보기" 링크와 함께 표시됩니다. 규칙은 활성화/비활성화 토글을 지원하며 삭제 시 그 이력도 연쇄 삭제됩니다. 발동된 알림은 **채널** 탭에서 구성한 **범용 웹훅 대상**으로도 전파됩니다 — **14개의 퍼스트클래스 제공자**와 범용 엔드포인트: **Slack**, **Discord**, **Microsoft Teams**, **Google Chat**, **Mattermost**, **Rocket.Chat**(네이티브 채팅 페이로드); **Telegram**(Bot API), **PagerDuty**(Events API v2), **Opsgenie**(Alert API + GenieKey 인증), **Splunk On-Call**(VictorOps REST); 그리고 **Zapier**, **Make**, **n8n**, **Pipedream**, 또는 임의의 **범용** 엔드포인트(선택적 **HMAC-SHA256** 서명과 사용자 지정 헤더가 있는 깔끔한 JSON 봉투). 각 제공자는 페이로드 포매터, URL 결정 방식(일부는 자격 증명에서 도출 — 예: Telegram은 봇 토큰에서, Opsgenie는 리전에서 — 나머지는 기본값 사용), UI가 렌더링할 자격 증명 필드를 선언하는 서버 측 레지스트리로 기술됩니다. 대상은 선택적 규칙별 범위 지정, 동기식 "테스트 전송" 프로브, 기록되는 전달 로그를 지원합니다. 전달은 요청 타임아웃과 제한된 재시도/백오프와 함께 알림 경로와 분리되어 실행되므로 모니터링을 느리게 하거나 차단할 수 없습니다. 대상 URL, 비밀 값, 자격 증명 필드는 서버 측에 저장되며 API가 절대 반환하지 않습니다(모든 응답에서 마스킹/삭제 처리) |
 | **업데이트 알리미**               | 서버가 주기적으로 논블로킹 `git fetch`를 실행하여 로컬 체크아웃을 `origin/master`/`origin/main`/`origin/HEAD`와 비교합니다. 업스트림이 앞서 있으면 UI에 정확한 `git pull && npm run setup` 명령과 원클릭 **복사** 버튼이 있는 모달이 표시되고, 사이드바에는 실시간 배지가 있는 영구적인 "업데이트 확인" 버튼이 생깁니다. 대시보드는 스스로 풀하거나 재시작하지 않습니다 — 사용자가 터미널에서 명령을 실행합니다 — 따라서 이 메커니즘은 개발 세션이나 pm2/systemd/Docker 감독을 깨뜨리거나 고아 프로세스를 남길 수 없습니다 |
-| **설정**                          | 시스템 정보, Hook 상태, 모델 가격 책정 관리, 알림 기본 설정, 데이터 내보내기, 세션 정리. 모델 가격 책정 섹션에는 규칙 조회 방식(첫 번째로 일치하는 패턴이 우선), 구체적인 예시가 있는 SQL 스타일 `%` 와일드카드 구문(`claude-opus-4-7%`, `claude-%-haiku`, 정확한 id), 그리고 Anthropic이 새 요금을 발표하면 가격을 수동으로 업데이트해야 한다는 점 — 이미 저장된 세션은 수집 시점에 적용된 가격을 유지 — 을 설명하는 정보 팝오버(제목 옆 `i` 아이콘)가 있습니다. 각 규칙의 편집기에는 접을 수 있는 **프로모션 요금** 블록(`YYYY-MM-DD` 프로모션 마감일 + 카테고리별 프로모션 가격)도 있습니다. 날짜를 비워 두면 프로모션이 없다는 의미이며, 빈 날짜는 저장된 프로모션 요금을 지웁니다. CLAUDE_HOME 상자와 가져오기 기록 패널은 en/vi/zh 전반에 걸쳐 완전히 i18n 기반입니다 |
+| **설정**                          | 시스템 정보, Hook 상태, 모델 가격 책정 관리, 알림 기본 설정, 데이터 내보내기 **및 복원**(Import History 패널의 **Restore backup** 모드가 전체 내보내기 `.json`을 다시 가져옵니다 — 멱등이며 비파괴적이라 여러 컴퓨터의 기록을 하나의 대시보드로 통합 가능), 세션 정리. 모델 가격 책정 섹션에는 규칙 조회 방식(첫 번째로 일치하는 패턴이 우선), 구체적인 예시가 있는 SQL 스타일 `%` 와일드카드 구문(`claude-opus-4-7%`, `claude-%-haiku`, 정확한 id), 그리고 Anthropic이 새 요금을 발표하면 가격을 수동으로 업데이트해야 한다는 점 — 이미 저장된 세션은 수집 시점에 적용된 가격을 유지 — 을 설명하는 정보 팝오버(제목 옆 `i` 아이콘)가 있습니다. 각 규칙의 편집기에는 접을 수 있는 **프로모션 요금** 블록(`YYYY-MM-DD` 프로모션 마감일 + 카테고리별 프로모션 가격)도 있습니다. 날짜를 비워 두면 프로모션이 없다는 의미이며, 빈 날짜는 저장된 프로모션 요금을 지웁니다. CLAUDE_HOME 상자와 가져오기 기록 패널은 en/vi/zh 전반에 걸쳐 완전히 i18n 기반입니다 |
 | **MCP 서버(로컬)**                | 세 가지 전송 모드(stdio, HTTP+SSE, 인터랙티브 REPL), 6개 도메인에 걸친 25개의 타입 지정 도구, 엄격한 입력 스키마, 재시도/백오프, localhost 전용 API 강제, 계층화된 변경/파괴적 작업 안전 게이트를 갖춘 `mcp/`의 엔터프라이즈급 로컬 MCP 서버. HTTP 모드는 구성 가능한 포트에서 Streamable HTTP(2025-11-25)와 레거시 SSE(2024-11-05)를 제공합니다. REPL 모드는 색상 출력과 함께 탭 완성 인터랙티브 도구 호출을 제공합니다 |
 | **워크플로**                      | 11개의 인터랙티브 섹션이 있는 D3.js 기반 시각화 페이지: 에이전트 오케스트레이션 DAG, 도구 실행 Sankey 다이어그램, 협업 네트워크, 서브에이전트 효과성(카드의 `overflow:hidden`을 벗어나 뷰포트에 맞춰 고정되어 절대 잘리지 않는 포털 렌더링 툴팁이 있는 요일별 스파크라인), 감지된 워크플로 패턴, 모델 위임 흐름, 오류 전파 맵(비율 배지가 있는 가로 막대, 에이전트 유형 분석, API/세션 오류 카드), 동시성 타임라인, 세션 복잡도 산점도, 컴팩션 영향 분석(축 제목, 통계 타일 — 총계 / 영향받은 세션 / 평균 / 최대 —, 설명 도움말 줄, 막대별 호버 툴팁이 있는 명확한 "컴팩션 횟수별 세션" 히스토그램으로 재설계), 세션별 드릴인. 각 섹션의 오른쪽 정렬 부제목은 한 줄로 고정되므로(말줄임표 + 호버 제목) 긴 번역이 헤더를 줄바꿈시키지 않습니다. **전체에 걸친 풍부한 i18n 인식 툴팁:** 모든 차트의 섹션 제목에는 구조화된 "무엇을 보여주는가 / 어떻게 읽는가 / 왜 중요한가" 팝오버를 여는 `i` 아이콘이 있습니다. 노드, 엣지, 막대, 버블에 호버하면 결정론적이고 값에 따라 달라지는 해석(예: 소스 점유율 / 대상 점유율 백분율, 성공률 상태 버킷, Opus / Sonnet / Haiku 제품군 설명, front-loaded / mid-session / back-loaded 같은 타이밍 패턴)이 있는 다중 섹션 툴팁이 표시됩니다. 6개의 헤드라인 통계 카드마다 오른쪽 아래에 지표 계산 방식과 현재 값의 의미를 쉬운 말로 설명하는 정보 팝오버가 있습니다. 툴팁은 차트당 단일 ref를 통해 DOM 변경되며 컨테이너 수준 `mouseleave` 폴백이 있어, 커서를 뒤늦게 따라가거나 재렌더링 후 남아 있는 일이 없습니다. **감지된 워크플로 패턴**의 행을 클릭하면 전체 단계 시퀀스, 통계 그리드, 결정론적 서사(루프 감지, 빈도 버킷), 실용적인 제안이 있는 인플레이스 상세 패널이 펼쳐집니다. 상태 필터 탭(활성만 / 완료 / 전체)이 11개 섹션 전체를 필터링합니다. 교차 필터링, JSON 내보내기, 3초 디바운스의 실시간 WebSocket 자동 새로고침. **워크플로 실행** 패널은 "동적 워크플로"를 표시합니다 — `Workflow` 도구(및 자체 페이스 `/loop`)가 생성한 서브에이전트 플릿으로, Hook을 발생시키지 않고 대신 디스크의 실행 저널(`workflows/wf_<runId>.json`)에서 재구성됩니다: 각 실행은 단계와 에이전트별 토큰 / 도구 호출 / 소요 시간 분석을 보여주며, 저널이 기록되기 전의 실시간 `running` 감지와 각 세션 상세 페이지의 연결된 하위 섹션이 있습니다 |
 | **컴팩션 추적**                   | JSONL 트랜스크립트에서 `/compact` 이벤트를 감지하여 컴팩션 에이전트와 이벤트를 생성합니다. 시작 시 레거시 컴팩션을 백필합니다. 주기적 스캐너(`DASHBOARD_STALE_MINUTES`에서 도출되는 주기)가 Hook이 전혀 발생하지 않을 때도 컴팩션을 포착합니다. 전체 events 테이블에 대해 `SELECT DISTINCT json_extract(events.data, '$.transcript_path')`를 실행하는 대신 각 활성 세션의 트랜스크립트 경로를 `sessions.transcript_path`(경로를 담은 첫 이벤트에서 Hook 핸들러가 채우고, `events`에서 일회성 백필)에서 직접 읽으므로 — 스윕은 O(활성 세션)이며 성숙한 데이터베이스에서도 저렴하게 유지됩니다. 트랜스크립트 캐시를 공유하므로 중복 파일 읽기가 발생하지 않습니다. 합성 컴팩션 행은 `started_at`과 `ended_at` 모두에 트랜스크립트 타임스탬프가 찍혀 소요 시간이 정확히 0이 되고(컴팩션은 즉각적임), 시작 시 복구 마이그레이션이 `ended_at < started_at`인 기존 행도 치유합니다(issue #156) |
 | **서브세션/재개된 세션**          | 새 이벤트가 도착하면 세션을 자동으로 재활성화하고, `/resume`과 고아 세션을 올바르게 처리합니다. 주기적 스윕(`DASHBOARD_STALE_MINUTES`의 ¼마다, 60초 – 5분으로 제한)이 이벤트 기반 감지를 벗어난 버려진 세션을 표시합니다                                                                     |
 | **기존 세션 감지**                | 서버 시작 시 이미 실행 중인 세션은 (최근 JSONL 파일 수정 기준으로) "활성"으로 가져옵니다. Stop 이벤트도 가져온 완료/버려진 세션을 재활성화하므로, 진행 중인 세션의 첫 Hook이 항상 해당 세션을 대시보드에 표시합니다     |
 | **지속적인 프로젝트 동기화**      | `~/.claude/projects`의 시작 시 자동 가져오기는 일회성(마커로 게이트)이므로, 최초 실행 **이후** 생성된 프로젝트 폴더 — 세션이 Hook을 통해 전혀 흐르지 않는 경우(예: 호스트 전용 Hook 비활성화) — 는 수동 재스캔 전까지 보이지 않게 됩니다. 백그라운드 동기화(`startSessionSync`)가 하나의 mtime 캐시 + 하나로 합쳐진 스윕을 공유하는 세 가지 트리거로 그 간극을 메웁니다: 시작 시의 **즉시** 스윕, 새 세션 파일/프로젝트 폴더가 나타나는 즉시 발동하는 디바운스된 **`fs.watch`**(macOS/Windows에서는 재귀적; Linux에서는 사용자 공간 재귀 감시자 위험을 피하기 위해 루트 + 직계 자식만), 그리고 **주기적 폴링**(`DASHBOARD_SESSION_SYNC_MS`, 기본 30초). 각 스윕은 mtime이 증가한 파일만 다시 파싱하고 `session_created`/`session_updated`(그리고 메인 에이전트)를 브로드캐스트하여 UI가 실시간으로 새로고침됩니다; 이미 DB에 있는 변경되지 않은 세션은 재파싱 없이 건너뛰므로 재시작 비용은 O(새/변경된 파일)로 유지됩니다 |
+| **원격 데이터 소스**             | SSH를 통한 실시간 원격/다중 머신 데이터 수집. 대시보드는 구성된 각 머신의 `~/.claude/projects`를 **scp**(Windows SSH에서 WSL Claude는 `wsl.exe` + `tar`)로 소스별 샌드박스 스테이징 디렉터리에 미러링하고, 로컬 기록과 **동일한 임포터**로 처리하며 가져온 세션에 출처(`sessions.source`)를 태그합니다. 백그라운드 폴러(`DASHBOARD_REMOTE_SYNC_MS`, 기본 15초; `0` 비활성화)가 준실시간을 유지합니다 — 소스 추가/재활성화 시 즉시 동기화 — 성공한 동기화는 `remote_data.updated`와 세션별 `session_created` / `session_updated` 프레임을 브로드캐스트해 열린 페이지가 수동 Sync 없이 새로고침됩니다. 전역 **데이터 범위** 선택기(로컬만 / 전체 / 특정 소스)로 앱 전체를 좁힙니다. **Settings → Remote Data Sources** 및 `ccam remote-sources`에서 관리하며, 상태는 `remote_source.status`로 스트리밍되고 Sessions 행에 소스 배지가 표시됩니다. 원격 세션은 **실시간 로컬 Hook을 받지 않으므로** 모든 로컬 liveness/stale 휴리스틱에서 제외되며, 대신 **매 동기화마다 미러 transcript로 실시간 상태를 조정**합니다 — JSONL 최신 이벤트 타임스탬프(미러 mtime 폴백)가 `DASHBOARD_REMOTE_ACTIVE_WINDOW_MS`(기본 10분) 이내면 원격 CLI가 아직 실행 중(⇒ `active`), 미러가 멈추면 `completed`로 전환됩니다 |
 | **반응형 디자인**                 | 쌓이는 그리드, 스크롤 가능한 테이블, 접을 수 있는 사이드바가 있는 모바일 친화적 레이아웃                                                                                                                                                                                      |
 | **UI 현지화**                     | 영어(`en`), 중국어(`zh`), 베트남어(`vi`), 한국어(`ko`)에 대해 번역된 UI 문구와 접근성 레이블을 갖춘 내장 언어 전환. 커버리지는 이제 워크플로 툴팁까지 엔드투엔드로 확장됩니다: 통계 카드 계산과 값 버킷 해석, 차트별 "무엇을 / 어떻게 읽는가 / 왜" 팝오버, 모든 그래프의 호버 툴팁(오케스트레이션, 도구 흐름, 파이프라인, 모델 위임, 동시성), 워크플로 패턴 상세 패널의 서사와 제안, 설정 → 모델 가격 책정 정보 팝오버, CLAUDE_HOME 패널, 전체 가져오기 기록 흐름                                                                                                                                                                       |
 | **시드 데이터**                   | 데모와 개발을 위한 내장 시드 스크립트                                                                                                                                                                                                                               |
@@ -306,7 +313,7 @@ flowchart LR
 | **모델 이름 형식화**              | UI 전반의 사람 친화적인 모델 이름: `claude-opus-4-7-20260101`이나 `claude-opus-4-7[1m]` 같은 원시 식별자는 "Claude Opus 4.7" 또는 "Claude Opus 4.7 (1M)"로 표시됩니다. 자동 버전 점 결합, 날짜/latest 접미사 제거, 제공자 접두사 제거, 컨텍스트 창 태그 형식화를 통해 Claude, GPT, Gemini 제품군을 처리합니다. 설정 페이지는 가격 책정 규칙 구성을 위해 원시 이름을 유지합니다 |
 | **플러그인 마켓플레이스**         | 10개의 플러그인(ccam-analytics, ccam-productivity, ccam-devtools, ccam-insights, ccam-dashboard, ccam-cost-guard, ccam-sessions, ccam-workflows, ccam-quality, ccam-config)이 있는 공식 Claude Code 플러그인 마켓플레이스. 53개 스킬, 14개 에이전트, 30개 슬래시 명령, 3개 CLI 도구, 3개 Hook 구성. 모두 실제 데이터 모델에 근거합니다 — 토큰 기준선, 가격 책정 엔진, 워크플로 인텔리전스(11개 데이터셋), 세션 메타데이터. `claude plugin marketplace add`로 설치 |
 | **Run Claude**                    | 채팅 스타일 스트리밍 UI로 대시보드에서 직접 `claude` 서브프로세스를 생성합니다. 두 가지 모드: **대화**(멀티턴 — stdin이 열린 상태로 유지되고 후속 턴은 stream-json 봉투로 파이프됨)와 **원샷**(헤드리스, 단일 프롬프트 → 단일 응답). 대화 모드는 `claude --resume <id>`를 통한 **기존 세션 재개**도 지원합니다 — 검색 가능한 피커로 전체 세션 기록에서 선택하세요. 통합된 활성 실행 / 기록 모달은 설정이 필요 없는 두 개의 이동 버튼도 제공합니다: 과거 대화 행의 **재개**는 즉시 `claude --resume <id>`를 생성하고 이전 트랜스크립트로 채팅을 시딩하여 전체 컨텍스트가 있는 라이브 뷰에 도달합니다(프롬프트를 다시 입력할 필요 없음 — 생성된 프로세스는 후속 메시지를 보낼 때까지 stdin에서 대기합니다); 과거 원샷 행의 **보기**는 캡처된 트랜스크립트를 읽기 전용으로 실행 뷰어에 인라인 로드합니다(생성 없음 — 동일한 패널, 중지/후속 컨트롤 없음). 헤더의 활성 실행 전환기로 실행을 백그라운드에 두고 다른 실행을 시작한 뒤 나중에 다시 연결할 수 있습니다. 재연결은 내구성이 있습니다: 클라이언트가 스포너의 메모리 내 봉투 로그(`?envelopes=1`)와 세션의 디스크 JSONL 트랜스크립트를 대조하여 사용자/어시스턴트 메시지가 더 많은 쪽을 선택하므로, 재개된 실행에서 벗어났다가 돌아와도 이전 전체 기록이 계속 보입니다(스포너는 생성 이후의 턴만 보고, 트랜스크립트 파일에는 이전 + 현재가 있습니다). 모델 드롭다운(Opus 4.7 / 1M / Sonnet 4.6 / Haiku 4.5 / 사용자 지정), 명시적 `bypassPermissions` 경고가 있는 권한 모드 피커, **thinking-effort** 필드(low / medium / high — `--effort`에 연결), 사용자의 **홈 디렉터리**로 미리 채워진 cwd 자동완성 — 대시보드 저장소 자체의 `.claude` 프로젝트 컨텍스트(에이전트, 스킬, 규칙, `CLAUDE.md`, `.mcp.json`)를 상속하지 않는 중립적 생성 위치입니다; 홈 제안이 없으면 대시보드 cwd로 폴백하며, 제안 그룹에서 홈이 먼저 나열됩니다(홈 → 대시보드 → 최근). `--include-partial-messages`를 통한 실제 문자 단위 스트리밍에 더해, 각 `text_delta` / `thinking_delta`를 `requestAnimationFrame`으로 흘려보내는 클라이언트 측 **타자기 스무딩 레이어**가 있어 짧은 응답(claude가 전체 답변을 한두 청크로 묶는 경우)도 타이핑되듯 나타납니다. 병합 코드는 claude의 정식 `assistant` 봉투가 스트림 도중 도착해도 `_streaming` 플래그와 델타 누적 `content` 배열을 온전히 유지하므로 완료 시 thinking 블록이 사라지지 않습니다. WebSocket 디스패치는 각 봉투를 `flushSync`로 감싸 React 18의 자동 배칭이 델타 폭주를 단일 렌더로 뭉개지 않게 합니다. **TUI 동등성(Tier 1)**: stream-json 모드가 터미널 TUI 대비 무엇을 할 수 있고 없는지 설명하는, 슬림한 필로 최소화되는(절대 사라지지 않음) 접을 수 있는 **제한 사항 배너**; 사용자 / 프로젝트 / 플러그인 명령을 나열하고(전송 전 템플릿 확장을 통해 클라이언트 측에서 실행) `/clear`, `/model`, `/config` 같은 내장 CLI 명령을 "CLI 전용 — 여기서는 실행되지 않음" 배지와 함께 표시하는, 계층적 점수(정확한 이름 → 시작 일치 → 단어 경계 → 포함 → 부분 시퀀스 → 설명 포함)의 **슬래시 명령 자동완성이 있는 프롬프트 편집기**; 실행의 cwd 전체에 걸친 디바운스된 퍼지 검색(`node_modules`, `.git`, `dist`, `build` 등은 건너뜀)이 있는 **`@` 파일 참조**; 라이브 스트리밍 중에는 `stream_event`와 `result.usage` 봉투에서, 재개 / 보기 / 재연결로 트랜스크립트에서 시딩될 때는 확정된 어시스턴트 `usage` 블록(input / output / cache-read / cache-creation)에서 계산되는, 입력 + 출력 + 캐시 읽기 토큰과 누적 비용을 보여주는 **라이브 컨텍스트 창 / 토큰 미터** — 그래서 미터는 0/200k에 머물지 않고 즉시 채워집니다. 진행 막대는 모델 컨텍스트 한도의 80% / 95%에서 인디고 → 앰버 → 레드로 바뀝니다; 활성 모델, effort, 권한 모드, cwd, 세션 ID, 봉투 수, 경과 시간이 있는 **상태 헤더**. 자동완성 드롭다운은 위쪽으로 열려 아래의 cwd 피커와 충돌하지 않습니다. 제목 옆의 라이브 / 오프라인 표시기. 라우트의 동일 출처 가드가 브라우저 드라이브바이 생성을 방지합니다. 동시성은 기본적으로 사실상 무제한입니다(버그 있는 클라이언트의 포크밤 실수를 막기 위한 10000의 안전 상한; 터미널 TUI에는 상한이 없고 우리도 마찬가지). 실제 상한을 원하면 `RUN_MAX_CONCURRENT`를 설정하세요. 생성된 세션은 다른 `claude` 프로세스와 동일한 Hook을 발생시키므로 세션 / 분석 / Kanban / 워크플로에 자동으로 나타나며 — 세션 / 세션 상세는 현재 Run 페이지에서 구동 중인 세션에 대해 Run 페이지로 다시 연결되는 녹색 **▶ Run** 배지 / 배너를 표시합니다 |
-| **Claude 설정 탐색기**            | Claude Code가 알고 있는 모든 것을 위한 `/cc-config`의 12탭 인스펙터: 스킬, 서브에이전트, 슬래시 명령, 출력 스타일, 플러그인(`plugin.json`의 플러그인별 기여 항목 수 + 작성자/라이선스/홈페이지 포함), 마켓플레이스(각 `marketplace.json`에서 읽은 플러그인 수 포함), MCP 서버, Hook(`~/.claude/hooks/` 스크립트 목록 포함), 설정(`/config`가 제어하는 옵션 — 모델, verbose, 테마, 출력 스타일, effort, 자동 컴팩트, 알림 등 — 을 사용자/프로젝트/프로젝트 로컬 범위에 걸쳐 해석하고 설정되지 않은 옵션은 기본값으로 표시하는 한눈에 보는 **현재 구성** 요약, 그리고 파일별 구조화된 키-값 보기 + 원시 JSON 토글, 비밀 키 마스킹), 메모리(사용자 + 프로젝트 `CLAUDE.md` 파일 **그리고** 프로젝트별 파일 기반 메모리 저장소 — `~/.claude/projects/<slug>/memory/` 아래의 모든 `*.md`, 즉 `MEMORY.md` 인덱스와 기억된 사실당 하나의 파일로 종종 100개 이상; 인덱스 파일과 사실별 파일을 분리하는 접을 수 있는 섹션에 프로젝트별로 그룹화되고 검색 상자 제공), 키바인딩(`<kbd>` 칩과 함께 컨텍스트별 그룹화), Statusline(구성 + 스크립트 내용). 저위험 텍스트 파일 표면(스킬 / 에이전트 / 명령 / 출력 스타일 / 메모리 — 프로젝트별 자동 메모리 파일 포함)에 대해 이 페이지는 Claude Code가 스캔하는 디렉터리 외부에 원자적으로 기록되는 **필수 타임스탬프 백업과 함께 생성 / 편집 / 삭제**를 지원하며, 자동 생성된 `mv` 복원 명령이 있는 백업 모달도 제공합니다. 플러그인, MCP, 설정 내 Hook, `settings.json` 파일은 설명 배너 + 복사 가능한 CLI 명령과 함께 읽기 전용으로 유지되어 사용자가 직접 실행할 정확한 명령을 알 수 있습니다. **실시간 업데이트**: 서버에서 실행되는 `cc-watcher`가 `~/.claude/`(플랫폼이 지원하는 경우 재귀적)와 `~/.claude.json`에 대해 500 ms 디바운스로 `fs.watch`를 사용하여, 대시보드 변경이든 외부 도구(플러그인을 설치하는 CLI, `settings.json` 수동 편집, 새 스킬 추가)든 Claude Code 구성이 변경될 때마다 `cc_config_changed` WebSocket 메시지를 브로드캐스트합니다. 페이지는 이를 구독하고 자동으로 다시 가져옵니다; 제목 옆의 라이브 / 오프라인 필이 WebSocket 상태를 표시합니다 |
+| **Claude 설정 탐색기**            | Claude Code가 알고 있는 모든 것을 위한 `/cc-config`의 12탭 인스펙터: 스킬, 서브에이전트, 슬래시 명령, 출력 스타일, 플러그인(`plugin.json`의 플러그인별 기여 항목 수 + 작성자/라이선스/홈페이지 포함), 마켓플레이스(각 `marketplace.json`에서 읽은 플러그인 수 포함), MCP 서버, Hook(`~/.claude/hooks/` 스크립트 목록 포함), 설정(`/config`가 제어하는 옵션 — 모델, verbose, 테마, 출력 스타일, effort, 자동 컴팩트, 알림 등 — 을 사용자/프로젝트/프로젝트 로컬 범위에 걸쳐 해석하고 설정되지 않은 옵션은 기본값으로 표시하는 한눈에 보는 **현재 구성** 요약, 그리고 파일별 구조화된 키-값 보기 + 원시 JSON 토글, 비밀 키 마스킹), 메모리(사용자 + 프로젝트 `CLAUDE.md` 파일 **그리고** 프로젝트별 파일 기반 메모리 저장소 — `~/.claude/projects/<slug>/memory/` 아래의 모든 `*.md`, 즉 `MEMORY.md` 인덱스와 기억된 사실당 하나의 파일로 종종 100개 이상; 인덱스 파일과 사실별 파일을 분리하는 접을 수 있는 섹션에 프로젝트별로 그룹화되고 검색 상자와 대응하는 사실 파일로 이동(스크롤 + 강조)하는 클릭 가능한 `MEMORY.md` 인덱스 링크 제공), 키바인딩(`<kbd>` 칩과 함께 컨텍스트별 그룹화), Statusline(구성 + 스크립트 내용). 저위험 텍스트 파일 표면(스킬 / 에이전트 / 명령 / 출력 스타일 / 메모리 — 프로젝트별 자동 메모리 파일 포함)에 대해 이 페이지는 Claude Code가 스캔하는 디렉터리 외부에 원자적으로 기록되는 **필수 타임스탬프 백업과 함께 생성 / 편집 / 삭제**를 지원하며, 자동 생성된 `mv` 복원 명령이 있는 백업 모달도 제공합니다. 플러그인, MCP, 설정 내 Hook, `settings.json` 파일은 설명 배너 + 복사 가능한 CLI 명령과 함께 읽기 전용으로 유지되어 사용자가 직접 실행할 정확한 명령을 알 수 있습니다. **실시간 업데이트**: 서버에서 실행되는 `cc-watcher`가 `~/.claude/`(플랫폼이 지원하는 경우 재귀적)와 `~/.claude.json`에 대해 500 ms 디바운스로 `fs.watch`를 사용하여, 대시보드 변경이든 외부 도구(플러그인을 설치하는 CLI, `settings.json` 수동 편집, 새 스킬 추가)든 Claude Code 구성이 변경될 때마다 `cc_config_changed` WebSocket 메시지를 브로드캐스트합니다. 페이지는 이를 구독하고 자동으로 다시 가져옵니다; 제목 옆의 라이브 / 오프라인 필이 WebSocket 상태를 표시합니다 |
 | **Tabby**                         | 모든 페이지의 오른쪽 아래 모서리에 고정된 떠다니는 고양이 친구. 기존 WebSocket `eventBus` 위에 전적으로 구축 — **새 백엔드 없음, API 키 없음, 새 의존성 없음**. 커서를 추적하는 눈과 라이브 세션 스트림에서 도출되는 **8가지 기분**(`idle`, `watching`, `happy`, `worried`, `stuck`, `thinking`, `sleeping`, `disconnected`)을 가진 반응형 SVG 마스코트로, 각 기분마다 고유한 애니메이션(꼬리 흔들기, 귀 쫑긋, 고개 까딱, 떨림, 반짝임, zzz, 경고 "!")이 있습니다. **자동 표시 말풍선**은 주목할 만한 이벤트(세션 시작/종료, 오류, 실행 완료)에 대해 짧고, 스로틀되고, 합쳐진 한마디를 게시하며 음소거할 수 있습니다. 고양이를 클릭하거나 **⌘B / Ctrl+B**를 누르면(Esc로 닫기) 라이브 상태 줄(`N live · M errored · 연결 상태`), 빠른 작업(Run Claude / 활동 / 세션 / 오류 세션으로 이동, 말풍선 음소거, 알림 지우기), **Ask** 상자가 있는 **패널**이 열립니다: 간단한 상태 질문("what's running", "any errors", "status")은 캐시된 데이터에서 로컬로 답변되고, 그 외의 질문은 **Run Claude** 페이지로 넘겨(`/run?prompt=…`로 딥링크) 실제 Claude Code 세션을 생성합니다. 접근성을 갖추었고(키보드 조작 가능, `aria-live` 말풍선, `prefers-reduced-motion` 준수), 소켓이 끊기면 차분한 `disconnected` 상태로 안전하게 저하되며, **설정**에서 토글할 수 있습니다(en/zh/vi/ko로 현지화). 구현은 `client/src/components/Tabby/`에 있습니다 |
 | **프로그레시브 웹 앱(PWA)**       | 세 개의 독립적인 PWA — 대시보드, 랜딩 페이지, 위키 — 각각 자체 Web App Manifest와 Service Worker를 갖습니다. 어느 것이든 홈 화면 / 독에 설치하면 크롬 없는 독립 실행형 경험을 얻습니다. 대시보드 SW는 `/assets/` 아래 Vite의 콘텐츠 해시 번들을 캐시 우선으로 제공하고(URL은 빌드마다 불변이므로 캐시 적중은 항상 정확), 그 외 모든 것 — 내비게이션, SW 자체, `manifest.json`, 아이콘, 루트 `/` — 은 캐시 폴백이 있는 네트워크 우선으로 처리합니다. 프로덕션 Express 정적 미들웨어의 명시적 `Cache-Control` 헤더(`/assets/*`는 `immutable`, `index.html`, `sw.js`, `manifest.json`은 `no-cache, must-revalidate`)와 결합하여 재빌드는 하드 새로고침 없이 항상 브라우저 내 번들을 교체합니다; 클라이언트의 `controllerchange` 리스너는 이미 제어 중인 페이지를 새 SW가 인수할 때 정확히 한 번만 다시 로드합니다. VAPID 푸시 알림 파이프라인은 보존됩니다. 랜딩 페이지와 위키 SW는 각자의 셸을 프리캐시하고 첫 방문 시 이미지를 지연 캐시하여, 한 번만 로드하면 오프라인 접근이 가능합니다. 모든 매니페스트는 최신 브라우저를 위해 `sizes="any"`의 SVG 아이콘(`favicon.svg`)을 사용하고, iOS 독립 실행형 모드를 위한 `apple-mobile-web-app-capable` + `apple-touch-icon` 메타 태그를 포함합니다 |
 | **데스크톱 앱(macOS & Windows)**  | `client/`, `server/`, `mcp/`, `vscode-extension/`과 나란히 `desktop/` 워크스페이스에 있는, Electron 35로 빌드된 선택적 네이티브 데스크톱 앱. macOS `.app`(`.dmg`) **및** Windows `.exe`(NSIS 설치 관리자 + 무설치 포터블)로 제공됩니다. 기존 Express 서버를 **인프로세스로** 임베드하고(`server/index.js`를 `require()` — 자식 프로세스 없음, IPC 없음) 빌드된 React 클라이언트를 `BrowserWindow`에 렌더링합니다. 네이티브 타이틀 바, 클릭 시점에 SQLite에서 가져온 **라이브 상태 스냅샷**(세션, 에이전트, 오늘의 이벤트)을 단일 클릭 드롭다운으로 보여주는 메뉴 바 / 알림 영역(트레이) 아이콘, 네이티브 애플리케이션 메뉴, 로그인 시 자동 시작(macOS는 `SMAppService`를 통한 로그인 항목; Windows는 사용자별 `HKCU\…\Run`), **⌘Q / Ctrl+Q 확인 대화 상자**(두 번째 누름은 우회), 창을 닫아도 서버는 계속 실행되는 동작, 단일 인스턴스 잠금, 그리고 **브라우저에서 열기**, **서버 재시작**, **로그 표시** 트레이 작업이 추가됩니다. 포트 4820을 선호하고(4821–4829, 그다음 임의의 높은 포트로 폴백), 4820에서 이미 실행 중인 정상 대시보드가 있으면 이중 바인딩하는 대신 이를 채택하며, **웹 대시보드와 공존합니다** — `npm run dev`와 데스크톱 앱을 함께 실행할 수 있고 Hook이 양쪽 모두로 전파됩니다. 알림은 네이티브 OS 토스트로 발생합니다(Electron 내부에서 Web Push는 안정적으로 작동하지 않음). 처음으로 자체 서버를 부팅할 때 Claude Code Hook을 자동 설치하고 백그라운드 서비스를 시작하므로, 설치만 한 사용자도 수동 설정 없이 이벤트가 흐릅니다. [`DESKTOP.md`](./DESKTOP.md)와 [`desktop/README.md`](./desktop/README.md)를 참조하세요 |
@@ -428,7 +435,7 @@ docker build -t agent-monitor .
 docker run -d --name agent-monitor \
   -p 127.0.0.1:4820:4820 \
   -v "$HOME/.claude:/root/.claude:ro" \
-  -v agent-monitor-data:/app/data \
+  -v "$HOME/.claude/agent-dashboard:/app/data" \
   agent-monitor
 
 # Podman
@@ -436,7 +443,7 @@ podman build -t agent-monitor .
 podman run -d --name agent-monitor \
   -p 127.0.0.1:4820:4820 \
   -v "$HOME/.claude:/root/.claude:ro" \
-  -v agent-monitor-data:/app/data \
+  -v "$HOME/.claude/agent-dashboard:/app/data" \
   agent-monitor
 ```
 
@@ -447,7 +454,7 @@ podman run -d --name agent-monitor \
 | 마운트 | 용도 |
 |---|---|
 | `~/.claude:/root/.claude:ro` | 가져오기를 위한 레거시 세션 기록 읽기 |
-| `agent-monitor-data:/app/data` | 재시작 간 SQLite 데이터베이스 유지 |
+| `~/.claude/agent-dashboard:/app/data` | **표준 SQLite 데이터베이스**(네이티브 설치와 공유) |
 
 > [!IMPORTANT]
 > **참고:** Claude Code Hook은 여전히 호스트에서 실행 중인 hook-handler 프로세스를 가리켜야 합니다. 컨테이너 자체는 Hook을 받지 않습니다 — `http://localhost:4820`으로 POST하는 Hook을 구성하려면 **호스트에서** `npm run install-hooks`를 실행하세요. 컨테이너 내부에서 설치 프로그램을 실행하는 것은 **거부됩니다**(issue #193). 바인드 마운트된 호스트 `~/.claude`에 컨테이너 내부 핸들러 경로가 기록되지 않게 하기 위함입니다; 실제로 같은 컨테이너 안에서 Claude Code를 실행하는 경우에만 `CCAM_ALLOW_CONTAINER_HOOKS=1`로 재정의하세요.
@@ -485,7 +492,7 @@ sequenceDiagram
 ### Hook 라이프사이클
 
 1. **Claude Code**는 세션 시작, 도구 사용, 턴 종료, 서브에이전트 완료, 세션 종료 시 Hook을 발생시킵니다
-2. **Hook 핸들러**(`scripts/hook-handler.js`)는 stdin에서 JSON 이벤트를 읽고, `~/.claude/.agent-dashboard.json`(또는 설정된 경우 `CLAUDE_DASHBOARD_PORT`)을 통해 실행 중인 모든 대시보드를 확인한 뒤, 동일한 페이로드를 각 대시보드에 병렬로 POST합니다. 5초의 안전망 타임아웃과 함께 조용히 실패하므로 Claude Code를 절대 차단하지 않으며, 대상별 프로미스는 절대 reject되지 않으므로 하나의 죽은 리스너가 다른 리스너들을 굶기는 일이 없습니다. 여러 대시보드가 함께 실행 중일 때(예: `npm run dev` + macOS 데스크톱 앱) 모두가 모든 이벤트를 수신합니다.
+2. **Hook 핸들러**(`scripts/hook-handler.js`)는 stdin에서 JSON 이벤트를 읽고, `~/.claude/.agent-dashboard.json`(또는 설정된 경우 `CLAUDE_DASHBOARD_PORT`)을 통해 실행 중인 대시보드를 확인한 뒤, **고유한 SQLite 데이터 디렉터리당 하나의 수집 대상**으로 동일한 페이로드를 POST합니다(Docker와 `npm run dev`가 `~/.claude/agent-dashboard`를 공유하면 가장 낮은 포트가 우선되어 이벤트가 중복 수집되지 않음). **서로 다른** 데이터베이스를 쓰는 서버(예: 데스크톱 앱의 Application Support와 `npm run dev`)는 각각 훅을 계속 받습니다. 5초의 안전망 타임아웃과 함께 조용히 실패하므로 Claude Code를 절대 차단하지 않으며, 대상별 프로미스는 절대 reject되지 않으므로 하나의 죽은 리스너가 다른 리스너들을 굶기는 일이 없습니다.
 3. **서버**는 SQLite 트랜잭션 내에서 이벤트를 처리합니다:
    - 첫 접촉 시 세션과 메인 에이전트를 자동 생성합니다
    - `Agent` 도구 호출을 감지하여 서브에이전트 생성을 추적합니다
@@ -504,8 +511,8 @@ sequenceDiagram
    - JSONL 트랜스크립트에서 API 오류(`isApiErrorMessage` 항목: 할당량 제한, 속도 제한, invalid_request)와 원시 `type: "error"` 응답을 추출하여 `APIError` 이벤트로 저장합니다. 턴 지속 시간(`system` 하위 유형 `turn_duration`)은 `TurnDuration` 이벤트로 저장됩니다. 도구 결과 오류(`toolUseResult.is_error`)는 `ToolError` 이벤트로 추적됩니다
    - **오류 감지 워치독** — 백그라운드 타이머가 15초마다 실행되어 최근 Hook 이벤트가 없는(10초 이상 오래된) 활성 세션을 스캔합니다. 해당 세션의 트랜스크립트 파일을 다시 읽어 API 오류(인증 실패, 속도 제한, 할당량 소진)를 찾고, 이벤트 데이터에 `transcript_path`가 없는 가져온 세션에 대해서는 세션 `cwd`로부터 트랜스크립트 경로를 유도하며, API 오류가 발견되면 세션/에이전트를 `error`로 표시합니다. 이는 API 오류 후 Claude CLI가 Hook을 발생시키지 않는 경우(예: CLI가 오류를 표시하고 대기하는 401 인증 실패)를 포착합니다
    - **사용자 중단(Esc) 복구** — `Esc`로 턴을 취소하면 **Hook이 전혀 발생하지 않으므로**(문서화된 Claude Code의 제한 사항), 개입이 없다면 메인 에이전트는 영원히 `working` 상태에 갇혀 있게 됩니다. 동일한 15초 워치독이 두 가지 방식으로 이를 복구합니다: (1) 취소가 트랜스크립트에 `[Request interrupted by user]` 마커를 남기는 경우(일부 출력 *이후의* Esc), 트랜스크립트 캐시가 `pendingInterrupt`를 통해 이를 플래그하고 — 순수하게 트랜스크립트 순서(최신 중단 vs 최신 실제 턴 활동, 동일한 시계이므로 1초 미만의 취소에도 동작)로부터 유도됩니다 — 세션은 약 15초 이내에 **Waiting**으로 이동합니다; (2) *어떤 출력도 나오기 전에* Esc를 누르면 Claude Code는 마커를 전혀 기록하지 않으므로 유휴 타임아웃 폴백이 적용됩니다 — 메인 에이전트가 **진행 중인 도구 없이** `working` 상태이고 **Hook 이벤트도 트랜스크립트도** `DASHBOARD_WORKING_IDLE_SECONDS`(기본값 `120`) 동안 진전이 없었다면, 해당 턴은 죽은 것으로 간주되고 세션은 **Waiting**으로 이동합니다. 두 경로 모두 `Interrupted` 이벤트를 기록하고, 일반적인 `Stop`이 만들어내는 것과 동일한 Waiting 상태에 세션을 안착시킵니다. 스트리밍 출력(트랜스크립트가 계속 증가 중)과 진행 중인 도구 호출(`current_tool` 설정됨)은 예외이며, 드물게 발생하는 잘못된 전환은 다음 실제 Hook에서 자가 복구됩니다
-   - **죽은 세션 활성 상태 회수** — Claude Code를 종료하면(Ctrl+C, 터미널 닫기) `SessionEnd` Hook이 발생하지만, 그 순간 대시보드가 실행 중이 아니면 이벤트는 영원히 유실되고 세션은 오래됨 정리(기본 3시간)까지 **Waiting** 상태로 남아 있게 됩니다. 동일한 15초 워치독이 **프로세스 활성 상태 프로브**로 이 공백을 메웁니다: 실행 중인 `claude` CLI 프로세스를 나열하고(macOS에서는 `ps` + `lsof`, Linux에서는 `/proc`), `cwd`에 살아 있는 claude 프로세스가 없는 모든 `active` 세션을 완료 처리합니다 — 실제 `SessionEnd`가 만들어내는 것과 동일한 `completed` 상태에 안착시키고, 타임라인에 합성 `SessionEnd` 이벤트를 남깁니다. 보호 장치: 워치독 틱에서는 세션의 트랜스크립트가 최소 `DASHBOARD_LIVENESS_IDLE_SECONDS`(기본값 `60`; 디스크에 트랜스크립트가 없을 때는 마지막 Hook 기록이 폴백 시계) 동안 기록되지 않았어야 하며 — **부팅 패스는 이 게이트를 완전히 건너뛰므로**, 실행 1초 전에 종료된 세션도 즉시 정리됩니다 — 프로브는 Windows에서, 컨테이너 내부에서(호스트 프로세스가 그곳에서는 보이지 않음), `ps`/`lsof`가 실패할 때, 또는 `DASHBOARD_LIVENESS_PROBE=0`으로 명시적으로 비활성화된 경우 "응답 없음"을 보고합니다(아무것도 변경하지 않음). **혼합** 배포에서는 회수가 `cwd`가 POSIX 절대 경로가 아닌 모든 세션도 자동으로 건너뜁니다 — household Hook을 통해 다른 머신에서 전달된 세션은 원본 머신 자체의 경로(예: Windows의 `D:\Git\ai-deck`)를 보고하며, 이는 로컬 `ps`/`lsof`/`/proc` 스캔이 결코 일치시킬 수 없으므로, 진짜 로컬 세션에 대해 프로브를 비활성화하지 않고도 원격 세션이 보호됩니다. 잘못된 완료 처리는 자가 복구됩니다: 다음 Hook 이벤트가 세션을 재활성화합니다. 15초 워치독 주기 외에도, 회수는 **시작 시 즉시** 실행되고(이전 실행에서 DB에 이미 남아 있던 죽은 세션을 렌더링되기 전에 정리) **약 5초 후 다시** 실행되므로(시작 동기화가 방금 가져온 세션까지 커버), 대시보드가 꺼져 있는 동안 죽은 세션이 Waiting으로 표시되는 일이 결코 없습니다
-   - 주기적인 서버 스윕이 이벤트 기반 감지를 빠져나간 abandoned 세션과 새 압축을 포착합니다(예: `/compact`는 Hook을 발생시키지 않고, `/resume`이 세션 생성 후 몇 초 이내에 발생하는 경우). 주기는 `DASHBOARD_STALE_MINUTES`로부터 유도됩니다(임계값의 ¼, 60초 – 5분으로 제한). 스윕은 `transcript_path`를 찾기 위해 이벤트 테이블을 스캔하는 대신 각 활성 세션 행에서 직접 읽습니다(작은 인덱스 조회). 이 컬럼은 Hook 핸들러가 트랜스크립트 경로를 처음 볼 때 채워지고 `db.js` 마이그레이션이 기존 이벤트로부터 일회성 백필하며, 부분 인덱스 `idx_sessions_active_tp`가 스윕이 읽는 행을 정확히 커버합니다. 스윕은 Hook 핸들러와 트랜스크립트 캐시를 공유하여 중복 I/O를 피합니다. abandoned 세션 정리는 메모리를 제한하기 위해 트랜스크립트 캐시 항목도 제거합니다
+   - **죽은 세션 활성 상태 회수** — Claude Code를 종료하면(Ctrl+C, 터미널 닫기) `SessionEnd` Hook이 발생하지만, 그 순간 대시보드가 실행 중이 아니면 이벤트는 영원히 유실되고 세션은 오래됨 정리(기본 3시간)까지 **Waiting** 상태로 남아 있게 됩니다. 동일한 15초 워치독이 **프로세스 활성 상태 프로브**로 이 공백을 메웁니다: 실행 중인 `claude` CLI 프로세스를 나열하고(macOS에서는 `ps` + `lsof`, Linux에서는 `/proc`), `cwd`에 살아 있는 claude 프로세스가 없는 모든 `active` 세션을 완료 처리합니다 — 실제 `SessionEnd`가 만들어내는 것과 동일한 `completed` 상태에 안착시키고, 타임라인에 합성 `SessionEnd` 이벤트를 남깁니다. 보호 장치: 워치독 틱에서는 세션의 트랜스크립트가 최소 `DASHBOARD_LIVENESS_IDLE_SECONDS`(기본값 `60`; 디스크에 트랜스크립트가 없을 때는 마지막 Hook 기록이 폴백 시계) 동안 기록되지 않았어야 하며 — **부팅 패스는 이 게이트를 완전히 건너뛰므로**, 실행 1초 전에 종료된 세션도 즉시 정리됩니다 — 프로브는 Windows에서, 컨테이너 내부에서(호스트 프로세스가 그곳에서는 보이지 않음), `ps`/`lsof`가 실패할 때, 또는 `DASHBOARD_LIVENESS_PROBE=0`으로 명시적으로 비활성화된 경우 "응답 없음"을 보고합니다(아무것도 변경하지 않음). **혼합** 배포에서는 회수가 `cwd`가 POSIX 절대 경로가 아닌 모든 세션도 자동으로 건너뜁니다 — household Hook을 통해 다른 머신에서 전달된 세션은 원본 머신 자체의 경로(예: Windows의 `D:\Git\ai-deck`)를 보고하며, 이는 로컬 `ps`/`lsof`/`/proc` 스캔이 결코 일치시킬 수 없으므로, 진짜 로컬 세션에 대해 프로브를 비활성화하지 않고도 원격 세션이 보호됩니다. **원격 데이터 소스** 세션(`sessions.source` ≠ `local`)도 항상 건너뜁니다 — 이들의 `cwd`는 다른 머신에서 정당하게 POSIX 절대 경로이므로 로컬 프로세스 프로브는 이들에 대해 아무것도 말해주지 않으며, 이들의 수명 주기는 위에서 설명한 원격 동기화 조정이 전적으로 소유합니다. 잘못된 완료 처리는 자가 복구됩니다: 다음 Hook 이벤트가 세션을 재활성화합니다. 15초 워치독 주기 외에도, 회수는 **시작 시 즉시** 실행되고(이전 실행에서 DB에 이미 남아 있던 죽은 세션을 렌더링되기 전에 정리) **약 5초 후 다시** 실행되므로(시작 동기화가 방금 가져온 세션까지 커버), 대시보드가 꺼져 있는 동안 죽은 세션이 Waiting으로 표시되는 일이 결코 없습니다
+   - 주기적인 서버 스윕이 이벤트 기반 감지를 빠져나간 abandoned 세션과 새 압축을 포착합니다(예: `/compact`는 Hook을 발생시키지 않고, `/resume`이 세션 생성 후 몇 초 이내에 발생하는 경우). 주기는 `DASHBOARD_STALE_MINUTES`로부터 유도됩니다(임계값의 ¼, 60초 – 5분으로 제한). 스윕은 `transcript_path`를 찾기 위해 이벤트 테이블을 스캔하는 대신 각 활성 세션 행에서 직접 읽습니다(작은 인덱스 조회). 이 컬럼은 Hook 핸들러가 트랜스크립트 경로를 처음 볼 때 채워지고 `db.js` 마이그레이션이 기존 이벤트로부터 일회성 백필하며, 부분 인덱스 `idx_sessions_active_tp`가 스윕이 읽는 행을 정확히 커버합니다. 스윕은 Hook 핸들러와 트랜스크립트 캐시를 공유하여 중복 I/O를 피합니다. abandoned 세션 정리는 메모리를 제한하기 위해 트랜스크립트 캐시 항목도 제거합니다. 이 스윕과 시작 시 1시간 정리 모두 **원격 데이터 소스** 세션(`source` ≠ `local`)을 건너뜁니다: 이들의 `updated_at`은 원격 CLI의 실제 활동이 아니라 `scp` 동기화 주기를 추적하므로, 대신 동기화가 미러로부터 상태를 조정합니다(JSONL 최신 이벤트 타임스탬프 기준)
    - **지속적 프로젝트 동기화**(`startSessionSync`)는 일회성의 마커로 게이트된 시작 백필을 넘어 `~/.claude/projects`를 계속 발견 가능하게 유지합니다: 나중에 추가되고 세션이 Hook을 통해 흐르지 않는 프로젝트는 그렇지 않으면 수동 재스캔 전까지 보이지 않은 채로 남게 됩니다. 즉각적인 시작 스윕, 디바운스된 `fs.watch`(macOS/Windows에서는 재귀적, Linux에서는 루트 + 직계 자식), 그리고 `DASHBOARD_SESSION_SYNC_MS` 폴링(기본값 30초; `0`은 폴링을 비활성화하고 워처는 유지)이 하나의 mtime 캐시와 병합된 스윕을 공유하여 mtime이 진행된 파일만 다시 파싱하며 — 이미 가져와졌고 변경되지 않은 세션은 다시 파싱하지 않고 건너뛰므로, 재시작 비용은 O(새/변경된 파일)로 유지됩니다. 새로 발견되거나 커진 각 세션은 Hook이 발생시키는 것과 동일한 프레임인 `session_created`/`session_updated`와 해당 메인 에이전트를 브로드캐스트합니다
 4. **WebSocket**은 변경 사항을 연결된 모든 클라이언트에 브로드캐스트합니다
 5. **UI**는 업데이트를 수신하고 영향을 받는 컴포넌트를 폴링 없이 실시간으로 다시 렌더링합니다.
@@ -604,6 +611,10 @@ flowchart LR
 | `DASHBOARD_LIVENESS_PROBE` | `1` (켜짐) | 워치독의 **죽은 세션 활성 상태 회수**(`claude` 프로세스가 더 이상 존재하지 않는 `active` 세션을 완료 처리하는 `ps`/`lsof` 기반 프로브 — 대시보드가 꺼져 있는 동안 유실된 `SessionEnd`를 복구)를 비활성화하려면 `0`으로 설정. **다른 머신**(household Hook)에서 전달된 세션은 비-POSIX `cwd`를 보고하여 회수가 자동으로 건너뛰므로, 혼합 로컬 + 전달 배포에서는 더 이상 이것을 끌 필요가 없습니다; 로컬 프로세스가 아무것도 증명하지 못하는 순수 원격 설정에서만 비활성화하십시오. Windows 및 컨테이너 내부에서는 자동으로 비활성화됩니다 |
 | `DASHBOARD_LIVENESS_IDLE_SECONDS` | `60` | **워치독 틱** 활성 상태 회수를 위한 유휴 게이트: 세션의 트랜스크립트가 최소 이 시간 동안 기록되지 않았을 때에만 완료 처리되므로(디스크에 트랜스크립트가 없을 때는 마지막 Hook 기록이 폴백 시계), 턴 진행 중이거나 방금 재개된 세션이 일시적인 프로브 실패로 깜빡이며 사라지는 일이 없습니다. 시작 패스는 이 게이트를 무시합니다 — 부팅 시에는 프로브 단독으로 결정하므로, 실행 직전에 종료된 세션은 즉시 정리됩니다 |
 | `DASHBOARD_SESSION_SYNC_MS` | `30000` | 시작 후 추가되어 세션이 Hook을 통해 흐르지 않는 프로젝트를 표면화하는 지속적 `~/.claude/projects` 백그라운드 동기화의 폴링 간격(ms). `fs.watch` 워처는 이와 무관하게 거의 즉시 발동합니다; 이 폴링은 안전망입니다(워처는 이벤트를 놓치거나 네트워크 파일시스템에서 발동하지 않을 수 있음). 워처는 계속 실행하면서 폴링만 비활성화하려면 `0`으로 설정하십시오 |
+| `DASHBOARD_REMOTE_SYNC_MS` | `15000` | 원격 소스를 `scp`로 가져오는 간격(ms). 새 소스 추가/활성화 시 즉시 1회 동기화. `0`으로 설정하면 원격 소스 폴링이 비활성화됩니다 |
+| `DASHBOARD_REMOTE_ACTIVE_WINDOW_MS` | `600000` (10분) | **원격 데이터 소스** 세션의 실시간 상태에 대한 신선도 윈도우. 각 동기화 시, 미러 transcript의 **마지막 JSONL 이벤트**가 이 윈도우 내에 있으면 원격 세션은 여전히 실행 중(`active`)으로 취급되고, 미러가 이보다 오래 진행을 멈추면 세션은 `completed`로 조정됩니다. 원격 세션은 실시간 Hook을 받지 않으므로 이것이 로컬 활성 상태/오래됨 스윕(이들을 건너뜀)을 대체합니다. 느린 링크나 매우 긴 유휴 턴에는 값을 높이십시오 |
+| `DASHBOARD_REMOTE_SYNC_TIMEOUT_MS` | `600000` | 원격 소스별 `scp` 타임아웃 |
+| `DASHBOARD_REMOTE_TEST_TIMEOUT_MS` | `15000` | 소스로의 SSH 연결 프로브 타임아웃 |
 | `DASHBOARD_HOST`        | `127.0.0.1`   | 서버가 바인딩하는 인터페이스. 기본값은 루프백(네트워크에서 접근 불가). LAN에 노출하려면 `0.0.0.0`으로 설정(시작 시 경고를 로깅) |
 | `DASHBOARD_TOKEN`       | _(설정 안 됨)_     | 설정하면 모든 `/api/*` 요청과 WebSocket이 토큰을 제시해야 합니다(`Authorization: Bearer <token>`, `x-dashboard-token` 헤더, 또는 `?token=`). 기본적으로 꺼져 있습니다 — 루프백 바인딩이 신뢰 경계입니다 |
 | `DASHBOARD_ALLOWED_HOSTS` | _(루프백)_ | HTTP + WebSocket 업그레이드에서 허용되는 추가 `Host` 값의 쉼표 구분 목록(DNS 리바인딩 방지). 루프백을 넘어 바인딩할 때 LAN 호스트명을 여기에 추가하십시오 |
@@ -668,6 +679,7 @@ ccam import path <dir>            # 디렉터리 아래의 모든 .jsonl 가져�
 ccam doctor                       # 연결, Hook, 데이터베이스 진단
 ccam info                         # 원시 시스템 정보 JSON
 ccam export [file.json]           # 전체 JSON 데이터 내보내기
+ccam import-data <file.json>      # 내보내기 복원 (멱등, 비파괴적)
 ccam cleanup --hours N --days M   # 오래된 세션 abandon 처리 / 이전 세션 삭제
 ccam reinstall-hooks              # Claude Code Hook 재설치
 ccam update-check                 # 체크아웃이 업스트림보다 뒤처져 있는가?(업데이트 명령어 출력)
@@ -717,6 +729,13 @@ API 기반 명령어는 서버가 실행 중이어야 합니다 — 서버가 �
 | `npm run desktop:dmg:universal` | **하나의** 병합된 유니버설 DMG(arm64 + x86_64, 단일 파일) 빌드 — 선택 사항, **가장 느림**, 릴리스에 포함되는 것은 아님. |
 | `npm run desktop:win`   | Windows **NSIS 설치 프로그램** `.exe`(x64)를 빌드합니다 — Windows에서 실행 |
 | `npm run desktop:win:portable` | Windows **포터블**(무설치) `.exe`(x64)를 빌드합니다 — Windows에서 실행 |
+| `npm run monitoring:install` | `monitoring/`에서 `npm install` 실행 — `postinstall`로 Prometheus + Grafana 다운로드 |
+| `npm run monitoring:setup` | `monitoring:install` 별칭 |
+| `npm run monitoring:up` | Prometheus(:9090) + Grafana(:3000)를 백그라운드로 시작합니다(Docker 불필요) |
+| `npm run monitoring:down` | npm으로 관리되는 모니터링 스택을 중지합니다 |
+| `npm run monitoring:start` | 포그라운드로 시작합니다(Ctrl+C로 둘 다 중지) |
+| `npm run monitoring:docker:up` | Docker Compose로 Prometheus + Grafana를 시작합니다 |
+| `npm run monitoring:docker:down` | Docker 모니터링 스택을 종료합니다 |
 
 ---
 
@@ -933,13 +952,52 @@ HTTP API를 탐색하는 방법은 세 가지가 있으며, 모두 하나의 Ope
 
 OpenAPI 문서는 `server/openapi.js`(`createOpenApiSpec()`)에서 생성되며, `server/openapi-extra/` 아래의 보조 프래그먼트와 병합됩니다. Swagger UI와 ReDoc은 모두 백엔드가 직접 제공합니다. ReDoc 번들은 로컬로 제공되므로(`GET /api/redoc/redoc.standalone.js`) 이 참조 문서는 완전한 오프라인 / 에어갭 환경에서도 동작하며, 이는 프로젝트의 외부 자산 미사용 정책과 일치합니다.
 
-커버리지는 포괄적입니다. 모든 백엔드 라우트가 문서화되어 있으며(75개의 경로 항목), 다음 태그들 — Health, Sessions, Agents, Events, Stats, Analytics, Hooks, Pricing, Workflows, Settings, Updates, Alerts, Webhooks, Push, CcConfig(Claude Code 설정 탐색기), Run(대시보드에서 생성된 실행), Documentation — 에 걸쳐 각각 매개변수, 요청/응답 스키마, 필드 수준 설명, 현실적인 예제를 포함합니다.
+커버리지는 포괄적입니다. 모든 백엔드 라우트가 문서화되어 있으며(82개의 경로 항목), 다음 태그들 — Health, Sessions, Agents, Events, Stats, Metrics, Analytics, Hooks, Pricing, Workflows, Settings, Updates, Alerts, Webhooks, Push, CcConfig(Claude Code 설정 탐색기), Run(대시보드에서 생성된 실행), Documentation — 에 걸쳐 각각 매개변수, 요청/응답 스키마, 필드 수준 설명, 현실적인 예제를 포함합니다.
 
 저장소 루트에 커밋되어 있는 **`openapi.yaml`**은 라이브 사양을 그대로 반영합니다. 이 파일은 `server/openapi.js`에서 생성되며(직접 손으로 편집하지 않음) — API 변경 후 다음 명령으로 다시 생성합니다:
 
 ```bash
 npm run openapi:yaml
 ```
+
+### Prometheus 메트릭 & Grafana
+
+`GET /api/metrics`는 대시보드의 실시간 카운터 — 상태별 세션/에이전트, 이벤트 및 토큰 총계, 연결된 실시간 클라이언트, 구성된 원격 소스, 프로세스 가동 시간/메모리, 빌드 버전 — 를 Prometheus 텍스트 노출 형식으로 공개하므로, CCAM를 자체 관측성 스택으로 스크레이핑할 수 있습니다. **네 개의 자동 프로비저닝 대시보드**(기본 홈: **CCAM — Overview**)를 갖춘 턴키 방식의 Prometheus + Grafana 스택은 [`monitoring/`](./monitoring/README.md)에 있습니다.
+
+**npm(Docker/Homebrew 불필요):**
+
+```bash
+npm start                      # dashboard on :4820
+npm run monitoring:install       # 1회: npm postinstall이 바이너리 다운로드
+npm run monitoring:up          # Grafana on :3000 (admin/admin), auto-provisioned
+```
+
+**Docker / Podman**(대시보드가 컨테이너에서 실행되거나 Compose를 선호할 때):
+
+```bash
+DASHBOARD_ALLOWED_HOSTS=host.docker.internal npm start   # 또는 agent-monitor 서비스에 설정
+npm run monitoring:docker:up
+```
+
+<p align="center">
+  <img src="images/grafana.png" alt="Grafana CCAM — Overview 대시보드의 실시간 세션·이벤트·토큰 메트릭" width="100%">
+  <br>
+  <em>📊 <strong>Grafana · CCAM — Overview</strong> — 기본 홈 대시보드(네 개 보드 자동 프로비저닝): 플릿 스냅샷, DB 누적 합계, 분해 차트, 속도 — 모두 실시간 <code>/api/metrics</code> 스크레이프</em>
+</p>
+
+<p align="center">
+  <img src="images/prometheus-console.png" alt="메트릭 카드와 세션 표가 있는 Prometheus CCAM 콘솔" width="100%">
+  <br>
+  <em>🔥 <strong>Prometheus · CCAM 콘솔</strong> — <code>/consoles/index.html</code> 사전 구성 랜딩 페이지가 스크레이프 상태, 세션/이벤트/토큰 합계 및 Graph 드릴다운 링크를 Prometheus에 직접 조회</em>
+</p>
+
+<p align="center">
+  <img src="images/prometheus-query.png" alt="CCAM PromQL 쿼리가 있는 Prometheus Graph UI" width="100%">
+  <br>
+  <em>📈 <strong>Prometheus · Graph</strong> — 스크레이프된 CCAM 메트릭에 PromQL 실행(예: <code>sum(ccam_sessions)</code>, <code>ccam_events_total</code>) — CCAM 콘솔과 <a href="./monitoring/README.md">monitoring/README.md</a>의 시작 링크 제공</em>
+</p>
+
+전체 메트릭 목록과 스크레이프/인증 세부 정보는 [docs/API.md → Metrics](./docs/API.md#metrics)를 참고하세요.
 
 <p align="center">
   <img src="images/swagger.png" alt="Swagger UI" width="100%">
@@ -1064,6 +1122,7 @@ npm run openapi:yaml
 | `POST` | `/api/settings/reinstall-hooks`| Claude Code Hook 재설치                          |
 | `POST` | `/api/settings/reset-pricing`  | 가격 책정을 기본값으로 재설정                    |
 | `GET`  | `/api/settings/export`         | 모든 데이터를 JSON 다운로드로 내보내기           |
+| `POST` | `/api/settings/import`         | `/export` 백업 복원 (multipart `file` 또는 JSON `{ path }`). 멱등 + 비파괴적 — 이미 있는 세션은 통째로 건너뜀 |
 | `POST` | `/api/settings/cleanup`        | 오래된 세션을 중단 처리하고 오래된 데이터 정리   |
 
 ### Claude 설정 탐색기 (`/api/cc-config`)
@@ -1083,6 +1142,7 @@ Claude Code의 모든 설정 표면을 읽기 전용으로 검사할 수 있으�
 | `GET`    | `/api/cc-config/hooks`              | 사용자 / 프로젝트 / 프로젝트 로컬 `settings.json` 파일 전반에 걸쳐 집계된 Hook |
 | `GET`    | `/api/cc-config/hook-scripts`       | `~/.claude/hooks/`의 파일(`hooks.<event>.command`가 참조하는 헬퍼 스크립트) |
 | `GET`    | `/api/cc-config/keybindings`        | `~/.claude/keybindings.json`을 컨텍스트별로 그룹화된 키/액션 쌍으로 파싱한 결과 |
+| `PUT`    | `/api/cc-config/keybindings`        | `{ groups: [{ context, bindings: [{ key, action }] }] }`로 `keybindings.json` 덮어쓰기. 먼저 백업하고, 최상위 메타데이터(`$schema`/`$docs`)를 보존하며, 중복 컨텍스트/키를 거부. (`settings.json`과 달리 CLI가 세션 중에 다시 쓰지 않으므로 안전) |
 | `GET`    | `/api/cc-config/statusline`         | `settings.json.statusLine` 설정 + 존재하는 경우 실제 `statusline.py` / `statusline-command.sh` 내용 |
 | `GET`    | `/api/cc-config/settings`           | 사용자 / 프로젝트 / 프로젝트 로컬 설정 JSON. 시크릿으로 보이는 키(`/token\|secret\|password\|api[_-]?key\|auth/i`에 일치)는 `"<redacted>"`로 대체됩니다 |
 | `GET`    | `/api/cc-config/memory`             | 사용자 + 프로젝트 범위의 `CLAUDE.md` 파일과 프로젝트별 파일 기반 메모리: `~/.claude/projects/<slug>/memory/` 아래의 모든 `*.md`에 대한 `scope:"auto-memory"` 항목(각각 `project`, `name`, `isIndex` 및 파싱된 `frontmatter`를 포함). `{ scope: "auto-memory", type: "auto-memory", project, name }`와 함께 `PUT`/`DELETE /api/cc-config/file`로 변경합니다(백업은 `<memory-dir>/.cc-config-backups/auto-memory/`에 저장됨) |
@@ -1107,6 +1167,17 @@ Claude Code의 모든 설정 표면을 읽기 전용으로 검사할 수 있으�
 | `DELETE` | `/api/run/:id`                    | 실행을 중지합니다. SIGTERM 후 5초가 지나면 SIGKILL로 격상됩니다 |
 
 출력은 기존 대시보드 WebSocket을 통해 세 가지 메시지 유형으로 스트리밍됩니다: `run_stream`(파싱된 stream-json 엔벨로프로, `--include-partial-messages`의 `stream_event` 델타 포함), `run_status`(상태 전환), `run_input_ack`(stdin 쓰기 확인). Config Explorer 페이지는 네 번째 메시지인 `cc_config_changed`를 구독합니다 — 이 메시지는 `server/lib/cc-watcher.js`(`~/.claude/`에 대한 `fs.watch`를 통해)와 `routes/cc-config.js`가 모든 성공적인 PUT/DELETE 후에 `{ source: "dashboard"|"fs", action?, scope?, type?, name?, paths? }` 페이로드와 함께 브로드캐스트합니다. 세션 목록과 SessionDetail 페이지는 `/api/run`을 폴링하고 (`run_status`를 수신하여) 현재 진행 중인 Run이 구동하고 있는 세션에, `/run`으로 다시 연결되는 클릭 가능한 **▶ Run** 표시 배지를 붙입니다.
+
+### 원격 데이터 소스
+
+| 메서드 | 경로 | 설명 |
+| -------- | -------------------------------- | ---------------------------- |
+| `GET`    | `/api/remote-sources`            | 구성된 원격 데이터 소스 목록을 조회합니다 |
+| `POST`   | `/api/remote-sources`            | 새 원격 소스를 추가합니다 |
+| `PATCH`  | `/api/remote-sources/:id`        | 원격 소스를 업데이트합니다 |
+| `DELETE` | `/api/remote-sources/:id`        | 원격 소스를 삭제합니다 |
+| `POST`   | `/api/remote-sources/:id/test`   | 소스로의 SSH 연결을 테스트합니다 |
+| `POST`   | `/api/remote-sources/:id/sync`   | 해당 소스에 대해 `scp` + 가져오기를 즉시 트리거합니다 |
 
 ### 히스토리 가져오기
 
@@ -1228,7 +1299,7 @@ zip/tar/gzip 폭탄을 차단합니다. 업로드 크기는 파일당
 }
 ```
 
-**메시지 유형:** `session_created`, `session_updated`, `agent_created`, `agent_updated`, `new_event`, `alert_triggered`, `alert_updated`
+**메시지 유형:** `session_created`, `session_updated`, `agent_created`, `agent_updated`, `new_event`, `alert_triggered`, `alert_updated`, `remote_source.status`
 
 ```mermaid
 stateDiagram-v2

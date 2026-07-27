@@ -15,6 +15,8 @@ Enterprise-grade Node.js backend for Claude Code agent monitoring with real-time
 ![ESLint](https://img.shields.io/badge/ESLint-8.44-4B32C3?style=flat-square&logo=eslint&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-20.10-2496ED?style=flat-square&logo=docker&logoColor=white)
 ![Podman](https://img.shields.io/badge/Podman-4.0-CC342D?style=flat-square&logo=podman&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Prometheus-2.x-E6522C?style=flat-square&logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-10.x-F46800?style=flat-square&logo=grafana&logoColor=white)
 ![SSE](https://img.shields.io/badge/SSE-Server_Sent_Events-FF6600?style=flat-square&logo=googlechrome&logoColor=white)
 ![MIT License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
@@ -114,6 +116,7 @@ graph TB
         Pricing[routes/pricing.js /api/pricing*]
         Settings[routes/settings.js /api/settings*]
         Workflows[routes/workflows.js /api/workflows*]
+        RemoteSources[routes/remote-sources.js /api/remote-sources*]
         OpenAPI[openapi.js + openapi-extra/ + Swagger + lib/redoc.js /api/openapi.json /api/docs /api/redoc]
     end
     
@@ -132,6 +135,7 @@ graph TB
     Index --> Pricing
     Index --> Settings
     Index --> Workflows
+    Index --> RemoteSources
     Index --> OpenAPI
     
     Hooks --> DB
@@ -258,6 +262,7 @@ CREATE TABLE sessions (
     model TEXT,
     status TEXT DEFAULT 'active',
     total_cost REAL DEFAULT 0,
+    source TEXT NOT NULL DEFAULT 'local',   -- data source: 'local' or a remote_sources.id
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
 );
@@ -265,7 +270,10 @@ CREATE TABLE sessions (
 CREATE INDEX idx_sessions_session_id ON sessions(session_id);
 CREATE INDEX idx_sessions_status ON sessions(status);
 CREATE INDEX idx_sessions_updated_at ON sessions(updated_at DESC);
+CREATE INDEX idx_sessions_source ON sessions(source);   -- powers the ?sources= data-scope filter
 ```
+
+The `source` column is added migration-safe (additive `ALTER TABLE ... NOT NULL DEFAULT 'local'`), so every historical row keeps reading exactly as before; only sessions pulled from a configured remote carry a non-`local` source id.
 
 #### `agents`
 
@@ -340,6 +348,28 @@ CREATE TABLE pricing_rules (
     input_cost_per_1m REAL NOT NULL,
     output_cost_per_1m REAL NOT NULL,
     created_at TEXT DEFAULT (datetime('now'))
+);
+```
+
+#### `remote_sources`
+
+Configured remote machines whose Claude Code history the dashboard pulls over SSH (see [Remote Data Sources](#remote-data-sources)). Config + operational status only — **no secrets** are stored; authentication defers to the host SSH stack.
+
+```sql
+CREATE TABLE remote_sources (
+    id TEXT PRIMARY KEY,          -- also stamped onto sessions.source
+    label TEXT NOT NULL,
+    host TEXT NOT NULL,           -- ssh destination (user@host or ~/.ssh/config alias)
+    ssh_port INTEGER,
+    identity_file TEXT,           -- optional path to a key the user already controls
+    remote_home TEXT,             -- remote home holding ~/.claude/projects
+    enabled INTEGER NOT NULL DEFAULT 1,
+    status TEXT NOT NULL DEFAULT 'idle',   -- idle | syncing | ok | error
+    last_error TEXT,
+    last_sync_at TEXT,
+    last_sync_counts TEXT,        -- JSON import counters from the last sync
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+    updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
 );
 ```
 
@@ -422,7 +452,7 @@ The OpenAPI spec is generated from `server/openapi.js` (`createOpenApiSpec()`), 
 
 | Method  | Path                | Description                                      |
 | ------- | ------------------- | ------------------------------------------------ |
-| `GET`   | `/api/health`       | Server health check                              |
+| `GET`   | `/api/health`       | Server health check (`status`, `version`, `timestamp`) |
 | `GET`   | `/api/sessions`     | List sessions (`status`, `limit`, `offset`)     |
 | `GET`   | `/api/sessions/:id` | Session detail (includes `agents` + `events`)   |
 | `POST`  | `/api/sessions`     | Create session (idempotent by `id`)             |
@@ -436,6 +466,11 @@ The OpenAPI spec is generated from `server/openapi.js` (`createOpenApiSpec()`), 
 | `GET`   | `/api/events`       | List events (`session_id`, `limit`, `offset`)   |
 | `GET`   | `/api/stats`        | Dashboard aggregate counters                     |
 | `GET`   | `/api/analytics`    | Analytics aggregates for charts/trends           |
+| `GET`   | `/api/metrics`      | Prometheus / OpenMetrics exposition (text; v0.0.4) |
+
+**Prometheus metrics (`GET /api/metrics`).** Exposes the dashboard's live counters — `ccam_sessions`/`ccam_agents` by status, `ccam_events_total`, `ccam_tokens_total` by kind, `ccam_websocket_clients`, `ccam_remote_sources` by enabled state, `ccam_process_uptime_seconds`/`ccam_process_resident_memory_bytes`, and `ccam_build_info{version}` — in the Prometheus v0.0.4 text-exposition format for scraping into Prometheus / Grafana (`server/routes/metrics.js`). Values come from the same `server/db.js` prepared statements the REST API uses, so they match the UI; status series are enumerated so a gauge never drops out of the exposition at zero. The route is read-only and, being under `/api`, sits behind both the Host-header (DNS-rebinding) guard and the optional `DASHBOARD_TOKEN` guard: a non-loopback scraper (e.g. Prometheus in Docker via `host.docker.internal`) must be allowlisted with `DASHBOARD_ALLOWED_HOSTS` or it gets `403 EBADHOST`, and must send the token when one is set. A ready-to-run Prometheus + Grafana stack with four auto-provisioned dashboards (default home **CCAM — Overview**) lives in [`monitoring/`](../monitoring/README.md).
+
+**Data scope (`?sources=`).** `GET /api/sessions`, `/api/events`, `/api/agents`, `/api/stats`, and `/api/analytics` all accept an optional `sources` query param — a comma-separated list of source ids (`local` plus any remote source id, see [Remote Data Sources](#remote-data-sources)) — that narrows the result to sessions with a matching `sessions.source`. It is parsed by `server/lib/source-filter.js` into SQL predicates; `/api/stats` and `/api/analytics` route to the source-scoped aggregates in `server/lib/scoped-stats.js` only when a scope is present, leaving the unscoped fast paths unchanged. `GET /api/sessions/facets` additionally returns a `sources` facet enumerating the known source ids.
 
 **Session names** are kept in sync with the transcript title: on every hook event (and in the 15 s watchdog) the ingestor reads the latest `custom-title` (`/rename`, `claude -n`, picker `Ctrl+R`) or `ai-title` (auto) from the JSONL and updates `sessions.name` — `custom-title` always wins, `ai-title` only fills a placeholder/auto name — broadcasting `session_updated` so the UI reflects renames in real time. When neither title exists, the session's first user prompt (tool-result / meta / slash-command plumbing entries skipped, 60-char label) fills the placeholder session name plus the main agent's placeholder name and empty task; a later `ai-title` can still replace a descriptor-filled name, and the agent fill passes the in-flight `current_tool` through so it is never wiped mid-turn.
 
@@ -478,6 +513,48 @@ Request body shape:
 | `GET`  | `/api/workflows`              | Aggregate workflow intelligence (`?status=active\|completed\|...`) |
 | `GET`  | `/api/workflows/session/:id`  | Per-session drill-in (tree, timeline, swim lanes, events)          |
 
+### Remote Data Sources
+
+Live remote/multi-machine data collection over SSH. The dashboard pulls Claude Code history from other machines: `server/lib/remote-sync.js` uses recursive **`scp` over SSH** (built into OpenSSH — no `rsync` or extra packages on the remote) to mirror each remote's `~/.claude/projects` into a sandboxed per-source staging dir under the data dir, feeds it through the **same** importer used for local history (`scripts/import-history.js` `importFromDirectory`), and tags every imported session with the source id (`sessions.source`). Authentication defers entirely to the host SSH stack (ssh-agent / `~/.ssh/config` / identity file) — **no secrets are stored**; every command runs via `execFile`/`spawn` argument arrays (never a shell string) and `StrictHostKeyChecking` is left at its SSH default.
+
+> **Cursor on remotes (informational):** The same note applies on synced machines — if Cursor on a remote host writes to `~/.claude`, those sessions are imported too. CCAM reads the paths, not the app name.
+
+| Method   | Path                          | Description |
+| -------- | ----------------------------- | ----------- |
+| `GET`    | `/api/remote-sources`         | List configured sources (config + operational status) |
+| `POST`   | `/api/remote-sources`         | Create a source |
+| `PATCH`  | `/api/remote-sources/:id`     | Update a source |
+| `DELETE` | `/api/remote-sources/:id`     | Delete a source; `?purge=true` also deletes that source's imported sessions |
+| `POST`   | `/api/remote-sources/:id/test`| SSH connectivity probe |
+| `POST`   | `/api/remote-sources/:id/sync`| Trigger an on-demand pull |
+| `POST`   | `/api/remote-sources/sync-all`| Pull every enabled source now (sequential; per-source failures isolated) |
+
+Every status transition broadcasts `remote_source.status` `{ id, status, error?, last_sync_at? }` over `/ws` (`status` one of `idle | syncing | ok | error | deleted`). A successful sync also emits `remote_data.updated` `{ sourceId, source, label?, counters?, last_sync_at? }` so open UI pages refetch sessions, costs, and analytics immediately. Enabled sources are also pulled automatically by the background sync poller (`startRemoteSourceSync` in `server/index.js`) — see [Continuous Project Sync](#continuous-project-sync) and the environment table.
+
+#### Setup & troubleshooting
+
+Because sync runs non-interactively (`ssh -o BatchMode=yes`), the connection must already work without a prompt. Set a source up like this:
+
+1. **Reach the host once, manually:** `ssh user@host` (or an alias from `~/.ssh/config`). This adds the host to `~/.ssh/known_hosts` — required, since `StrictHostKeyChecking` is left at its secure default (an unknown host key fails the sync rather than being trusted blindly).
+2. **Make auth passwordless:** load your key into `ssh-agent` (`ssh-add`), or set an `IdentityFile` in `~/.ssh/config`, or point the source's optional `identity_file` at the key. Passphrase prompts and password auth will not work under `BatchMode`.
+3. **OpenSSH on both sides** — the dashboard machine needs the OpenSSH **client** (`ssh` + `scp`). The remote needs a running OpenSSH **server** (default on most Linux/macOS hosts; enable the OpenSSH Server optional feature on Windows). **Nothing else is installed on the remote.**
+4. **Cross-platform notes:**
+   - **macOS auth (Secretive, 1Password, ssh-agent, or file keys):** leave **Identity file** blank unless you need a specific key path. CCAM mirrors your shell: `ssh -G` supplies `IdentityAgent` when your `~/.ssh/config` does; otherwise it uses `SSH_AUTH_SOCK` (including `launchctl getenv` when the dashboard is GUI-launched) or plain `~/.ssh` keys. Secretive is used only when your SSH config points at it — never forced.
+   - **Windows dashboard:** OpenSSH Client optional feature; CCAM prefers `ssh`/`scp` on `PATH`, then falls back to `System32\OpenSSH\`.
+   - **Windows remote:** default `~/.claude` checks the Windows profile **and** WSL (`~/.claude` inside the default distro). If Claude Code runs only in WSL, leave remote home blank — CCAM auto-detects WSL and pulls via `wsl.exe` + `tar`, or set `wsl:~/.claude` / `wsl:/home/you/.claude` explicitly. Native Windows installs can use `C:/Users/you/.claude`; UNC paths such as `//wsl.localhost/Ubuntu/home/you/.claude` also work when `scp` can read them.
+   - **Linux/macOS remote:** default `~/.claude/projects`; custom POSIX paths (`/home/ubuntu/.claude`) also work. Prefer SSH directly into WSL/Linux rather than Windows→WSL when possible.
+5. **Add the source** (Settings → Remote Data Sources, or `ccam remote-sources add`), click **Test**, then **Sync**.
+
+| Symptom (surfaced in `last_error` / the Test result) | Cause & fix |
+| --- | --- |
+| `Host key verification failed` | The host isn't in `known_hosts`. `ssh user@host` once to accept its key. |
+| `Permission denied (publickey)` | No usable key for non-interactive auth. `ssh-add` your key, set `IdentityFile` in `~/.ssh/config`, or set the source's `identity_file`. |
+| `… does not exist on the remote` | Claude Code's home is elsewhere on that machine. Set the source's **remote home** (default `~/.claude`). |
+| `scp` / `ssh` not recognized (Windows) | Install the **OpenSSH Client** optional feature, restart the dashboard, or confirm `C:\Windows\System32\OpenSSH\scp.exe` exists. |
+| `Permission denied (publickey,password)` | SSH auth failed in the **dashboard process** (not necessarily your Terminal). Leave **Identity file** blank for Secretive, ssh-agent, or default `~/.ssh` keys — CCAM follows `ssh -G` / your config and does not force Secretive. Start the dashboard from the same shell as `ssh user@host`, or ensure your agent is running. Set **Identity file** only for an explicit on-disk key. |
+| Connected but directory missing | Claude Code may not be installed on the remote, or `remote_home` points at the wrong path. On Windows SSH with Claude in WSL, leave remote home blank (auto WSL) or set `wsl:~/.claude`. Default native path is `~/.claude/projects`. |
+| Sync hangs then errors after ~10 min | Bounded by `DASHBOARD_REMOTE_SYNC_TIMEOUT_MS`; usually a network/host issue — verify with **Test** (bounded by `DASHBOARD_REMOTE_TEST_TIMEOUT_MS`). |
+
 ### Settings / Ops
 
 | Method | Path                           | Description                                      |
@@ -487,7 +564,8 @@ Request body shape:
 | `POST` | `/api/settings/reimport`       | Re-import legacy sessions from `~/.claude/`      |
 | `POST` | `/api/settings/reinstall-hooks`| Reinstall Claude Code hooks                      |
 | `POST` | `/api/settings/reset-pricing`  | Reset pricing table to defaults                  |
-| `GET`  | `/api/settings/export`         | Export all data as JSON attachment               |
+| `GET`  | `/api/settings/export`         | Export all data (sessions, agents, events, token_usage, workflows, dashboard_runs, alert_rules, model_pricing) as one versioned JSON attachment |
+| `POST` | `/api/settings/import`         | Restore a bundle from `/export`. Multipart `file`, or JSON `{ path }` (server reads it). Idempotent + non-destructive: sessions already present are skipped whole |
 | `POST` | `/api/settings/cleanup`        | Abandon stale sessions and purge old data        |
 
 ### Claude Config Explorer (`/api/cc-config`)
@@ -507,6 +585,7 @@ Reads — and carefully gated mutations for low-risk text-file artifacts — for
 | `GET`    | `/api/cc-config/hooks`                | Hooks aggregated across user / project / project-local `settings.json` |
 | `GET`    | `/api/cc-config/hook-scripts`         | Files in `~/.claude/hooks/` (helper scripts referenced by hook commands) |
 | `GET`    | `/api/cc-config/keybindings`          | `~/.claude/keybindings.json` parsed into context-grouped key/action pairs |
+| `PUT`    | `/api/cc-config/keybindings`          | Overwrite `~/.claude/keybindings.json` from `{ groups: [{ context, bindings: [{ key, action }] }] }`. Backs the file up first, preserves top-level metadata (`$schema`/`$docs`), rejects duplicate contexts/keys (`EBADCONTENT`). Safe because — unlike `settings.json` — the CLI does not rewrite it mid-session |
 | `GET`    | `/api/cc-config/statusline`           | `settings.json.statusLine` config + script content if present |
 | `GET`    | `/api/cc-config/settings`             | User / project / project-local settings JSON, secret keys redacted |
 | `GET`    | `/api/cc-config/memory`               | `CLAUDE.md` files at user + project scope. Also returns the per-project file-based memory store as `scope:"auto-memory"` items (each carrying `project`, `name`, `isIndex`, and parsed `frontmatter`) — every `*.md` under `~/.claude/projects/<slug>/memory/` |
@@ -735,6 +814,18 @@ Server broadcasts JSON messages to all connected clients:
 {
   "type": "notification.received",
   "data": { ...notification object }
+}
+
+// Remote data source status transition
+{
+  "type": "remote_source.status",
+  "data": { "id": "...", "status": "idle|syncing|ok|error|deleted", "error": "...?", "last_sync_at": "...?" }
+}
+
+// Remote data imported — nudge stats pages to refetch
+{
+  "type": "remote_data.updated",
+  "data": { "sourceId": "...", "source": "...", "label": "...?", "counters": { "imported": 0, "skipped": 0 }, "last_sync_at": "...?" }
 }
 ```
 
@@ -1047,6 +1138,12 @@ The startup auto-import of `~/.claude/projects` is **one-time** (marker-gated vi
 
 Each sweep parses **only** files whose mtime is new or has advanced. A cold-cache fast path (e.g. the immediate sweep on every restart, when `mtimeCache` is empty) additionally skips an already-imported session whose file mtime hasn't advanced past its DB row's `updated_at`, so restart cost stays O(new/changed files) instead of re-parsing every transcript on disk. For each touched session it then broadcasts `session_created` / `session_updated` plus the session's main agent (`agent_created` / `agent_updated`) — the same frames hooks emit, so the UI refreshes live. All timers and watchers are `unref`'d and best-effort; nothing here can block shutdown or take down the server.
 
+### Remote Data Source Sync
+
+`startRemoteSourceSync` (in `server/index.js`, wired into `startBackgroundServices`) pulls history from every **enabled** [Remote Data Source](#remote-data-sources) on an interval. A cheap guard first checks whether any enabled source exists, so the poller does no SSH work at all until the user configures one. Each tick delegates to `server/lib/remote-sync.js`, which pulls the remote's `~/.claude/projects` via `scp` into a sandboxed per-source staging dir and runs it through `importFromDirectory`, tagging imported sessions with the source id. The interval is `DASHBOARD_REMOTE_SYNC_MS` (default `15000` ms; `0` disables the poller); adding or re-enabling a source also triggers an immediate pull. A per-source pull is bounded by `DASHBOARD_REMOTE_SYNC_TIMEOUT_MS` (default `600000` ms) and the connectivity test by `DASHBOARD_REMOTE_TEST_TIMEOUT_MS` (default `15000` ms). Status transitions broadcast `remote_source.status`; successful syncs also broadcast `remote_data.updated` so the client refetches sessions, costs, and analytics as soon as the mirror lands. The timer is `unref`'d and fail-safe — a hung or unreachable remote never wedges the dashboard.
+
+After each pull imports and tags a source's sessions, `remote-sync.js` **reconciles their live status from the fresh mirror** (`reconcileRemoteSessionStatus`). Remote sessions receive no live hooks and are excluded from every local liveness/stale heuristic (see below), so the mirror is their single source of truth: activity is judged from the **newest event timestamp inside each transcript** (falling back to mirror mtime when the file has no parseable events). A session whose last event is within `DASHBOARD_REMOTE_ACTIVE_WINDOW_MS` (default `600000` ms = 10 min) is treated as still running (→ `active`, main agent back to `waiting`); once it stops advancing, the session lands in `completed` with its agents completed and `ended_at` stamped — the same terminal state a real `SessionEnd` produces. This is what keeps an already-imported remote session's status correct on every subsequent sync (the shared importer only sets status on first insert), and it self-heals any remote session a pre-fix build wrongly completed.
+
 ### User-Interrupt (Esc) Recovery
 
 Cancelling a turn with `Esc` fires **no Claude Code hook** (a documented CLI limitation), so the `UserPromptSubmit` that promoted the main agent to `working` is never undone — the session would otherwise sit in `working` forever. The same 15 s watchdog recovers it, with two detection paths:
@@ -1065,6 +1162,7 @@ Fail-safe guards, in order:
 - The probe must be **trustworthy**: it reports "no answer" (and the reap changes nothing) on Windows, inside containers (host processes are invisible), when `ps`/`lsof` fail, or when explicitly disabled via `DASHBOARD_LIVENESS_PROBE=0` — the escape hatch for setups where hooks arrive from another machine, where local processes prove nothing.
 - The session must have a `cwd` to match on.
 - The `cwd` must be **POSIX-absolute** (`path.isAbsolute`). A session forwarded from another machine via household hooks reports the origin's own path syntax (e.g. a Windows `D:\Git\ai-deck`), which this host's `/proc`/`lsof` scan can never produce — so its absence from the probe is not a death signal. Such sessions are skipped (never reaped by this probe), while genuinely-local POSIX sessions are still reaped on real crashes. This keeps a **mixed** deployment (local *and* household-forwarded sessions on one instance) correct without sacrificing local crash detection via `DASHBOARD_LIVENESS_PROBE=0`.
+- **Remote Data Source sessions** (`sessions.source` ≠ `local`) are excluded outright — the reap query, the watchdog's transcript error/interrupt scan, the startup 1 h cleanup, and the periodic abandon sweep are all gated on `source = 'local' OR source IS NULL`. A remote session's `cwd` is legitimately POSIX-absolute on *another* machine (e.g. `/home/ubuntu/matroid`), so the POSIX-cwd guard above can't catch it, and this host's process probe / clock say nothing about a box reached over SSH. Their active/completed lifecycle is owned solely by `remote-sync.js`'s mirror reconciliation (see the Remote source sync section above). Without this guard a busy remote session was wrongly completed the moment no local `claude` matched its cwd.
 - On **watchdog ticks only** (both startup passes skip this gate — at boot the probe alone decides, so a session quit moments before launch clears immediately): the session's **transcript mtime** must be older than `DASHBOARD_LIVENESS_IDLE_SECONDS` (default `60`) — the transcript is the ground-truth activity clock (Claude Code appends to it every turn and it stops moving the instant the process dies); `updated_at` is only the fallback for sessions with no transcript on disk. Keying on `updated_at` would leave a freshly imported dead session in Waiting for a full extra gate period after every boot, since import/backfill passes bump it at startup. A mid-turn session with a mismatched cwd (e.g. `claude --resume` run from a different directory) keeps its transcript mtime fresh and is spared.
 - A false completion self-heals: the next hook event reactivates the session via the existing reactivation path.
 - Only `status = 'active'` rows are considered; `error` sessions keep their existing recovery paths.
@@ -1320,6 +1418,12 @@ DASHBOARD_SESSION_SYNC_MS=30000    # Continuous project-sync poll interval (ms);
 DASHBOARD_LIVENESS_PROBE=1         # 0 disables the dead-session liveness reap (use when hooks arrive from another machine)
 DASHBOARD_LIVENESS_IDLE_SECONDS=60 # Idle gate before the liveness reap may complete a process-less session
 
+# Remote Data Sources (SSH pull; see the Remote Data Sources section)
+DASHBOARD_REMOTE_SYNC_MS=15000         # Remote-source sync poll interval (ms); 0 disables the poller
+DASHBOARD_REMOTE_SYNC_TIMEOUT_MS=600000# Per-source scp/pull timeout (ms)
+DASHBOARD_REMOTE_TEST_TIMEOUT_MS=15000 # SSH connectivity-test timeout (ms)
+DASHBOARD_REMOTE_ACTIVE_WINDOW_MS=600000 # Freshness window (ms) for a remote session's live status (active↔completed)
+
 # Logging
 LOG_LEVEL=info                     # Log level (debug, info, warn, error)
 ```
@@ -1366,7 +1470,7 @@ CMD ["node", "server/index.js"]
 ```bash
 # Build and run
 docker build -t agent-dashboard .
-docker run -p 4820:4820 -v $(pwd)/data:/app/data agent-dashboard
+docker run -p 127.0.0.1:4820:4820 -v "$HOME/.claude/agent-dashboard:/app/data" agent-dashboard
 ```
 
 ---

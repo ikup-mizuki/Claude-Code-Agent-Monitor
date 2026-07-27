@@ -79,6 +79,7 @@ function createOpenApiSpec() {
     ],
     tags: [
       { name: "Health", description: "Service liveness checks" },
+      { name: "Metrics", description: "Prometheus / OpenMetrics scrape endpoint" },
       { name: "Sessions", description: "Claude Code session lifecycle" },
       { name: "Agents", description: "Main/subagent records and status" },
       { name: "Events", description: "Event stream persistence" },
@@ -101,6 +102,11 @@ function createOpenApiSpec() {
         name: "Webhooks",
         description:
           "Universal webhook delivery for fired alerts: target CRUD (Slack/Discord/Teams/generic), test probe, and delivery log. Secrets are never returned.",
+      },
+      {
+        name: "Remote Sources",
+        description:
+          "Config for remote SSH machines the dashboard pulls Claude Code history from. No secrets are stored — SSH auth defers to the host's SSH stack (agent, ~/.ssh/config, keys).",
       },
       { name: "Documentation", description: "OpenAPI/Swagger endpoints" },
     ],
@@ -177,6 +183,14 @@ function createOpenApiSpec() {
             enum: ["all", "active", "completed", "error", "abandoned"],
           },
           description: "Filter workflow aggregates by session status",
+        },
+        SourcesQuery: {
+          name: "sources",
+          in: "query",
+          required: false,
+          schema: { type: "string" },
+          description:
+            "Comma-separated list of data-source ids to include. The built-in local history is the id `local`; remote SSH machines use their `remote_sources.id`. Omit to include every source. Filters on the `sessions.source` column.",
         },
       },
       schemas: {
@@ -308,9 +322,14 @@ function createOpenApiSpec() {
         },
         HealthResponse: {
           type: "object",
-          required: ["status", "timestamp"],
+          required: ["status", "timestamp", "version"],
           properties: {
             status: { type: "string", enum: ["ok"] },
+            version: {
+              type: "string",
+              description: "Dashboard release version from package.json",
+              example: "1.4.6",
+            },
             timestamp: { type: "string", format: "date-time" },
           },
         },
@@ -1121,8 +1140,12 @@ function createOpenApiSpec() {
             },
             server: {
               type: "object",
-              required: ["uptime", "node_version", "platform", "ws_connections"],
+              required: ["version", "uptime", "node_version", "platform", "ws_connections"],
               properties: {
+                version: {
+                  type: "string",
+                  description: "Dashboard release version from package.json",
+                },
                 uptime: { type: "number" },
                 node_version: { type: "string" },
                 platform: { type: "string" },
@@ -1241,6 +1264,13 @@ function createOpenApiSpec() {
           type: "object",
           required: ["exported_at", "sessions", "agents", "events", "token_usage", "model_pricing"],
           properties: {
+            format: {
+              type: "string",
+              description:
+                'Bundle format marker (always "ccam-export" for exports from this version).',
+              example: "ccam-export",
+            },
+            version: { type: "integer", description: "Bundle schema version.", example: 1 },
             exported_at: { type: "string", format: "date-time" },
             sessions: { type: "array", items: { $ref: "#/components/schemas/Session" } },
             agents: { type: "array", items: { $ref: "#/components/schemas/Agent" } },
@@ -1252,7 +1282,50 @@ function createOpenApiSpec() {
                 additionalProperties: true,
               },
             },
+            workflows: { type: "array", items: { type: "object", additionalProperties: true } },
+            dashboard_runs: {
+              type: "array",
+              items: { type: "object", additionalProperties: true },
+            },
+            alert_rules: { type: "array", items: { type: "object", additionalProperties: true } },
             model_pricing: { type: "array", items: { $ref: "#/components/schemas/PricingRule" } },
+          },
+        },
+        ImportResponse: {
+          type: "object",
+          required: [
+            "ok",
+            "sessions_imported",
+            "sessions_skipped",
+            "agents",
+            "events",
+            "token_usage",
+            "workflows",
+            "dashboard_runs",
+            "alert_rules",
+            "model_pricing",
+            "errors",
+          ],
+          description:
+            "Per-table counts from restoring an export bundle. Session-scoped counts are rows newly inserted; sessions_skipped counts sessions already present (skipped whole to stay idempotent).",
+          properties: {
+            ok: { type: "boolean" },
+            source: { type: "string", description: "Uploaded filename or server-side path read." },
+            format: {
+              type: "string",
+              nullable: true,
+              description: "Bundle format marker, or null for a legacy export.",
+            },
+            sessions_imported: { type: "integer" },
+            sessions_skipped: { type: "integer" },
+            agents: { type: "integer" },
+            events: { type: "integer" },
+            token_usage: { type: "integer" },
+            workflows: { type: "integer" },
+            dashboard_runs: { type: "integer" },
+            alert_rules: { type: "integer" },
+            model_pricing: { type: "integer" },
+            errors: { type: "integer" },
           },
         },
         CleanupRequest: {
@@ -1766,6 +1839,38 @@ function createOpenApiSpec() {
               content: {
                 "application/json": {
                   schema: { $ref: "#/components/schemas/StatsResponse" },
+                },
+              },
+            },
+          },
+        },
+      },
+      "/api/metrics": {
+        get: {
+          tags: ["Metrics"],
+          summary: "Prometheus metrics exposition",
+          operationId: "getMetrics",
+          description:
+            "Exposes the dashboard's live counters (sessions/agents by status, " +
+            "event and token totals, connected realtime clients, configured " +
+            "remote sources, process uptime/memory, build version) in the " +
+            "Prometheus text-exposition format (v0.0.4) for scraping into " +
+            "Prometheus / Grafana. Read-only. Mounted under `/api`, so it honors " +
+            "the optional `DASHBOARD_TOKEN` guard — point the scrape job's bearer " +
+            "token at it when the server is bound to a LAN.",
+          responses: {
+            200: {
+              description: "Prometheus text exposition (v0.0.4).",
+              content: {
+                "text/plain": {
+                  schema: { type: "string" },
+                  example:
+                    "# HELP ccam_up 1 when the dashboard API is serving this scrape.\n" +
+                    "# TYPE ccam_up gauge\n" +
+                    "ccam_up 1\n" +
+                    "# HELP ccam_sessions Number of sessions by lifecycle status.\n" +
+                    "# TYPE ccam_sessions gauge\n" +
+                    'ccam_sessions{status="active"} 3\n',
                 },
               },
             },

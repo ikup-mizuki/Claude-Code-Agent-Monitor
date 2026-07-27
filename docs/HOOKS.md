@@ -23,6 +23,8 @@ Comprehensive guide to integrating with Claude Code's hook system for real-time 
 
 Claude Code provides a hook system that allows external tools to receive real-time events during agent execution. Agent Dashboard uses these hooks to capture session lifecycle, tool executions, and notifications.
 
+> **Cursor (informational):** Live hooks fire from Claude Code. **Cursor** sessions that only exist as JSONL under `~/.claude` (Cursor uses the same paths locally) are still counted — they appear via startup import, continuous project sync, or remote SSH sync, not via hooks.
+
 ```mermaid
 graph TB
     subgraph "Claude Code Process"
@@ -244,7 +246,7 @@ Triggered when a Claude Code session starts. The `source` field distinguishes th
 - Create the session and main-agent records on first contact
 - Stamp `awaiting_input_since` (with `awaiting_reason` = `session_start`) so the dashboard shows the row in **Waiting** from the moment the CLI lands at a prompt — **only for `startup`/`resume`/`clear`**. A `compact`-source SessionStart fires mid-turn while Claude is working, so it leaves the awaiting flag untouched: a genuinely-active session stays **Active** (not flipped to Waiting), and a session that compacted while idle keeps its existing Waiting flag and reason
 - Reactivate completed/abandoned sessions on resume
-- Sweep other active sessions whose last activity is older than `DASHBOARD_STALE_MINUTES` (default 180), marking them `abandoned` with their agents `completed`
+- Sweep other active sessions whose last activity is older than `DASHBOARD_STALE_MINUTES` (default 180), marking them `abandoned` with their agents `completed` (Remote Data Source sessions, `source` ≠ `local`, are exempt — their status comes from the SSH-mirror reconciliation, not local activity)
 
 ---
 
@@ -554,25 +556,24 @@ function sendToServer(hookType, payload) {
 ```
 
 > **Port resolution & fan-out.** The snippet above shows a single fixed `4820`
-> for clarity. The real `scripts/hook-handler.js` resolves **every** live
-> dashboard at runtime via `server/lib/server-info.js`:
+> for clarity. The real `scripts/hook-handler.js` resolves hook targets at
+> runtime via `server/lib/server-info.js`:
 >
 > 1. If `CLAUDE_DASHBOARD_PORT` is set in the environment, the handler treats
 >    it as an explicit operator override and POSTs to that single port —
 >    no discovery, no fan-out (useful for tests and container setups).
 > 2. Otherwise it reads `~/.claude/.agent-dashboard.json`, a JSON document
 >    that lists every dashboard server currently running on the machine.
->    Each server appends its `{port, pid, startedAt}` entry on startup and
->    removes it on a clean shutdown. The handler **prunes any entry whose
->    PID is no longer alive** (so a crashed server self-evicts the next
->    time anyone reads the file) and POSTs the hook payload to every
->    remaining entry **in parallel**.
+>    Each server appends its `{port, pid, startedAt, dataDir}` entry on
+>    startup and removes it on a clean shutdown. The handler **prunes any
+>    entry whose PID is no longer alive** and POSTs the hook payload to one
+>    port per **unique SQLite data directory** (lowest port wins when Docker
+>    and `npm run dev` share `~/.claude/agent-dashboard`).
 > 3. If neither yields a target, the handler falls back to `4820`.
 >
-> This is what lets the macOS desktop app coexist with `npm run dev` (or
-> two `npm start` instances on different ports) without either dashboard
-> losing its real-time stream — both receive the same events and update
-> simultaneously.
+> Dashboards with **different** databases (e.g. the packaged desktop app using
+> its own Application Support data dir alongside `npm run dev`) still each
+> receive hooks. Dashboards sharing one database never double-ingest events.
 
 ---
 
@@ -657,7 +658,7 @@ Both paths land the session in **Waiting** (main agent → `waiting`, `awaiting_
 
 `SessionEnd` is the only signal that a session closed, and hooks are fire-and-forget: if the dashboard was **not running** when the user quit (Ctrl+C, terminal closed), the POST fails silently and the event is lost forever — the session previously sat in **Waiting** until the stale sweep (3 h by default). The same 15 s watchdog closes the gap with a **process-liveness probe** (`server/lib/session-liveness.js`): it enumerates running `claude` CLI processes and their working directories (`ps` + `lsof` on macOS, `/proc/<pid>/cwd` on Linux) and completes any `active` session whose `cwd` has no live claude process — the same terminal state a real `SessionEnd` produces, plus a synthetic `SessionEnd` event (`data.source = "liveness-probe"`) on the timeline.
 
-Fail-safe guards: the probe reports "no answer" (nothing changes) on Windows, inside containers (host processes are invisible), on `ps`/`lsof` failure, or when disabled via `DASHBOARD_LIVENESS_PROBE=0` (the escape hatch for hooks arriving from another machine); the session must have a `cwd`, and that `cwd` must be **POSIX-absolute** — a household-hook-forwarded session reports the origin machine's own path (e.g. a Windows `D:\Git\ai-deck`) that this host's `/proc`/`lsof` scan can never produce, so the reap skips it rather than falsely completing every remote session (this makes a mixed local + forwarded deployment correct without the blanket `DASHBOARD_LIVENESS_PROBE=0`); and — on watchdog ticks only — its transcript must not have been written for at least `DASHBOARD_LIVENESS_IDLE_SECONDS` (default `60`; the last hook write is the fallback clock when no transcript exists on disk) so a mid-turn / just-resumed session never flickers out. The reap runs immediately at startup (rows from a previous run), again ~5 s after startup (rows the startup sync just imported) — both startup passes **skip the idle gate**, so a session quit even seconds before launch clears at once — and on every 15 s watchdog tick (gated) as the safety net. A false completion self-heals — the next hook event reactivates the session.
+Fail-safe guards: the probe reports "no answer" (nothing changes) on Windows, inside containers (host processes are invisible), on `ps`/`lsof` failure, or when disabled via `DASHBOARD_LIVENESS_PROBE=0` (the escape hatch for hooks arriving from another machine); the session must have a `cwd`, and that `cwd` must be **POSIX-absolute** — a household-hook-forwarded session reports the origin machine's own path (e.g. a Windows `D:\Git\ai-deck`) that this host's `/proc`/`lsof` scan can never produce, so the reap skips it rather than falsely completing every remote session (this makes a mixed local + forwarded deployment correct without the blanket `DASHBOARD_LIVENESS_PROBE=0`); **Remote Data Source sessions** (`sessions.source` ≠ `local`) are also skipped outright — their POSIX-absolute `cwd` lives on another machine reached over SSH, so this host's process probe proves nothing about them, and their status is reconciled from the SSH mirror by `remote-sync.js` (the same `source = 'local'` guard also exempts them from the watchdog's error/interrupt scan and both stale sweeps); and — on watchdog ticks only — its transcript must not have been written for at least `DASHBOARD_LIVENESS_IDLE_SECONDS` (default `60`; the last hook write is the fallback clock when no transcript exists on disk) so a mid-turn / just-resumed session never flickers out. The reap runs immediately at startup (rows from a previous run), again ~5 s after startup (rows the startup sync just imported) — both startup passes **skip the idle gate**, so a session quit even seconds before launch clears at once — and on every 15 s watchdog tick (gated) as the safety net. A false completion self-heals — the next hook event reactivates the session.
 
 ---
 

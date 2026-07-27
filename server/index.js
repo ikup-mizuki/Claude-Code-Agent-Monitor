@@ -36,7 +36,8 @@ const swaggerUi = require("swagger-ui-express");
 const { initWebSocket } = require("./websocket");
 const { createOpenApiSpec } = require("./openapi");
 const { redocBundlePath, renderRedocHtml } = require("./lib/redoc");
-const { writeServerInfo, removeServerInfo } = require("./lib/server-info");
+const { writeServerInfo, removeServerInfo, peersSharingDataDir } = require("./lib/server-info");
+const { getDataDir } = require("./lib/claude-home");
 const {
   resolveHost,
   isLoopbackHostname,
@@ -62,6 +63,16 @@ const ccConfigRouter = require("./routes/cc-config");
 const runRouter = require("./routes/run");
 const alertsRouter = require("./routes/alerts");
 const webhooksRouter = require("./routes/webhooks");
+const remoteSourcesRouter = require("./routes/remote-sources");
+const metricsRouter = require("./routes/metrics");
+
+const APP_VERSION = (() => {
+  try {
+    return require("../package.json").version || "0.0.0";
+  } catch {
+    return "0.0.0";
+  }
+})();
 
 function createApp() {
   const app = express();
@@ -90,6 +101,8 @@ function createApp() {
   app.use("/api/run", runRouter);
   app.use("/api/alerts", alertsRouter);
   app.use("/api/webhooks", webhooksRouter);
+  app.use("/api/remote-sources", remoteSourcesRouter);
+  app.use("/api/metrics", metricsRouter);
   app.get("/api/openapi.json", (_req, res) => {
     res.json(openApiSpec);
   });
@@ -122,7 +135,7 @@ function createApp() {
   });
 
   app.get("/api/health", (_req, res) => {
-    res.json({ status: "ok", timestamp: new Date().toISOString() });
+    res.json({ status: "ok", version: APP_VERSION, timestamp: new Date().toISOString() });
   });
 
   return app;
@@ -182,6 +195,16 @@ function startServer(app, port) {
       // server even when it bound a non-default port (the desktop app falls
       // back off 4820 when that port is already taken).
       writeServerInfo(port);
+      const sharedDbPeers = peersSharingDataDir();
+      if (sharedDbPeers.length > 0) {
+        const peerPorts = sharedDbPeers.map((p) => p.port).join(", ");
+        const ingestPort = Math.min(port, ...sharedDbPeers.map((p) => p.port));
+        console.warn(
+          `⚠️  Another dashboard is running on port(s) ${peerPorts} using the same database ` +
+            `(${getDataDir()}). Hooks ingest through port ${ingestPort} only to avoid duplicate events. ` +
+            `Stop extra instances if you do not need them.`
+        );
+      }
       const mode = isProduction ? "production" : "development";
       const shown = boundLoopback ? "localhost" : host;
       console.log(`Agent Dashboard server running on http://${shown}:${port} (${mode})`);
@@ -354,6 +377,15 @@ function startBackgroundServices() {
   } catch (err) {
     console.warn("session sync failed to start:", err.message);
   }
+  // Pull Claude Code history from enabled remote (SSH) sources on an interval so
+  // usage collected on other machines shows up here in near real time. Off by
+  // default cost-wise: the loop only does work when the user has configured at
+  // least one enabled source. Disable entirely with DASHBOARD_REMOTE_SYNC_MS=0.
+  try {
+    startRemoteSourceSync(broadcast);
+  } catch (err) {
+    console.warn("remote source sync failed to start:", err.message);
+  }
   // Flip any dashboard_runs rows the previous process left flagged
   // running/spawning — those handles died with the previous server, so
   // there's no way to attach to them anymore. Marking them abandoned
@@ -367,6 +399,59 @@ function startBackgroundServices() {
   } catch (err) {
     console.warn("dashboard-runs reconciliation failed:", err.message);
   }
+}
+
+/**
+ * Periodic pull of Claude Code history from enabled remote (SSH) sources. Each
+ * tick rsyncs every enabled source's `~/.claude/projects` into a sandboxed
+ * staging dir and feeds it through the shared importer (see
+ * server/lib/remote-sync.js), so remote usage appears here in near real time.
+ * A first pass runs shortly after boot; thereafter every DASHBOARD_REMOTE_SYNC_MS
+ * (default 15s). Set the interval to 0 to disable. Unref'd so it never blocks
+ * shutdown; overlapping ticks queue one follow-up sweep (same as local sync).
+ */
+function startRemoteSourceSync(broadcast) {
+  const POLL_MS = process.env.DASHBOARD_REMOTE_SYNC_MS
+    ? Number(process.env.DASHBOARD_REMOTE_SYNC_MS)
+    : 15_000;
+  if (!Number.isFinite(POLL_MS) || POLL_MS <= 0) return;
+
+  const dbModule = require("./db");
+  const { syncAllEnabled } = require("./lib/remote-sync");
+  let running = false;
+  let queued = false;
+
+  const tick = () => {
+    if (running) {
+      queued = true;
+      return;
+    }
+    // Cheap gate: skip all SSH work unless the user has an enabled source.
+    let count = 0;
+    try {
+      count = dbModule.stmts.listEnabledRemoteSources.all().length;
+    } catch {
+      return;
+    }
+    if (count === 0) return;
+    running = true;
+    Promise.resolve()
+      .then(() => syncAllEnabled(dbModule, { broadcast }))
+      .catch((err) => console.warn("remote source sync tick failed:", err?.message || err))
+      .finally(() => {
+        running = false;
+        if (queued) {
+          queued = false;
+          tick();
+        }
+      });
+  };
+
+  // First pass 2s after boot (let local import settle), then interval.
+  const boot = setTimeout(tick, 2_000);
+  if (boot.unref) boot.unref();
+  const timer = setInterval(tick, POLL_MS);
+  if (timer.unref) timer.unref();
 }
 
 /**

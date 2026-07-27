@@ -16,7 +16,7 @@
  * Alerting              alerts · alerts ack <id> · alerts ack-all · rules
  * Webhooks              webhooks · webhooks test <id>
  * Pricing               pricing · pricing set/delete/reset
- * Import                import rescan · import path <dir>
+ * Import                import rescan · import path <dir> · import-data <file>
  * Administration        doctor · info · export · cleanup · reinstall-hooks ·
  *                       update-check · clear-data --yes · open · version
  *
@@ -551,7 +551,8 @@ const offlineData = {
 
 async function cmdHealth() {
   const h = await get("/api/health");
-  console.log(`${c.green("●")} Dashboard ${c.bold("up")} at ${baseUrl()} (${h.timestamp})`);
+  const ver = h.version ? ` v${h.version}` : "";
+  console.log(`${c.green("●")} Dashboard ${c.bold("up")}${ver} at ${baseUrl()} (${h.timestamp})`);
 }
 
 function renderStats(s, source) {
@@ -1006,6 +1007,102 @@ async function cmdWebhooks(flags, positional) {
   table(["ID", "Enabled", "Provider", "Name", "URL"], rows);
 }
 
+// ── Remote data sources ─────────────────────────────────────────────────────
+
+/**
+ * `ccam remote-sources [list|add|test|sync|rm]` — manage the SSH machines this
+ * dashboard pulls Claude Code history from (server/routes/remote-sources.js).
+ * No secrets are handled here; auth defers to the host's SSH stack.
+ */
+async function cmdRemoteSources(flags, positional) {
+  const sub = positional[0] || "list";
+
+  if (sub === "add") {
+    if (!flags.label || !flags.host) {
+      console.error(c.red("✖ add requires --label and --host"));
+      console.error(
+        c.dim(
+          "  e.g. ccam remote-sources add --label 'Dev box' --host son@dev --port 22 --identity ~/.ssh/id_ed25519"
+        )
+      );
+      process.exit(1);
+    }
+    const body = {
+      label: String(flags.label),
+      host: String(flags.host),
+      ssh_port: flags.port != null ? Number(flags.port) : null,
+      identity_file: flags.identity != null ? String(flags.identity) : null,
+      remote_home: flags["remote-home"] != null ? String(flags["remote-home"]) : null,
+      enabled: flags.disabled ? false : true,
+    };
+    const r = await post("/api/remote-sources", body);
+    console.log(`${c.green("✔")} Added remote source ${c.bold(r.source.label)} (${r.source.id})`);
+    return;
+  }
+
+  if (sub === "test" && positional[1]) {
+    const r = await post(`/api/remote-sources/${positional[1]}/test`);
+    console.log(r.ok ? `${c.green("✔")} ${r.message}` : `${c.red("✖")} ${r.message}`);
+    process.exit(r.ok ? 0 : 1);
+  }
+
+  if (sub === "sync") {
+    if (positional[1]) {
+      const r = await post(`/api/remote-sources/${positional[1]}/sync`);
+      console.log(
+        `${c.green("✔")} Synced ${positional[1]}: ${r.imported ?? 0} imported, ${r.sessions_tagged ?? 0} tagged`
+      );
+    } else {
+      // No id → sync every source sequentially.
+      const { sources = [] } = await get("/api/remote-sources");
+      for (const s of sources) {
+        const r = await post(`/api/remote-sources/${s.id}/sync`);
+        console.log(
+          `  ${c.bold(s.label)}: ${r.imported ?? 0} imported, ${r.sessions_tagged ?? 0} tagged`
+        );
+      }
+      console.log(`${c.green("✔")} Synced ${sources.length} source(s)`);
+    }
+    return;
+  }
+
+  if (sub === "rm" && positional[1]) {
+    const purge = !!flags.purge;
+    const r = await api(
+      "DELETE",
+      `/api/remote-sources/${positional[1]}${purge ? "?purge=true" : ""}`
+    );
+    console.log(
+      `${c.green("✔")} Removed ${positional[1]}${purge ? ` (purged ${r.purged} session(s))` : " (data kept)"}`
+    );
+    return;
+  }
+
+  // Default: list.
+  const { sources = [] } = await get("/api/remote-sources");
+  const rows = sources.map((s) => [
+    s.id,
+    s.enabled ? c.green("on") : c.dim("off"),
+    s.status,
+    (s.label || "").slice(0, 24),
+    `${s.host}${s.ssh_port ? `:${s.ssh_port}` : ""}`,
+    String(s.session_count ?? 0),
+    s.last_sync_at ? new Date(s.last_sync_at).toLocaleString() : "-",
+  ]);
+  table(["ID", "Auto", "Status", "Label", "Host", "Sessions", "Last sync"], rows);
+  if (sources.length > 0) {
+    const totalSessions = sources.reduce((n, s) => n + (s.session_count || 0), 0);
+    const enabled = sources.filter((s) => s.enabled).length;
+    console.log(
+      c.dim(
+        `  ${sources.length} source(s), ${enabled} auto-syncing, ${totalSessions} session(s) collected`
+      )
+    );
+  } else {
+    console.log(c.dim("  No remote sources configured. Add one: ccam remote-sources add --help"));
+  }
+}
+
 // ── Pricing ─────────────────────────────────────────────────────────────────
 
 /** Render pricing rules — shared by the online list and the offline fallback
@@ -1141,18 +1238,20 @@ async function cmdImport(flags, positional) {
 // ── Administration ──────────────────────────────────────────────────────────
 
 async function cmdDoctor() {
+  let failed = false;
   await get("/api/health");
   heading("ccam doctor", baseUrl());
   console.log(`${c.green("✔")}  API reachable  ${baseUrl()}`);
   const info = await get("/api/settings/info");
   const hooks = info.hooks || {};
-  console.log(
-    `${hooks.installed ? c.green("✔") : c.red("✖")}  Claude Code hooks  ${
-      hooks.installed
-        ? `installed (${hooks.path || "~/.claude/settings.json"})`
-        : "NOT installed — run: npm run install-hooks"
-    }`
-  );
+  if (hooks.installed) {
+    console.log(
+      `${c.green("✔")}  Claude Code hooks  installed (${hooks.path || "~/.claude/settings.json"})`
+    );
+  } else {
+    failed = true;
+    console.log(`${c.red("✖")}  Claude Code hooks  NOT installed — run: npm run install-hooks`);
+  }
   const db = info.db || {};
   console.log(
     `${c.green("✔")}  Database  ${db.path || "?"} (${((db.size || 0) / 1048576).toFixed(1)} MB)`
@@ -1165,6 +1264,34 @@ async function cmdDoctor() {
     `${c.green("✔")}  Server uptime  ${Math.floor((srv.uptime || 0) / 60)} min (node ${srv.node_version || "?"})`
   );
   console.log(`${c.green("✔")}  WS connections  ${srv.ws_connections ?? 0}`);
+
+  try {
+    const { sources = [] } = await get("/api/remote-sources");
+    if (sources.length === 0) {
+      console.log(`${c.green("✔")}  Remote sources  none configured`);
+    } else {
+      const errored = sources.filter((s) => s.status === "error");
+      console.log(
+        `${errored.length ? c.yellow("!") : c.green("✔")}  Remote sources  ${sources.length} configured` +
+          (errored.length ? ` (${errored.length} in error)` : "")
+      );
+      for (const s of sources) {
+        const mark =
+          s.status === "error" ? c.red("✖") : s.status === "ok" ? c.green("·") : c.dim("·");
+        console.log(
+          `${mark}    ${s.label || s.id}  ${s.status}` +
+            (s.last_sync_at ? `  last sync ${s.last_sync_at}` : "") +
+            (s.last_error ? `  ${c.red(s.last_error)}` : "")
+        );
+      }
+      if (errored.length) failed = true;
+    }
+  } catch (err) {
+    failed = true;
+    console.log(`${c.red("✖")}  Remote sources  ${err.message || err}`);
+  }
+
+  if (failed) process.exit(1);
 }
 
 async function cmdInfo() {
@@ -1178,6 +1305,29 @@ async function cmdExport(positional) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2));
   console.log(
     `${c.green("✔")} Exported to ${c.bold(file)} (${(fs.statSync(file).size / 1048576).toFixed(1)} MB)`
+  );
+}
+
+// Restore a bundle produced by `ccam export` (or the dashboard's Export data).
+// The local server reads the file from disk, so we pass an absolute path rather
+// than uploading — idempotent and non-destructive (existing sessions skipped).
+async function cmdImportData(positional) {
+  const target = positional[0];
+  if (!target) {
+    console.error(c.red("✖ Usage: ccam import-data <export.json>"));
+    process.exit(1);
+  }
+  const abs = path.resolve(process.cwd(), target);
+  if (!fs.existsSync(abs)) {
+    console.error(c.red(`✖ File not found: ${abs}`));
+    process.exit(1);
+  }
+  const r = await post("/api/settings/import", { path: abs });
+  console.log(
+    `${c.green("✔")} Restored: ${r.sessions_imported ?? 0} sessions added, ` +
+      `${r.sessions_skipped ?? 0} already present, ${r.events ?? 0} events, ` +
+      `${r.model_pricing ?? 0} pricing rules ` +
+      `(${r.agents ?? 0} agents · ${r.workflows ?? 0} workflows · ${r.dashboard_runs ?? 0} runs · ${r.alert_rules ?? 0} rules)`
   );
 }
 
@@ -1380,12 +1530,27 @@ const COMMAND_GROUPS = [
     [
       ["import rescan", "", "Re-scan ~/.claude/projects"],
       ["import path <dir>", "", "Import every .jsonl under a directory"],
+      ["import-data <file>", "", "Restore a dashboard export (.json) — merge machines"],
+    ],
+  ],
+  [
+    "Remote sources",
+    [
+      ["remote-sources", "", "List remote (SSH) data sources + status"],
+      [
+        "remote-sources add",
+        "",
+        "--label X --host user@host [--port N --identity path --remote-home path]",
+      ],
+      ["remote-sources test <id>", "", "Probe SSH connectivity to a source"],
+      ["remote-sources sync [id]", "", "Pull history now (all sources if id omitted)"],
+      ["remote-sources rm <id>", "[--purge]", "Remove a source (--purge also deletes its data)"],
     ],
   ],
   [
     "Administration",
     [
-      ["doctor", "", "Connectivity, hooks, and database diagnosis"],
+      ["doctor", "", "Connectivity, hooks, database, and remote sources diagnosis"],
       ["info", "", "Raw system info JSON"],
       ["export", "[file.json]", "Export all data as JSON"],
       ["cleanup", "--hours N --days M", "Abandon stale / purge old sessions"],
@@ -1594,8 +1759,12 @@ const OFFLINE_HANDLERS = {
   },
   async doctor() {
     heading("ccam doctor", "offline");
+    let failed = true; // offline is always a failure for live monitoring
     console.log(
       `${c.red("○")}  Dashboard server  NOT running ${c.dim(`(tried ${baseUrl()})`)} — start with: ${c.bold("ccam start")}`
+    );
+    console.log(
+      `${c.dim("·")}  Remote sources  require a live server (ccam remote-sources / Settings)`
     );
     const file = dbPath();
     if (fs.existsSync(file)) {
@@ -1613,6 +1782,7 @@ const OFFLINE_HANDLERS = {
         }
       }
     } else {
+      failed = true;
       console.log(`${c.red("✖")}  Database  not found at ${file}`);
     }
     try {
@@ -1623,12 +1793,16 @@ const OFFLINE_HANDLERS = {
       const installed =
         fs.existsSync(settingsPath) &&
         fs.readFileSync(settingsPath, "utf8").includes("hook-handler.js");
-      console.log(
-        `${installed ? c.green("✔") : c.red("✖")}  Claude Code hooks  ${installed ? `installed (${settingsPath})` : "NOT installed — run: npm run install-hooks"}`
-      );
+      if (installed) {
+        console.log(`${c.green("✔")}  Claude Code hooks  installed (${settingsPath})`);
+      } else {
+        failed = true;
+        console.log(`${c.red("✖")}  Claude Code hooks  NOT installed — run: npm run install-hooks`);
+      }
     } catch {
       console.log(`${c.dim("·")}  Claude Code hooks  could not be checked`);
     }
+    if (failed) process.exit(1);
   },
 };
 
@@ -1641,6 +1815,7 @@ const SERVER_ONLY_REASONS = {
   cost: "cost math (pricing rules, compaction baselines) runs server-side",
   webhooks: "webhook configuration and test deliveries are server-side",
   import: "imports must go through the server's ingestion pipeline",
+  "import-data": "restoring an export writes to the database through the server",
   cleanup: "cleanup is a server-side mutation",
   "clear-data": "data wipes must go through the server",
   "reinstall-hooks": "hook installation is performed by the server",
@@ -2128,6 +2303,9 @@ async function runCommand(argv) {
       return cmdRules();
     case "webhooks":
       return cmdWebhooks(flags, positional);
+    case "remote-sources":
+    case "remotes":
+      return cmdRemoteSources(flags, positional);
     case "pricing":
       return cmdPricing(flags, positional);
     case "import":
@@ -2138,6 +2316,8 @@ async function runCommand(argv) {
       return cmdInfo();
     case "export":
       return cmdExport(positional);
+    case "import-data":
+      return cmdImportData(positional);
     case "cleanup":
       return cmdCleanup(flags);
     case "clear-data":

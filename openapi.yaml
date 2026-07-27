@@ -3,7 +3,7 @@
 openapi: 3.0.3
 info:
   title: Agent Dashboard for Claude Code API
-  version: 1.3.0
+  version: 1.4.6
   description: HTTP API for real-time Claude Code session monitoring, agent lifecycle tracking, analytics, pricing, hooks ingestion, and workflow intelligence.
   contact:
     name: Son Nguyen
@@ -23,6 +23,8 @@ servers:
 tags:
   - name: Health
     description: Service liveness checks
+  - name: Metrics
+    description: Prometheus / OpenMetrics scrape endpoint
   - name: Sessions
     description: Claude Code session lifecycle
   - name: Agents
@@ -47,6 +49,8 @@ tags:
     description: 'Rules-based alerting: rule CRUD, fired-alert feed, acknowledgement'
   - name: Webhooks
     description: 'Universal webhook delivery for fired alerts: target CRUD (Slack/Discord/Teams/generic), test probe, and delivery log. Secrets are never returned.'
+  - name: Remote Sources
+    description: Config for remote SSH machines the dashboard pulls Claude Code history from. No secrets are stored — SSH auth defers to the host's SSH stack (agent, ~/.ssh/config, keys).
   - name: Documentation
     description: OpenAPI/Swagger endpoints
   - name: CcConfig
@@ -138,6 +142,13 @@ components:
           - error
           - abandoned
       description: Filter workflow aggregates by session status
+    SourcesQuery:
+      name: sources
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Comma-separated list of data-source ids to include. The built-in local history is the id `local`; remote SSH machines use their `remote_sources.id`. Omit to include every source. Filters on the `sessions.source` column.
   schemas:
     ErrorObject:
       type: object
@@ -342,11 +353,16 @@ components:
       required:
         - status
         - timestamp
+        - version
       properties:
         status:
           type: string
           enum:
             - ok
+        version:
+          type: string
+          description: Dashboard release version from package.json
+          example: 1.4.6
         timestamp:
           type: string
           format: date-time
@@ -1446,11 +1462,15 @@ components:
         server:
           type: object
           required:
+            - version
             - uptime
             - node_version
             - platform
             - ws_connections
           properties:
+            version:
+              type: string
+              description: Dashboard release version from package.json
             uptime:
               type: number
             node_version:
@@ -1633,6 +1653,14 @@ components:
         - token_usage
         - model_pricing
       properties:
+        format:
+          type: string
+          description: Bundle format marker (always "ccam-export" for exports from this version).
+          example: ccam-export
+        version:
+          type: integer
+          description: Bundle schema version.
+          example: 1
         exported_at:
           type: string
           format: date-time
@@ -1653,10 +1681,70 @@ components:
           items:
             type: object
             additionalProperties: true
+        workflows:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        dashboard_runs:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        alert_rules:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
         model_pricing:
           type: array
           items:
             $ref: '#/components/schemas/PricingRule'
+    ImportResponse:
+      type: object
+      required:
+        - ok
+        - sessions_imported
+        - sessions_skipped
+        - agents
+        - events
+        - token_usage
+        - workflows
+        - dashboard_runs
+        - alert_rules
+        - model_pricing
+        - errors
+      description: Per-table counts from restoring an export bundle. Session-scoped counts are rows newly inserted; sessions_skipped counts sessions already present (skipped whole to stay idempotent).
+      properties:
+        ok:
+          type: boolean
+        source:
+          type: string
+          description: Uploaded filename or server-side path read.
+        format:
+          type: string
+          nullable: true
+          description: Bundle format marker, or null for a legacy export.
+        sessions_imported:
+          type: integer
+        sessions_skipped:
+          type: integer
+        agents:
+          type: integer
+        events:
+          type: integer
+        token_usage:
+          type: integer
+        workflows:
+          type: integer
+        dashboard_runs:
+          type: integer
+        alert_rules:
+          type: integer
+        model_pricing:
+          type: integer
+        errors:
+          type: integer
     CleanupRequest:
       type: object
       properties:
@@ -3425,9 +3513,10 @@ components:
           example: 1
     SessionsFacetsResponse:
       type: object
-      description: Facet values for the Sessions page filter UI. Currently exposes the distinct working directories (cwd) seen across all sessions.
+      description: 'Facet values for the Sessions page filter UI: the distinct working directories (cwd) and the distinct data-source ids seen across all sessions.'
       required:
         - cwds
+        - sources
       properties:
         cwds:
           type: array
@@ -3437,6 +3526,233 @@ components:
           example:
             - /Users/son/WebstormProjects/Claude-Code-Agent-Monitor
             - /Users/son/code/another-project
+        sources:
+          type: array
+          description: Distinct data-source ids seen across all sessions (the `sessions.source` column). Always includes the built-in `local` history; each configured remote SSH machine contributes its `remote_sources.id`. Powers the source filter dropdown and the `sources` query param on the list/analytics endpoints.
+          items:
+            type: string
+          example:
+            - local
+            - 4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11
+    RemoteSource:
+      type: object
+      description: A configured remote SSH machine the dashboard pulls Claude Code history from. NO secrets are stored on this record — SSH authentication defers entirely to the host's SSH stack (ssh-agent, `~/.ssh/config`, and key files). `host` is an SSH destination (`user@host`) or a `~/.ssh/config` alias.
+      required:
+        - id
+        - label
+        - host
+        - ssh_port
+        - identity_file
+        - remote_home
+        - enabled
+        - status
+        - last_error
+        - last_sync_at
+        - last_sync_counts
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          description: Primary key — the remote-source id (also used as `sessions.source`).
+          example: 4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11
+        label:
+          type: string
+          description: Human-readable name shown in the UI.
+          example: Work laptop
+        host:
+          type: string
+          description: SSH destination (`user@host`) or a `~/.ssh/config` alias resolved by the host SSH stack.
+          example: son@studio.local
+        ssh_port:
+          type: integer
+          nullable: true
+          description: Optional SSH port; null defers to the SSH default / `~/.ssh/config`.
+          example: 22
+        identity_file:
+          type: string
+          nullable: true
+          description: Optional path to a private-key file passed to ssh (`-i`); null to omit.
+          example: ~/.ssh/id_ed25519
+        remote_home:
+          type: string
+          nullable: true
+          description: Optional remote Claude home to read transcripts from; null defaults to the remote `~/.claude`.
+          example: ~/.claude
+        enabled:
+          type: boolean
+          description: Whether this source is eligible for scheduled/manual syncs.
+          example: true
+        status:
+          type: string
+          enum:
+            - idle
+            - syncing
+            - ok
+            - error
+          description: Last known sync status of the source.
+          example: ok
+        last_error:
+          type: string
+          nullable: true
+          description: Error message from the last failed sync/test, or null.
+          example: null
+        last_sync_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: ISO-8601 timestamp of the last successful sync, or null.
+          example: '2026-07-22T18:41:55.117Z'
+        last_sync_counts:
+          type: object
+          nullable: true
+          additionalProperties: true
+          description: Counters from the last sync (imported / skipped / backfilled / errors / sessions_seen / sessions_tagged), or null if never synced.
+          example:
+            imported: 9
+            skipped: 41
+            backfilled: 0
+            errors: 0
+            sessions_seen: 50
+            sessions_tagged: 50
+        created_at:
+          type: string
+          format: date-time
+          description: ISO-8601 creation timestamp.
+          example: '2026-07-20T09:15:00.000Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: ISO-8601 timestamp of the last edit.
+          example: '2026-07-22T18:41:55.117Z'
+    RemoteSourceCreateRequest:
+      type: object
+      description: Request body to register a remote SSH source. `label` and `host` are required; the rest are optional. No credentials are ever accepted or stored — auth defers to the host SSH stack.
+      required:
+        - label
+        - host
+      properties:
+        label:
+          type: string
+          description: Human-readable name.
+          example: Work laptop
+        host:
+          type: string
+          description: SSH destination (`user@host`) or a `~/.ssh/config` alias.
+          example: son@studio.local
+        ssh_port:
+          type: integer
+          description: Optional SSH port.
+          example: 22
+        identity_file:
+          type: string
+          description: Optional private-key path passed to ssh (`-i`).
+          example: ~/.ssh/id_ed25519
+        remote_home:
+          type: string
+          description: Optional remote Claude home; defaults to the remote `~/.claude`.
+          example: ~/.claude
+        enabled:
+          type: boolean
+          description: Whether the source is enabled for syncing (default true).
+          example: true
+    RemoteSourceUpdateRequest:
+      type: object
+      description: Partial update for a remote source. Only the keys present in the body are changed; omitted keys are left as-is. Same field set as create; both `label` and `host` are optional here.
+      properties:
+        label:
+          type: string
+          example: Studio Mac
+        host:
+          type: string
+          example: son@studio.local
+        ssh_port:
+          type: integer
+          nullable: true
+          example: 2222
+        identity_file:
+          type: string
+          nullable: true
+          example: ~/.ssh/id_ed25519
+        remote_home:
+          type: string
+          nullable: true
+          example: ~/.claude
+        enabled:
+          type: boolean
+          example: false
+    RemoteSourceResponse:
+      type: object
+      required:
+        - source
+      properties:
+        source:
+          $ref: '#/components/schemas/RemoteSource'
+    RemoteSourceListResponse:
+      type: object
+      required:
+        - sources
+      properties:
+        sources:
+          type: array
+          items:
+            $ref: '#/components/schemas/RemoteSource'
+    RemoteSourceTestResponse:
+      type: object
+      description: Result of an SSH connectivity probe.
+      required:
+        - ok
+        - message
+      properties:
+        ok:
+          type: boolean
+          example: true
+        message:
+          type: string
+          description: Human-readable probe result.
+          example: Connected; found 24 project directories under ~/.claude/projects.
+        remoteProjects:
+          type: array
+          description: Optional list of remote project directories discovered during the probe (present on success).
+          items:
+            type: string
+          example:
+            - '-Users-son-code-foo'
+            - '-Users-son-code-bar'
+    RemoteSourceSyncResponse:
+      type: object
+      description: Counters from a pull-now sync against the remote source.
+      required:
+        - ok
+        - imported
+        - skipped
+        - backfilled
+        - errors
+        - sessions_seen
+        - sessions_tagged
+      properties:
+        ok:
+          type: boolean
+          example: true
+        imported:
+          type: integer
+          example: 9
+        skipped:
+          type: integer
+          example: 41
+        backfilled:
+          type: integer
+          example: 0
+        errors:
+          type: integer
+          example: 0
+        sessions_seen:
+          type: integer
+          example: 50
+        sessions_tagged:
+          type: integer
+          description: Number of imported sessions stamped with this source's id.
+          example: 50
     SettingsClaudeHomeResponse:
       type: object
       description: The Claude Code home directory the dashboard reads transcripts and settings from. Defaults to `~/.claude` unless overridden via the CLAUDE_HOME environment variable.
@@ -3679,6 +3995,8 @@ paths:
             type: string
           description: Case-insensitive search across `id` / `name` / `cwd`. Composes with the status filter when both are present.
           example: pricing
+        - $ref: '#/components/parameters/SourcesQuery'
+          example: local,4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11
         - $ref: '#/components/parameters/LimitQuery'
           example: 50
         - $ref: '#/components/parameters/OffsetQuery'
@@ -4163,6 +4481,8 @@ paths:
           example: working
         - $ref: '#/components/parameters/SessionFilterQuery'
           example: b7f3a2c1-4e5d-4a8b-9c2f-1d6e8a0b3c4d
+        - $ref: '#/components/parameters/SourcesQuery'
+          example: local,4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11
         - $ref: '#/components/parameters/LimitQuery'
           example: 50
         - $ref: '#/components/parameters/OffsetQuery'
@@ -4446,6 +4766,8 @@ paths:
             type: string
             format: date-time
           example: '2026-06-26T00:00:00.000Z'
+        - $ref: '#/components/parameters/SourcesQuery'
+          example: local,4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11
         - in: query
           name: limit
           description: Max rows to return; clamped to 1–500 (default 50).
@@ -4534,6 +4856,8 @@ paths:
           schema:
             type: integer
           example: 420
+        - $ref: '#/components/parameters/SourcesQuery'
+          example: local,4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11
       responses:
         '200':
           description: Statistics overview
@@ -4558,6 +4882,27 @@ paths:
                   active: 3
                   completed: 175
                   error: 6
+  /api/metrics:
+    get:
+      tags:
+        - Metrics
+      summary: Prometheus metrics exposition
+      operationId: getMetrics
+      description: Exposes the dashboard's live counters (sessions/agents by status, event and token totals, connected realtime clients, configured remote sources, process uptime/memory, build version) in the Prometheus text-exposition format (v0.0.4) for scraping into Prometheus / Grafana. Read-only. Mounted under `/api`, so it honors the optional `DASHBOARD_TOKEN` guard — point the scrape job's bearer token at it when the server is bound to a LAN.
+      responses:
+        '200':
+          description: Prometheus text exposition (v0.0.4).
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: |
+                # HELP ccam_up 1 when the dashboard API is serving this scrape.
+                # TYPE ccam_up gauge
+                ccam_up 1
+                # HELP ccam_sessions Number of sessions by lifecycle status.
+                # TYPE ccam_sessions gauge
+                ccam_sessions{status="active"} 3
   /api/analytics:
     get:
       tags:
@@ -4577,6 +4922,8 @@ paths:
           schema:
             type: integer
           example: 420
+        - $ref: '#/components/parameters/SourcesQuery'
+          example: local,4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11
       responses:
         '200':
           description: Analytics response
@@ -4831,7 +5178,7 @@ paths:
         - Pricing
       summary: Get total token cost across all sessions
       operationId: getTotalCost
-      description: Computes the aggregate token cost across EVERY session by matching each (model, speed, inference_geo, service_tier) usage bucket against the most specific pricing rule. Returns `total_cost`, a per-bucket `breakdown`, `feature_costs` (web-search surcharge, code-execution container time with the org free-hours allowance applied), `unpriced_models` (usage with no matching rule, contributing $0 so the total stays honest), and `daily_costs` bucketed by local calendar day. Pass `tz_offset` (minutes; the JS `Date.getTimezoneOffset()` value, e.g. 300 for US Eastern, -120 for CEST) so day boundaries align with the viewer's timezone; omitted/invalid offsets fall back to UTC.
+      description: Computes the aggregate token cost across EVERY session by matching each (model, speed, inference_geo, service_tier) usage bucket against the most specific pricing rule. Returns `total_cost`, a per-bucket `breakdown`, `feature_costs` (web-search surcharge, code-execution container time with the org free-hours allowance applied), `unpriced_models` (usage with no matching rule, contributing $0 so the total stays honest), and `daily_costs` bucketed by local calendar day. Pass `tz_offset` (minutes; the JS `Date.getTimezoneOffset()` value, e.g. 300 for US Eastern, -120 for CEST) so day boundaries align with the viewer's timezone; omitted/invalid offsets fall back to UTC. Honors the `sources` data-scope filter, like the sessions / stats / analytics endpoints, so the reported cost matches the active scope.
       parameters:
         - name: tz_offset
           in: query
@@ -4840,6 +5187,13 @@ paths:
             type: integer
           description: Viewer timezone offset in minutes, as returned by `Date.getTimezoneOffset()` (positive for zones behind UTC, e.g. 300 = US Eastern, -120 = CEST). Shifts the `daily_costs` day boundaries; invalid or omitted values default to UTC.
           example: 300
+        - name: sources
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Comma-separated data-source ids to include (local history is `local`; remote SSH machines use their `remote_sources.id`). Omit for all sources. Narrows the aggregate cost to the given origins.
+          example: local
       responses:
         '200':
           description: Cost result
@@ -5422,7 +5776,7 @@ paths:
       tags:
         - Settings
       summary: Export all dashboard data as JSON
-      description: 'Exports the entire dataset as a single JSON document — all sessions, agents, events, token_usage rows, and model_pricing — stamped with `exported_at`. Served with a `Content-Disposition: attachment` header (filename `agent-monitor-export-YYYY-MM-DD.json`) so browsers download it. Use this to back up before a destructive operation (clear-data / cleanup with purge_days) or to migrate data to another machine. Read-only; nothing is modified.'
+      description: 'Exports the entire dataset as a single versioned JSON document — all sessions, agents, events, token_usage rows, workflows, dashboard_runs, alert_rules, and model_pricing — stamped with `format: "ccam-export"`, `version`, and `exported_at`. Served with a `Content-Disposition: attachment` header (filename `agent-monitor-export-YYYY-MM-DD.json`) so browsers download it. Use it to back up before a destructive operation (clear-data / cleanup with purge_days) or to migrate/consolidate data across machines — the bundle is re-importable via POST /api/settings/import. Read-only; nothing is modified.'
       operationId: exportData
       responses:
         '200':
@@ -5432,6 +5786,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ExportResponse'
               example:
+                format: ccam-export
+                version: 1
                 exported_at: '2026-06-26T01:12:44.913Z'
                 sessions:
                   - id: 5f3c0e2a-1b9d-4c77-8a21-9e0f7b6d4c11
@@ -7270,6 +7626,90 @@ paths:
                     bindings:
                       - key: ctrl+s
                         action: submit
+    put:
+      tags:
+        - CcConfig
+      summary: Overwrite keybindings
+      description: 'Mutating. Overwrites ~/.claude/keybindings.json from a structured list of context groups (`{ context, bindings: [{ key, action }] }`); on disk the bindings become an object keyed by `key`. The existing file is backed up first (under cc-config-backups/keybindings/) and any top-level metadata (`$schema`, `$docs`, unknown keys) is preserved — only the `bindings` array is replaced. Rejects duplicate contexts and duplicate keys within a context. Writes are atomic. Unlike settings.json, keybindings.json is not rewritten mid-session by the live CLI, so this edit is safe. Emits a `cc_config_changed` websocket event on success.'
+      operationId: ccConfigPutKeybindings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - groups
+              properties:
+                groups:
+                  type: array
+                  description: Full set of context-scoped keybinding groups to persist.
+                  items:
+                    type: object
+                    required:
+                      - context
+                      - bindings
+                    properties:
+                      context:
+                        type: string
+                        example: Global
+                      bindings:
+                        type: array
+                        items:
+                          type: object
+                          required:
+                            - key
+                            - action
+                          properties:
+                            key:
+                              type: string
+                              example: ctrl+t
+                            action:
+                              type: string
+                              example: toggleTodos
+            example:
+              groups:
+                - context: Global
+                  bindings:
+                    - key: ctrl+t
+                      action: toggleTodos
+                - context: Chat
+                  bindings:
+                    - key: escape
+                      action: cancel
+      responses:
+        '200':
+          description: keybindings.json written (backup taken when it already existed).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CcConfigFileWriteResponse'
+              example:
+                ok: true
+                file: /Users/son/.claude/keybindings.json
+                target: /Users/son/.claude/keybindings.json
+                backupPath: /Users/son/.claude/cc-config-backups/keybindings/keybindings.json.2026-06-25T12-00-00.000Z.bak
+                created: false
+        '400':
+          description: Bad request. `EBADREQ` — `groups` is missing or not an array. `EBADCONTENT` — a group/binding is malformed, a context is empty, or there is a duplicate context or duplicate key within a context.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: EBADCONTENT
+                  message: duplicate key "ctrl+t" in context Global
+        '413':
+          description: '`ETOOLARGE` — the serialized keybindings exceed the 256 KiB limit.'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: ETOOLARGE
+                  message: content exceeds 262144 bytes
   /api/cc-config/statusline:
     get:
       tags:
@@ -8257,11 +8697,11 @@ paths:
       tags:
         - Sessions
       summary: List session facet values
-      description: Returns the distinct, non-empty working directories (the `cwd` column) across all sessions, sorted ascending. Used to populate the cwd filter dropdown on the Sessions page. Always returns a 200 with a (possibly empty) array.
+      description: 'Returns the distinct facet values for the Sessions page filters: the non-empty working directories (the `cwd` column, sorted ascending) in `cwds`, and the distinct data-source ids (the `sessions.source` column) in `sources`. `sources` always includes the built-in `local` history plus any configured remote SSH machines. Always returns a 200 with (possibly empty) arrays.'
       operationId: listSessionFacets
       responses:
         '200':
-          description: Distinct session working directories
+          description: Distinct session working directories and data-source ids
           content:
             application/json:
               schema:
@@ -8270,6 +8710,391 @@ paths:
                 cwds:
                   - /Users/son/WebstormProjects/Claude-Code-Agent-Monitor
                   - /Users/son/code/another-project
+                sources:
+                  - local
+                  - 4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11
+  /api/remote-sources:
+    get:
+      tags:
+        - Remote Sources
+      summary: List remote data sources
+      description: Returns every configured remote SSH source the dashboard pulls Claude Code history from. NO secrets are ever returned — these records store none (SSH auth defers to the host SSH stack). Each entry carries its last sync `status`, `last_error`, `last_sync_at`, and `last_sync_counts`. Read-only; always 200.
+      operationId: listRemoteSources
+      responses:
+        '200':
+          description: All configured remote sources
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteSourceListResponse'
+              example:
+                sources:
+                  - id: 4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11
+                    label: Work laptop
+                    host: son@studio.local
+                    ssh_port: 22
+                    identity_file: ~/.ssh/id_ed25519
+                    remote_home: ~/.claude
+                    enabled: true
+                    status: ok
+                    last_error: null
+                    last_sync_at: '2026-07-22T18:41:55.117Z'
+                    last_sync_counts:
+                      imported: 9
+                      skipped: 41
+                      backfilled: 0
+                      errors: 0
+                      sessions_seen: 50
+                      sessions_tagged: 50
+                    created_at: '2026-07-20T09:15:00.000Z'
+                    updated_at: '2026-07-22T18:41:55.117Z'
+    post:
+      tags:
+        - Remote Sources
+      summary: Register a remote data source
+      description: 'Registers a remote SSH source. `label` and `host` are required; `host` is an SSH destination (`user@host`) or a `~/.ssh/config` alias. Optional `ssh_port`, `identity_file`, `remote_home`, and `enabled` fine-tune the connection. No credentials are accepted or stored — auth defers to the host SSH stack. Returns the created source (201). Validation failures return 400 `{ error: { code, message } }` with one of the codes INVALID_LABEL, INVALID_HOST, INVALID_PORT, INVALID_IDENTITY_FILE, INVALID_REMOTE_HOME.'
+      operationId: createRemoteSource
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteSourceCreateRequest'
+            examples:
+              minimal:
+                summary: Minimal — label + SSH config alias
+                value:
+                  label: Work laptop
+                  host: studio
+              full:
+                summary: Full — explicit port, key, and remote home
+                value:
+                  label: Work laptop
+                  host: son@studio.local
+                  ssh_port: 22
+                  identity_file: ~/.ssh/id_ed25519
+                  remote_home: ~/.claude
+                  enabled: true
+      responses:
+        '201':
+          description: Remote source created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteSourceResponse'
+              example:
+                source:
+                  id: 4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11
+                  label: Work laptop
+                  host: son@studio.local
+                  ssh_port: 22
+                  identity_file: ~/.ssh/id_ed25519
+                  remote_home: ~/.claude
+                  enabled: true
+                  status: idle
+                  last_error: null
+                  last_sync_at: null
+                  last_sync_counts: null
+                  created_at: '2026-07-22T18:41:55.117Z'
+                  updated_at: '2026-07-22T18:41:55.117Z'
+        '400':
+          description: 'Validation error (codes: INVALID_LABEL, INVALID_HOST, INVALID_PORT, INVALID_IDENTITY_FILE, INVALID_REMOTE_HOME).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                label:
+                  summary: Missing/blank label
+                  value:
+                    error:
+                      code: INVALID_LABEL
+                      message: '`label` is required'
+                host:
+                  summary: Missing/invalid host
+                  value:
+                    error:
+                      code: INVALID_HOST
+                      message: '`host` is required'
+                port:
+                  summary: Port out of range
+                  value:
+                    error:
+                      code: INVALID_PORT
+                      message: '`ssh_port` must be 1–65535'
+  /api/remote-sources/{id}:
+    patch:
+      tags:
+        - Remote Sources
+      summary: Update a remote data source (partial)
+      description: Partially updates a remote source. Only the keys present in the body are changed; omitted keys are left as-is. The same validation as create applies to any field that is present. Returns the updated source, or 404 when the id is unknown.
+      operationId: updateRemoteSource
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Remote source id.
+          example: 4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoteSourceUpdateRequest'
+            examples:
+              disable:
+                summary: Disable a source without touching anything else
+                value:
+                  enabled: false
+              rename:
+                summary: Rename and change port
+                value:
+                  label: Studio Mac
+                  ssh_port: 2222
+      responses:
+        '200':
+          description: Updated remote source
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteSourceResponse'
+              example:
+                source:
+                  id: 4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11
+                  label: Studio Mac
+                  host: son@studio.local
+                  ssh_port: 2222
+                  identity_file: ~/.ssh/id_ed25519
+                  remote_home: ~/.claude
+                  enabled: false
+                  status: ok
+                  last_error: null
+                  last_sync_at: '2026-07-22T18:41:55.117Z'
+                  last_sync_counts:
+                    imported: 9
+                    skipped: 41
+                    backfilled: 0
+                    errors: 0
+                    sessions_seen: 50
+                    sessions_tagged: 50
+                  created_at: '2026-07-20T09:15:00.000Z'
+                  updated_at: '2026-07-22T19:02:10.400Z'
+        '400':
+          description: 'Validation error (codes: INVALID_LABEL, INVALID_HOST, INVALID_PORT, INVALID_IDENTITY_FILE, INVALID_REMOTE_HOME).'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: INVALID_PORT
+                  message: '`ssh_port` must be 1–65535'
+        '404':
+          description: Remote source not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: NOT_FOUND
+                  message: Remote source not found
+    delete:
+      tags:
+        - Remote Sources
+      summary: Delete a remote data source
+      description: Deletes a remote source. By default its imported sessions are DETACHED — reassigned to the built-in `local` source — so history is preserved. Pass `?purge=true` to instead permanently DELETE that source's imported sessions along with the source. The response reports whether a purge occurred.
+      operationId: deleteRemoteSource
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Remote source id.
+          example: 4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11
+        - name: purge
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+          description: When true, also delete this source's imported sessions. When false/omitted, those sessions are reattached to `local`.
+          example: true
+      responses:
+        '200':
+          description: Deleted (with the purge outcome)
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ok
+                  - purged
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+                  purged:
+                    type: boolean
+                    description: True when the source's imported sessions were deleted (purge=true); false when they were detached to `local`.
+                    example: false
+              examples:
+                detached:
+                  summary: Default — sessions detached to local
+                  value:
+                    ok: true
+                    purged: false
+                purged:
+                  summary: purge=true — sessions deleted
+                  value:
+                    ok: true
+                    purged: true
+        '404':
+          description: Remote source not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: NOT_FOUND
+                  message: Remote source not found
+  /api/remote-sources/{id}/test:
+    post:
+      tags:
+        - Remote Sources
+      summary: Probe SSH connectivity to a remote source
+      description: Runs an SSH connectivity probe against the source and reports the outcome synchronously. The `ok` flag carries the probe result and `message` is a human-readable summary; on success `remoteProjects` may list the remote project directories discovered under the remote Claude home. This does not import anything — use POST /{id}/sync to pull.
+      operationId: testRemoteSource
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Remote source id.
+          example: 4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11
+      responses:
+        '200':
+          description: Probe result (ok flag carries the connectivity outcome)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteSourceTestResponse'
+              examples:
+                success:
+                  summary: Reachable
+                  value:
+                    ok: true
+                    message: Connected; found 24 project directories under ~/.claude/projects.
+                    remoteProjects:
+                      - '-Users-son-code-foo'
+                      - '-Users-son-code-bar'
+                failure:
+                  summary: Unreachable / auth failed
+                  value:
+                    ok: false
+                    message: 'ssh: connect to host studio.local port 22: Connection refused'
+        '404':
+          description: Remote source not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: NOT_FOUND
+                  message: Remote source not found
+  /api/remote-sources/{id}/sync:
+    post:
+      tags:
+        - Remote Sources
+      summary: Pull Claude Code history from a remote source now
+      description: Triggers an immediate pull of Claude Code history from the remote source over SSH, importing new transcripts through the same idempotent, baseline-preserving pipeline used for local imports and tagging imported sessions with this source's id. The response reports the per-run counters. Sync progress/completion is also broadcast over the WebSocket as `remote_source.status` frames.
+      operationId: syncRemoteSource
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Remote source id.
+          example: 4d1f0e2a-7b9c-4c33-8a21-9e0f7b6d4c11
+      responses:
+        '200':
+          description: Sync result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RemoteSourceSyncResponse'
+              example:
+                ok: true
+                imported: 9
+                skipped: 41
+                backfilled: 0
+                errors: 0
+                sessions_seen: 50
+                sessions_tagged: 50
+        '404':
+          description: Remote source not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: NOT_FOUND
+                  message: Remote source not found
+        '500':
+          description: Sync failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: SYNC_FAILED
+                  message: ssh exited with code 255
+  /api/remote-sources/sync-all:
+    post:
+      tags:
+        - Remote Sources
+      summary: Sync all enabled remote sources now
+      description: Pulls Claude Code history from every enabled remote source over SSH, sequentially (one connection at a time). Per-source failures are isolated — one unreachable source never aborts the others — and each outcome is returned in `results`. Progress/completion is also broadcast over the WebSocket as `remote_source.status` frames. Always returns 200.
+      operationId: syncAllRemoteSources
+      responses:
+        '200':
+          description: Per-source sync outcomes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  synced:
+                    type: integer
+                    description: Number of enabled sources that were attempted.
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        ok:
+                          type: boolean
+                        error:
+                          type: string
+              example:
+                ok: true
+                synced: 2
+                results:
+                  - id: src_a
+                    ok: true
   /api/settings/claude-home:
     get:
       tags:
@@ -8499,4 +9324,56 @@ paths:
                 error:
                   code: WORKFLOW_DETAIL_FAILED
                   message: database is locked
+  /api/settings/import:
+    post:
+      tags:
+        - Settings
+      summary: Restore (import) a previously exported data bundle
+      description: 'Restores a bundle produced by GET /api/settings/export. Supply it either as `multipart/form-data` with a single `file` field (browser upload) or as a JSON body `{ "path": "<absolute path>" }` (the server reads the file from disk — used by the `ccam import-data` CLI, and it also sidesteps the global 1 MB JSON body cap for large bundles). The restore is idempotent and NON-DESTRUCTIVE: it is session-atomic, so a session already present (matched by its UUID) is skipped whole together with its agents/events/token_usage/workflows, and independent config rows (dashboard_runs, alert_rules, model_pricing) are inserted only when absent. Nothing existing is overwritten — ideal for consolidating several machines into one dashboard. The response reports per-table counts.'
+      operationId: importData
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The export .json file.
+          application/json:
+            schema:
+              type: object
+              required:
+                - path
+              properties:
+                path:
+                  type: string
+                  description: Absolute path (server-side) to an export .json file. `~` is expanded.
+            example:
+              path: /Users/you/ccam-export-2026-06-26.json
+      responses:
+        '200':
+          description: Per-table restore counts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportResponse'
+              example:
+                ok: true
+                source: agent-monitor-export-2026-06-26.json
+                format: ccam-export
+                sessions_imported: 42
+                sessions_skipped: 3
+                agents: 96
+                events: 5120
+                token_usage: 42
+                workflows: 4
+                dashboard_runs: 11
+                alert_rules: 2
+                model_pricing: 0
+                errors: 0
+        '400':
+          description: Missing file, invalid JSON, or unrecognized export format
 x-issues-url: https://github.com/hoangsonww/Claude-Code-Agent-Monitor/issues

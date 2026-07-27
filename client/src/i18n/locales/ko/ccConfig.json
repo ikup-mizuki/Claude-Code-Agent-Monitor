@@ -39,6 +39,7 @@
   },
   "common": {
     "search": "이름으로 검색…",
+    "clearSearch": "검색 지우기",
     "empty": "아직 항목이 없습니다.",
     "viewSource": "소스 보기",
     "close": "닫기",
@@ -103,7 +104,16 @@
     "context": "컨텍스트",
     "key": "키",
     "action": "동작",
-    "docsLink": "키바인딩 문서 보기"
+    "docsLink": "키바인딩 문서 보기",
+    "contextPlaceholder": "컨텍스트 (예: Global, Chat)",
+    "addContext": "컨텍스트 추가",
+    "removeContext": "컨텍스트 삭제",
+    "addBinding": "키바인딩 추가",
+    "removeBinding": "키바인딩 삭제",
+    "errContext": "모든 컨텍스트에는 이름이 필요합니다.",
+    "errDupContext": "중복된 컨텍스트: {{context}}",
+    "errEmpty": "\"{{context}}\"의 모든 키바인딩에는 키와 동작이 모두 필요합니다.",
+    "errDupKey": "컨텍스트 \"{{context}}\"에 중복된 키 \"{{key}}\"이(가) 있습니다."
   },
   "statusline": {
     "title": "상태 표시줄",
@@ -147,6 +157,7 @@
     "autoSubtitle": "~/.claude/projects/<project>/memory/ 아래에 프로젝트별로 파일 기반 메모리를 저장합니다 - MEMORY.md 색인 파일과 기억된 사실마다 하나씩의 파일로 구성됩니다. 여기서는 읽기 전용입니다.",
     "noMatches": "검색과 일치하는 메모리 파일이 없습니다.",
     "indexFiles": "색인",
+    "jumpTo": "파일로 이동",
     "fileCount_one": "파일 {{count}}개",
     "fileCount_other": "파일 {{count}}개",
     "factFiles_one": "사실 {{count}}개",

@@ -576,6 +576,9 @@
           <a href="#import-pipeline" class="nav-link"
             ><span class="nav-icon">◈</span>Import Pipeline</a
           >
+          <a href="#remote-sources" class="nav-link"
+            ><span class="nav-icon">◈</span>Remote Data Sources</a
+          >
           <a href="#mcp-agent-extensions" class="nav-link"
             ><span class="nav-icon">◈</span>MCP &amp; Agent Extensions</a>
           <a href="#plugin-marketplace" class="nav-link"
@@ -587,9 +590,11 @@
           <a href="#vscode-ext" class="nav-link"><span class="nav-icon">◈</span>VS Code Extension</a>
           <a href="#desktop-app" class="nav-link"><span class="nav-icon">◈</span>Desktop App (macOS &amp; Windows)</a>
           <a href="#settings-page" class="nav-link"><span class="nav-icon">◈</span>Settings Page</a>
+          <a href="#config-explorer" class="nav-link"><span class="nav-icon">◈</span>Claude Config Explorer</a>
           <a href="#alerts-webhooks" class="nav-link"><span class="nav-icon">◈</span>Alerts &amp; Webhooks</a>
           <a href="#update-notifier" class="nav-link"><span class="nav-icon">◈</span>Update Notifier</a>
           <a href="#connection-status" class="nav-link"><span class="nav-icon">◈</span>Connection Status</a>
+          <a href="#prometheus-grafana" class="nav-link"><span class="nav-icon">◈</span>Prometheus &amp; Grafana</a>
           <a href="#i18n" class="nav-link"><span class="nav-icon">◈</span>Internationalization</a>
           <a href="#tabby" class="nav-link"><span class="nav-icon">🐾</span>Tabby</a>
 
@@ -736,6 +741,16 @@
                 <span class="tech-badge badge-node">Windows native APIs</span>
                 <span class="tech-badge badge-node">NSIS installer</span>
                 <span class="tech-badge badge-node">Chromium (Electron)</span>
+                <span class="tech-badge badge-prometheus">GET /api/metrics</span>
+                <span class="tech-badge badge-grafana">4 Grafana dashboards</span>
+                <span class="tech-badge badge-ws">Remote data sources</span>
+                <span class="tech-badge badge-openapi">SSH tunnel federation</span>
+                <span class="tech-badge badge-ts">ccam CLI</span>
+                <span class="tech-badge badge-react">Data scope (local/all/selected)</span>
+                <span class="tech-badge badge-express">Import history</span>
+                <span class="tech-badge badge-github">File-header PR CI</span>
+                <span class="tech-badge badge-docker">docker-compose monitoring</span>
+                <span class="tech-badge badge-node">npm run metrics:verify</span>
                 <span class="tech-badge badge-mit">MIT License</span>
               </div>
               <div class="marquee-content" aria-hidden="true">
@@ -802,6 +817,16 @@
                 <span class="tech-badge badge-node">Windows native APIs</span>
                 <span class="tech-badge badge-node">NSIS installer</span>
                 <span class="tech-badge badge-node">Chromium (Electron)</span>
+                <span class="tech-badge badge-prometheus">GET /api/metrics</span>
+                <span class="tech-badge badge-grafana">4 Grafana dashboards</span>
+                <span class="tech-badge badge-ws">Remote data sources</span>
+                <span class="tech-badge badge-openapi">SSH tunnel federation</span>
+                <span class="tech-badge badge-ts">ccam CLI</span>
+                <span class="tech-badge badge-react">Data scope (local/all/selected)</span>
+                <span class="tech-badge badge-express">Import history</span>
+                <span class="tech-badge badge-github">File-header PR CI</span>
+                <span class="tech-badge badge-docker">docker-compose monitoring</span>
+                <span class="tech-badge badge-node">npm run metrics:verify</span>
                 <span class="tech-badge badge-mit">MIT License</span>
               </div>
             </div>
@@ -1071,6 +1096,20 @@
                   </p>
                 </div>
                 <div class="feature-card">
+                  <div class="feature-icon ic-blue">🛜</div>
+                  <h3>Remote Data Sources</h3>
+                  <p>
+                    Pull Claude Code history from other machines over SSH. Each remote's
+                    <code>~/.claude/projects</code> tree is mirrored via <code>scp</code> into a sandboxed staging
+                    directory, fed through the same importer as local history, and every session
+                    is tagged with its source. A background poller keeps remote data
+                    near-real-time, a global data-scope selector (Local only / All / a specific
+                    source) narrows the whole app, and sessions from a remote show a source badge.
+                    Auth defers entirely to the host's SSH stack — no passwords or secrets are
+                    stored. Managed in <b>Settings → Remote Data Sources</b>.
+                  </p>
+                </div>
+                <div class="feature-card">
                   <div class="feature-icon ic-cyan">💾</div>
                   <h3>Transcript Cache</h3>
                   <p>
@@ -1313,11 +1352,16 @@
                     per-project file-based memory store — every auto-memory <code>*.md</code>
                     under <code>~/.claude/projects/&lt;slug&gt;/memory/</code> (a
                     <code>MEMORY.md</code> index plus one file per remembered fact, often 100+),
-                    grouped by project, searchable, and editable. Create, edit, and
-                    delete the low-risk text-file surfaces
+                    grouped by project, searchable, and editable — the <code>MEMORY.md</code>
+                    index links are clickable and jump to (scroll to + highlight) the matching
+                    fact file.                     Create, edit, and
+                    delete the low-risk surfaces — text-file artifacts, per-project auto-memory
+                    files, and <code>keybindings.json</code> (structured inline editor) —
                     with mandatory timestamped backups before every write. Plugins, MCP, hooks,
                     and live settings stay read-only with explainer banners and copy-able CLI
-                    commands. Per-plugin contribution breakdowns show author and license.
+                    commands. See the dedicated
+                    <a href="#config-explorer">Config Explorer</a> section for the full tour.
+                    Per-plugin contribution breakdowns show author and license.
                   </p>
                 </div>
                 <div class="feature-card">
@@ -1478,6 +1522,10 @@
               <img src="../images/config.png" alt="Claude Config Explorer" width="100%" loading="lazy" decoding="async" />
               <div class="screenshot-caption"><span class="caption-icon">🧰</span> <span><strong>Claude Config Explorer</strong> — 12-tab inspector for skills, subagents, slash commands, plugins, MCP servers, hooks, settings, memory, keybindings, and statusline. Safe edits with backups</span></div>
             </div>
+            <div class="screenshot-card" id="ss-config-skills">
+              <img src="../images/config-skills.png" alt="Claude Config Explorer — Skills tab" width="100%" loading="lazy" decoding="async" />
+              <div class="screenshot-caption"><span class="caption-icon">🧩</span> <span><strong>Claude Config Explorer · Skills</strong> — the Skills tab lists every discovered skill (user, project, and plugin) with its description and source, is searchable across the whole set, and opens any skill file for a safe, timestamp-backed edit</span></div>
+            </div>
             <div class="screenshot-card" id="ss-run">
               <img src="../images/run.png" alt="Run Claude — pre-run configuration" width="100%" loading="lazy" decoding="async" />
               <div class="screenshot-caption"><span class="caption-icon">▶️</span> <span><strong>Run Claude</strong> — spawn or resume Claude subprocesses from the browser. Pick Conversation or Headless mode, set cwd, model, permission level, and thinking effort. Same-origin guard included</span></div>
@@ -1494,6 +1542,10 @@
               <img src="../images/alerts.png" alt="Settings — Alerts &amp; Webhooks" width="100%" loading="lazy" decoding="async" />
               <div class="screenshot-caption"><span class="caption-icon">🔔</span> <span><strong>Settings · Alerts</strong> — rules-based alerting engine and outbound webhooks in one place: alert rules (event pattern / inactivity / stuck agent / token threshold) with per-rule cooldown, a live fired-alert feed, and 14 first-class webhook providers plus a generic JSON endpoint with optional HMAC signing</span></div>
             </div>
+            <div class="screenshot-card" id="ss-remote">
+              <img src="../images/remote.png" alt="Settings — Remote Data Sources" width="100%" loading="lazy" decoding="async" />
+              <div class="screenshot-caption"><span class="caption-icon">🛰️</span> <span><strong>Settings · Remote Data Sources</strong> — pull Claude Code activity from other machines over SSH: add sources by destination, test connectivity, sync manually or on a background poller, and switch the global data scope between local, all sources, or a specific machine with per-session source badges</span></div>
+            </div>
             <div class="screenshot-card" id="ss-swagger">
               <img src="../images/swagger.png" alt="Swagger UI API docs" width="100%" loading="lazy" decoding="async" />
               <div class="screenshot-caption"><span class="caption-icon">📘</span> <span><strong>API Docs · Swagger UI</strong> — interactive OpenAPI 3.0 playground at <code>/api/docs</code>: collapsible endpoint groups, request/response schemas, auth headers, and try-it-out request execution against the live local server</span></div>
@@ -1502,54 +1554,17 @@
               <img src="../images/redoc.png" alt="ReDoc API reference" width="100%" loading="lazy" decoding="async" />
               <div class="screenshot-caption"><span class="caption-icon">📗</span> <span><strong>API Docs · ReDoc</strong> — a self-hosted, read-optimized rendering of the full OpenAPI 3.0 spec at <code>/api/redoc</code>, served entirely offline with no CDN. Complements the interactive Swagger UI at <code>/api/docs</code>; every backend route is documented with parameters, schemas, and examples</span></div>
             </div>
-          </div>
-
-          <h3>GitHub Star History</h3>
-          <p class="star-history-intro">
-            This chart tracks how interest in Claude Code Agent Monitor has grown over time. The
-            curve keeps climbing as more developers discover the project, share it, and use it in
-            real workflows. Each new star is a small vote of confidence from the community.
-          </p>
-          <div class="screenshot-gallery gallery-single">
-            <div class="screenshot-card star-history-card">
-              <a
-                class="star-history-link"
-                href="https://www.star-history.com/?repos=hoangsonww%2FClaude-Code-Agent-Monitor&type=date&legend=top-left"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <picture>
-                  <source
-                    media="(prefers-color-scheme: dark)"
-                    srcset="https://api.star-history.com/chart?repos=hoangsonww/Claude-Code-Agent-Monitor&type=date&theme=dark&legend=top-left"
-                  />
-                  <source
-                    media="(prefers-color-scheme: light)"
-                    srcset="https://api.star-history.com/chart?repos=hoangsonww/Claude-Code-Agent-Monitor&type=date&legend=top-left"
-                  />
-                  <img
-                    alt="GitHub star history chart for Claude Code Agent Monitor"
-                    src="https://api.star-history.com/chart?repos=hoangsonww/Claude-Code-Agent-Monitor&type=date&legend=top-left"
-                   
-                    width="1140"
-                    height="560"
-                  />
-                </picture>
-              </a>
-              <div class="screenshot-caption">
-                <span class="caption-icon">⭐</span>
-                <span>
-                  Enjoying the project?
-                  <a
-                    class="star-history-caption-link"
-                    href="https://github.com/hoangsonww/Claude-Code-Agent-Monitor"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >Give it a star on GitHub</a
-                  >
-                  and help more builders discover it.
-                </span>
-              </div>
+            <div class="screenshot-card" id="ss-grafana">
+              <img src="../images/grafana.png" alt="Grafana CCAM — Overview dashboard" width="100%" loading="lazy" decoding="async" />
+              <div class="screenshot-caption"><span class="caption-icon">📊</span> <span><strong>Observability · Grafana</strong> — default home dashboard <em>CCAM — Overview</em> (four boards auto-provisioned): live fleet snapshot, database totals, breakdown charts, and rates from <code>/api/metrics</code> scrapes. Login <code>admin</code> / <code>admin</code> on port 3000</span></div>
+            </div>
+            <div class="screenshot-card" id="ss-prometheus-console">
+              <img src="../images/prometheus-console.png" alt="Prometheus CCAM console" width="100%" loading="lazy" decoding="async" />
+              <div class="screenshot-caption"><span class="caption-icon">🔥</span> <span><strong>Observability · Prometheus console</strong> — pre-built landing page at <code>/consoles/index.html</code> with live metric cards, session/token tables, and drill-down links into the Graph UI (Prometheus 3.x compatible — queries the HTTP API directly)</span></div>
+            </div>
+            <div class="screenshot-card" id="ss-prometheus-query">
+              <img src="../images/prometheus-query.png" alt="Prometheus Graph with CCAM PromQL" width="100%" loading="lazy" decoding="async" />
+              <div class="screenshot-caption"><span class="caption-icon">📈</span> <span><strong>Observability · Prometheus Graph</strong> — run PromQL against scraped CCAM series (e.g. <code>sum(ccam_sessions)</code>, <code>ccam_events_total</code>, <code>rate(ccam_tokens_total[5m])</code>) with starter expressions from the CCAM console and recording rules in <code>monitoring/prometheus/ccam-rules.yml</code></span></div>
             </div>
           </div>
 
@@ -1900,6 +1915,13 @@ npm run mcp:start:repl         # interactive CLI with tab completion</code></pre
                   <td><code>DASHBOARD_DB_PATH</code></td>
                   <td><code>data/dashboard.db</code></td>
                   <td>Path to the SQLite database file</td>
+                </tr>
+                <tr>
+                  <td><code>DASHBOARD_ALLOWED_HOSTS</code></td>
+                  <td><code>(empty)</code></td>
+                  <td>
+                    Comma-separated extra <code>Host</code>-header names allowed past the DNS-rebinding guard — needed for a non-loopback client or scraper, such as Prometheus in Docker reaching <code>/api/metrics</code> via <code>host.docker.internal</code>; an unlisted host is rejected with <code>403 EBADHOST</code>
+                  </td>
                 </tr>
                 <tr>
                   <td><code>DASHBOARD_WORKING_IDLE_SECONDS</code></td>
@@ -2290,6 +2312,14 @@ npm run mcp:start:repl         # interactive CLI with tab completion</code></pre
                   </td>
                 </tr>
                 <tr>
+                  <td>Remote Data Sources</td>
+                  <td><code>remote-sources list</code> · <code>remote-sources add</code> · <code>remote-sources test &lt;id&gt;</code> · <code>remote-sources sync [id]</code> · <code>remote-sources rm &lt;id&gt; [--purge]</code></td>
+                  <td>
+                    List, add, and test SSH data sources; sync one source (or all when no id is
+                    given); and remove a source, optionally purging the sessions it imported
+                  </td>
+                </tr>
+                <tr>
                   <td>Administration</td>
                   <td><code>doctor</code> · <code>info</code> · <code>export</code> · <code>cleanup</code> · <code>reinstall-hooks</code> · <code>update-check</code> · <code>clear-data --yes</code> · <code>open</code></td>
                   <td>
@@ -2648,8 +2678,11 @@ npm run mcp:start:repl         # interactive CLI with tab completion</code></pre
                   <td><code>routes/settings.js</code></td>
                   <td>
                     System info (DB size, row counts, hook status, server uptime). Data export as
-                    JSON. Session cleanup (abandon stale active sessions, purge old completed
-                    sessions). Clear all data. Reset pricing to defaults. Reinstall hooks.
+                    one versioned JSON bundle and matching import/restore (<code>POST /api/settings/import</code>
+                    via <code>server/lib/data-transfer.js</code> — idempotent, session-atomic,
+                    non-destructive; consolidate machines). Session cleanup (abandon stale active
+                    sessions, purge old completed sessions). Clear all data. Reset pricing to
+                    defaults. Reinstall hooks.
                   </td>
                 </tr>
                 <tr>
@@ -3215,6 +3248,17 @@ npm run mcp:start:repl         # interactive CLI with tab completion</code></pre
             </div>
           </div>
 
+          <h3>Metrics</h3>
+          <div class="route-list">
+            <div class="route-item">
+              <span class="method method-get">GET</span>
+              <span class="route-path">/api/metrics</span>
+              <span class="route-desc"
+                >Live counters in Prometheus text-exposition format (v0.0.4): sessions and agents by status, total events, cumulative tokens by kind, connected WebSocket clients, configured remote sources, process uptime and RSS, and build version — so CCAM can be scraped into Prometheus / Grafana. Read-only, and — being under <code>/api</code> — behind the DNS-rebinding Host-header guard and the optional <code>DASHBOARD_TOKEN</code>: a non-loopback scraper (e.g. Prometheus in Docker via <code>host.docker.internal</code>) must be allowlisted with <code>DASHBOARD_ALLOWED_HOSTS</code> or the scrape returns <code>403 EBADHOST</code>, and must send the token when one is set. A ready-to-run Prometheus + Grafana stack with a pre-provisioned "CCAM — Overview" dashboard lives in <code>monitoring/</code> (<code>cd monitoring && docker compose up -d</code>; Grafana on port 3000).</span
+              >
+            </div>
+          </div>
+
           <h3>Hooks Ingestion</h3>
           <div class="route-list">
             <div class="route-item">
@@ -3280,7 +3324,12 @@ npm run mcp:start:repl         # interactive CLI with tab completion</code></pre
             <div class="route-item">
               <span class="method method-get">GET</span>
               <span class="route-path">/api/settings/export</span>
-              <span class="route-desc">Export all data as JSON download</span>
+              <span class="route-desc">Export all data (sessions, agents, events, tokens, workflows, runs, alert rules, pricing) as one versioned JSON download</span>
+            </div>
+            <div class="route-item">
+              <span class="method method-post">POST</span>
+              <span class="route-path">/api/settings/import</span>
+              <span class="route-desc">Restore an export bundle (multipart <code>file</code> or JSON <code>{ path }</code>) — idempotent, non-destructive; consolidate machines</span>
             </div>
             <div class="route-item">
               <span class="method method-post">POST</span>
@@ -3813,6 +3862,188 @@ npm run mcp:start:repl         # interactive CLI with tab completion</code></pre
             Phases: <code>start</code> → <code>scan</code> → <code>extract</code> (upload only)
             → <code>parse</code> → <code>complete</code>, with <code>error</code> /
             <code>extract_error</code> replacing <code>complete</code> on failure.
+          </p>
+        </section>
+
+        <!-- ─── Remote Data Sources ──────────────────────────────────────── -->
+        <section id="remote-sources">
+          <div class="section-label">◈ Integrations</div>
+          <h2>Remote Data Sources</h2>
+
+          <div class="screenshot-gallery gallery-single">
+            <div class="screenshot-card">
+              <img src="../images/remote.png" alt="Settings page Remote Data Sources section showing configured SSH sources with live status, the data-scope selector, and per-source sync controls" width="3024" height="1722" loading="lazy" decoding="async" />
+              <div class="screenshot-caption"><span class="caption-icon">🛰️</span> <span>Settings → Remote Data Sources — add machines by SSH destination, test connectivity, sync on demand or on a background schedule, and narrow the whole app with the global data-scope selector</span></div>
+            </div>
+          </div>
+
+          <p>
+            Beyond local history, the dashboard can pull Claude Code activity from
+            <b>other machines over SSH</b> and fold it into the same views as your local
+            sessions. Each remote's <code>~/.claude/projects</code> tree is mirrored via
+            <code>scp</code> (or <code>wsl.exe</code> + <code>tar</code> when Claude runs in WSL
+            on a Windows SSH host) into a sandboxed staging directory, fed through the exact same
+            importer used for local history, and every imported session is tagged with the source it
+            came from. A background poller (<code>DASHBOARD_REMOTE_SYNC_MS</code>, default
+            <code>15000</code> ms) keeps remote data near-real-time — adding or re-enabling a source
+            also triggers an immediate pull — and successful syncs broadcast
+            <code>remote_data.updated</code> plus per-session <code>session_created</code> /
+            <code>session_updated</code> frames. A global <b>data scope</b> selector lets you narrow
+            the entire app to local sessions only, all sources, or a specific machine. Sources are
+            managed in <b>Settings → Remote Data Sources</b>.
+          </p>
+
+          <h3>How It Works</h3>
+          <div class="diagram-wrap">
+            <!-- prettier-ignore -->
+            <div class="mermaid">
+              flowchart LR
+                RH["Remote host\n~/.claude/projects"] -->|scp over SSH| ST["Sandboxed\nstaging dir"]
+                ST -->|same pipeline\nas local history| P["parseSessionFile +\nimportSession"]
+                P -->|tagged with source| D[("SQLite\nsessions / agents / events")]
+                POLL["Background poller\nDASHBOARD_REMOTE_SYNC_MS"] -.->|periodic sync| RH
+                D -.->|remote_source.status\nremote_data.updated\nsession_created/updated| W["WebSocket /ws"]
+            </div>
+            <p class="diagram-label">
+              Each remote is mirrored over SSH, imported through the local pipeline, and tagged by
+              source — the poller (default 15 s) keeps it near-real-time
+            </p>
+          </div>
+
+          <h3>Setup</h3>
+          <p>
+            Add a source with an SSH destination — either a <code>user@host</code> pair or an
+            alias defined in your <code>~/.ssh/config</code> — plus an optional port, identity
+            file, and remote home directory. Use <b>Test connection</b> to verify reachability
+            before saving, then <b>Sync now</b> to pull immediately, or let the background
+            poller do it on its own schedule. Removing a source can optionally purge the
+            sessions it imported.
+          </p>
+
+          <h3>Data Scope</h3>
+          <p>
+            A global data-scope selector narrows the whole app: choose <b>Local only</b>,
+            <b>All</b> sources, or one specific machine. The scope flows into every data view
+            through a <code>sources</code> query parameter on the sessions, events, agents,
+            stats, and analytics endpoints, and sessions imported from a remote carry a
+            <b>source badge</b> so their origin is always visible.
+          </p>
+
+          <h3>Live Status</h3>
+          <p>
+            Because a remote session is pulled over SSH, it never emits live hooks to this
+            dashboard, so remote sessions (<code>source</code> ≠ <code>local</code>) are excluded
+            from every local liveness and stale sweep — the process liveness reap, the watchdog
+            transcript scan, the startup cleanup, and the periodic abandon sweep all skip them.
+            Instead, a remote session's live status is reconciled from the mirrored transcript on
+            every sync: activity is judged from the <b>newest event timestamp inside the
+            JSONL</b> (falling back to mirror mtime). If the last event is within
+            <code>DASHBOARD_REMOTE_ACTIVE_WINDOW_MS</code> (default 10 minutes) the session stays
+            <code>active</code>; once the mirror stops advancing for longer than that window, the
+            session is reconciled to <code>completed</code>. This keeps a still-running remote
+            session from being wrongly shown as Completed.
+          </p>
+
+          <h3>Security Model</h3>
+          <p>
+            Authentication defers entirely to the host's own SSH stack —
+            <code>~/.ssh/config</code>, <code>ssh-agent</code>, on-disk keys, and
+            <code>known_hosts</code>. The dashboard stores <b>no passwords or secrets</b>; it
+            only records the SSH destination and connection options you supply.
+            <code>StrictHostKeyChecking</code> is left at its default, so the remote host must
+            already be present in <code>known_hosts</code> — an unknown host fails the
+            connection rather than being trusted blindly.
+          </p>
+
+          <h3>Environment Variables</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Variable</th>
+                  <th>Default</th>
+                  <th>Purpose</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>DASHBOARD_REMOTE_SYNC_MS</code></td>
+                  <td><code>15000</code></td>
+                  <td>Interval for the background remote poller (add/re-enable also syncs immediately); <code>0</code> disables the poller while leaving manual sync available</td>
+                </tr>
+                <tr>
+                  <td><code>DASHBOARD_REMOTE_SYNC_TIMEOUT_MS</code></td>
+                  <td><code>600000</code></td>
+                  <td>Ceiling on a single scp-and-import run before it is aborted</td>
+                </tr>
+                <tr>
+                  <td><code>DASHBOARD_REMOTE_TEST_TIMEOUT_MS</code></td>
+                  <td><code>15000</code></td>
+                  <td>Timeout for the <b>Test connection</b> probe</td>
+                </tr>
+                <tr>
+                  <td><code>DASHBOARD_REMOTE_ACTIVE_WINDOW_MS</code></td>
+                  <td><code>600000</code></td>
+                  <td>Freshness window (10 min) for a Remote Data Source session's live status — judged from the newest JSONL event timestamp in the mirror (mtime fallback); remote sessions receive no live hooks, so this replaces the local liveness and stale sweeps (which skip them)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>API Endpoints</h3>
+          <div class="route-list">
+            <div class="route-item">
+              <span class="method method-get">GET</span>
+              <span class="route-path">/api/remote-sources</span>
+              <span class="route-desc">List configured sources with their status</span>
+            </div>
+            <div class="route-item">
+              <span class="method method-post">POST</span>
+              <span class="route-path">/api/remote-sources</span>
+              <span class="route-desc">Add a source — SSH destination plus optional port, identity file, and remote home</span>
+            </div>
+            <div class="route-item">
+              <span class="method method-patch">PATCH</span>
+              <span class="route-path">/api/remote-sources/:id</span>
+              <span class="route-desc">Edit an existing source</span>
+            </div>
+            <div class="route-item">
+              <span class="method method-delete">DELETE</span>
+              <span class="route-path">/api/remote-sources/:id</span>
+              <span class="route-desc">Remove a source; optionally purge the sessions it imported</span>
+            </div>
+            <div class="route-item">
+              <span class="method method-post">POST</span>
+              <span class="route-path">/api/remote-sources/:id/test</span>
+              <span class="route-desc">Test SSH reachability without importing anything</span>
+            </div>
+            <div class="route-item">
+              <span class="method method-post">POST</span>
+              <span class="route-path">/api/remote-sources/:id/sync</span>
+              <span class="route-desc">Trigger an immediate scp-and-import for that source</span>
+            </div>
+          </div>
+          <p>
+            The <code>sources</code> query parameter is also accepted on
+            <code>/api/sessions</code>, <code>/api/events</code>, <code>/api/agents</code>,
+            <code>/api/stats</code>, and <code>/api/analytics</code> to scope any view to
+            <code>local</code>, <code>all</code>, or a comma-separated list of source IDs.
+          </p>
+
+          <h3>WebSocket Events</h3>
+          <p>
+            Sync progress and connection state broadcast on <code>/ws</code> as
+            <code>remote_source.status</code> messages, so the Settings panel and the source
+            badges update live as a remote connects, syncs, or fails.
+          </p>
+
+          <h3>CLI</h3>
+          <p>
+            The same operations are available from the terminal via
+            <code>ccam remote-sources</code>, with subcommands <code>list</code>,
+            <code>add</code>, <code>test &lt;id&gt;</code>, <code>sync [id]</code> (all sources
+            when no id is given), and <code>rm &lt;id&gt; [--purge]</code> to remove a source
+            and optionally drop the sessions it imported.
           </p>
         </section>
 
@@ -5034,6 +5265,245 @@ xattr -cr "/Applications/Claude Code Monitor.app"</code></pre>
           </div>
         </section>
 
+        <!-- ─── Claude Config Explorer ─────────────────────────────────────── -->
+        <section id="config-explorer">
+          <div class="section-label">◈ Integrations</div>
+          <h2>Claude Config Explorer</h2>
+
+          <div class="screenshot-gallery">
+            <div class="screenshot-card">
+              <img src="../images/config.png" alt="Claude Config Explorer — 12-tab inspector with overview counts, scope filter, and tab bar" width="3024" height="1722" loading="lazy" decoding="async" />
+              <div class="screenshot-caption"><span class="caption-icon">🧰</span> <span><strong>Claude Config Explorer</strong> — the <code>/cc-config</code> page: 12 tabs (skills, subagents, slash commands, output styles, plugins, marketplaces, MCP servers, hooks, keybindings, settings, memory), a scope filter (user / project / all), search, and safe edit affordances on the low-risk surfaces</span></div>
+            </div>
+            <div class="screenshot-card">
+              <img src="../images/config-skills.png" alt="Claude Config Explorer — Skills tab with searchable skill list and edit actions" width="3024" height="1722" loading="lazy" decoding="async" />
+              <div class="screenshot-caption"><span class="caption-icon">🧩</span> <span><strong>Claude Config Explorer · Skills</strong> — the Skills tab lists every discovered skill (user, project, and plugin) with description and source, is searchable, and opens any <code>SKILL.md</code> for a timestamp-backed edit via the shared editor modal</span></div>
+            </div>
+          </div>
+
+          <p>
+            A first-class <strong>configuration inspector</strong> at <code>/cc-config</code> that
+            reads every surface Claude Code knows about — skills, subagents, slash commands, output
+            styles, plugins, marketplaces, MCP servers, hooks, settings, memory, keybindings, and
+            statusline scripts — from the same on-disk layout the CLI uses. The Overview tab
+            summarizes counts and filesystem roots; every other tab drills into one surface with
+            search, scope filtering (<b>user</b> / <b>project</b> / <b>all</b>), and — where safe —
+            create / edit / delete with <strong>mandatory timestamped backups</strong> before every
+            mutation. A <code>cc-watcher</code> on <code>CLAUDE_HOME</code> plus
+            <code>cc_config_changed</code> WebSocket messages keep the page live when files change
+            outside the dashboard.
+          </p>
+
+          <div class="feature-grid">
+            <div class="feature-card">
+              <div class="feature-icon ic-amber">🗂️</div>
+              <h3>12 discovery tabs</h3>
+              <p>
+                <strong>Skills</strong>, <strong>Subagents</strong>, <strong>Slash commands</strong>,
+                <strong>Output styles</strong>, <strong>Plugins</strong> (with per-plugin
+                <code>contributes</code> counts and <code>plugin.json</code> metadata),
+                <strong>Marketplaces</strong>, <strong>MCP servers</strong>, <strong>Hooks</strong>
+                (plus <code>~/.claude/hooks/</code> script listing), <strong>Keybindings</strong>,
+                <strong>Settings</strong> (Current configuration summary + per-file JSON),
+                and <strong>Memory</strong> (user/project <code>CLAUDE.md</code> + per-project
+                auto-memory). Statusline config and script previews live under Settings.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon ic-emerald">✏️</div>
+              <h3>Safe mutations</h3>
+              <p>
+                <code>PUT</code> / <code>DELETE /api/cc-config/file</code> handles skills, agents,
+                commands, output-styles, <code>CLAUDE.md</code>, and per-project auto-memory
+                (<code>scope: "auto-memory"</code>). Writes are <strong>atomic</strong> (temp file +
+                rename), names are validated against a strict regex, resolved paths are
+                containment-checked, and content is capped at 256&nbsp;KiB. Every overwrite or delete
+                creates a backup under <code>cc-config-backups/</code> — outside the directories
+                Claude Code scans — so deleted artifacts cannot reappear as ghost entries.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon ic-indigo">⌨️</div>
+              <h3>Keybindings editor</h3>
+              <p>
+                The Keybindings tab includes a structured inline editor for
+                <code>~/.claude/keybindings.json</code>. Add or remove contexts and bindings, edit
+                keys and actions in place, and save via <code>PUT /api/cc-config/keybindings</code>.
+                The server read-modify-writes the file: top-level metadata (<code>$schema</code>,
+                <code>$docs</code>) is preserved, duplicate contexts/keys are rejected, and the
+                file is backed up first. Unlike <code>settings.json</code>, the live CLI does not
+                rewrite keybindings mid-session, so dashboard edits are safe.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon ic-cyan">🧠</div>
+              <h3>Memory store</h3>
+              <p>
+                The Memory tab surfaces user + project <code>CLAUDE.md</code> and the per-project
+                file-based memory store — every <code>*.md</code> under
+                <code>~/.claude/projects/&lt;slug&gt;/memory/</code> (a <code>MEMORY.md</code> index
+                plus one file per remembered fact, often 100+). Files are grouped by project in
+                collapsible sections, searchable, and editable. Clickable index links in
+                <code>MEMORY.md</code> jump to (scroll + highlight) the matching fact file.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon ic-rose">🔒</div>
+              <h3>Read-only by design</h3>
+              <p>
+                <strong>Plugins</strong>, <strong>MCP servers</strong>, <strong>hooks-in-settings</strong>,
+                and live <strong>settings.json</strong> files are intentionally not writable from the
+                dashboard — they race with the running <code>claude</code> CLI. Those tabs show
+                explainer banners with copy-able <code>claude plugin …</code>,
+                <code>claude mcp …</code>, and <code>claude config …</code> commands instead of
+                edit buttons. Secret-like settings keys are redacted server-side.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon ic-violet">🔄</div>
+              <h3>Live refresh</h3>
+              <p>
+                Successful mutations broadcast <code>cc_config_changed</code> over the WebSocket so
+                every open <code>/cc-config</code> tab refetches without polling. A filesystem watcher
+                on <code>CLAUDE_HOME</code> (<code>cc-watcher.js</code>) detects external edits
+                (e.g. you changed a skill in your editor) and triggers the same refresh path. The
+                Backups modal lists every timestamped copy and builds <code>mv</code> restore
+                commands.
+              </p>
+            </div>
+          </div>
+
+          <h3>Editable vs read-only</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Surface</th>
+                  <th>Dashboard</th>
+                  <th>How to change (if read-only)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Skills · Subagents · Commands · Output styles</td>
+                  <td>Create / edit / delete (<code>PUT</code>/<code>DELETE /file</code>)</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td><code>CLAUDE.md</code> · auto-memory <code>*.md</code></td>
+                  <td>Create / edit / delete (<code>PUT</code>/<code>DELETE /file</code>)</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td><code>keybindings.json</code></td>
+                  <td>Structured inline editor (<code>PUT /keybindings</code>)</td>
+                  <td>—</td>
+                </tr>
+                <tr>
+                  <td>Plugins · marketplaces</td>
+                  <td>Read-only inventory</td>
+                  <td><code>claude plugin install|uninstall …</code></td>
+                </tr>
+                <tr>
+                  <td>MCP servers</td>
+                  <td>Read-only inventory</td>
+                  <td><code>claude mcp add|remove …</code></td>
+                </tr>
+                <tr>
+                  <td>Hooks · settings.json</td>
+                  <td>Read-only (redacted secrets)</td>
+                  <td><code>claude config</code> · <code>/config</code> · <code>$EDITOR</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>API endpoints</h3>
+          <div class="route-list">
+            <div class="route-item">
+              <span class="method method-get">GET</span>
+              <span class="route-path">/api/cc-config/overview</span>
+              <span class="route-desc">Filesystem roots + aggregate counts across every surface</span>
+            </div>
+            <div class="route-item">
+              <span class="method method-get">GET</span>
+              <span class="route-path">/api/cc-config/{skills,agents,commands,…}</span>
+              <span class="route-desc">Per-tab discovery lists; most accept <code>?scope=user|project|all</code></span>
+            </div>
+            <div class="route-item">
+              <span class="method method-get">GET</span>
+              <span class="route-path">/api/cc-config/file?path=…</span>
+              <span class="route-desc">Single-file viewer (path-contained to allowed roots)</span>
+            </div>
+            <div class="route-item">
+              <span class="method method-put">PUT</span>
+              <span class="route-path">/api/cc-config/file</span>
+              <span class="route-desc">Create/overwrite a text artifact — backs up first, atomic write</span>
+            </div>
+            <div class="route-item">
+              <span class="method method-delete">DELETE</span>
+              <span class="route-path">/api/cc-config/file</span>
+              <span class="route-desc">Backup-then-delete (skill dirs backed up whole)</span>
+            </div>
+            <div class="route-item">
+              <span class="method method-put">PUT</span>
+              <span class="route-path">/api/cc-config/keybindings</span>
+              <span class="route-desc">Structured overwrite of <code>keybindings.json</code> — preserves metadata, backs up first</span>
+            </div>
+            <div class="route-item">
+              <span class="method method-get">GET</span>
+              <span class="route-path">/api/cc-config/backups</span>
+              <span class="route-desc">Timestamped backup listing for the recovery modal</span>
+            </div>
+          </div>
+
+          <div class="code-header"><span class="code-lang">json — PUT /api/cc-config/keybindings body</span></div>
+          <pre><code>{
+  "groups": [
+    {
+      "context": "Global",
+      "bindings": [
+        { "key": "ctrl+t", "action": "toggleTodos" },
+        { "key": "ctrl+n", "action": "newThing" }
+      ]
+    },
+    {
+      "context": "Chat",
+      "bindings": [{ "key": "escape", "action": "cancel" }]
+    }
+  ]
+}</code></pre>
+
+          <div class="callout callout-info">
+            <div class="callout-icon">ℹ</div>
+            <div class="callout-body">
+              <strong>Backups live outside Claude Code's scan paths</strong>
+              <p>
+                Every mutation writes a timestamped copy under
+                <code>&lt;root&gt;/cc-config-backups/&lt;type&gt;/</code> (or
+                <code>&lt;memory-dir&gt;/.cc-config-backups/auto-memory/</code> for per-project
+                memory files) <em>before</em> touching the original. Skill folders are copied
+                whole so bundled assets survive in the backup. The UI's Backups modal shows every
+                copy and prints a one-line <code>mv</code> restore command.
+              </p>
+            </div>
+          </div>
+
+          <div class="callout callout-warning">
+            <div class="callout-icon">⚠</div>
+            <div class="callout-body">
+              <strong>Do not edit settings.json from here</strong>
+              <p>
+                The live <code>claude</code> process rewrites <code>settings.json</code> and
+                <code>~/.claude.json</code> constantly (model changes, plugin toggles, MCP
+                registration). A dashboard write would race and lose state — or worse, break hook
+                ingestion. Use <code>claude config set …</code>, <code>/config</code>, or hand-edit
+                only when no <code>claude</code> process is running.
+              </p>
+            </div>
+          </div>
+        </section>
+
         <!-- ─── Alerts & Webhooks ──────────────────────────────────────────── -->
         <section id="alerts-webhooks">
           <div class="section-label">◈ Integrations</div>
@@ -5395,6 +5865,111 @@ xattr -cr "/Applications/Claude Code Monitor.app"</code></pre>
             portalled to <code>document.body</code> so the sidebar's stacking context can't trap
             it.
           </p>
+        </section>
+
+        <!-- ─── Prometheus & Grafana ───────────────────────────────────────── -->
+        <section id="prometheus-grafana">
+          <div class="section-label">◈ Integrations</div>
+          <h2>Prometheus &amp; Grafana</h2>
+
+          <div class="screenshot-gallery">
+            <div class="screenshot-card">
+              <img src="../images/grafana.png" alt="Grafana CCAM — Overview dashboard with live fleet metrics" width="100%" loading="lazy" decoding="async" />
+              <div class="screenshot-caption"><span class="caption-icon">📊</span> <span><strong>Grafana · CCAM — Overview</strong> — default home dashboard after login (<code>admin</code> / <code>admin</code> on port 3000): fleet snapshot, database totals, breakdown charts, and rates from live <code>/api/metrics</code> scrapes — no sample or synthetic data</span></div>
+            </div>
+            <div class="screenshot-card">
+              <img src="../images/prometheus-console.png" alt="Prometheus CCAM console landing page" width="100%" loading="lazy" decoding="async" />
+              <div class="screenshot-caption"><span class="caption-icon">🔥</span> <span><strong>Prometheus · CCAM console</strong> — static HTML at <code>/consoles/index.html</code> (Prometheus 3.x compatible): live metric cards, session/token tables, and one-click Graph drill-down links that query the Prometheus HTTP API directly</span></div>
+            </div>
+            <div class="screenshot-card">
+              <img src="../images/prometheus-query.png" alt="Prometheus Graph UI running CCAM PromQL" width="100%" loading="lazy" decoding="async" />
+              <div class="screenshot-caption"><span class="caption-icon">📈</span> <span><strong>Prometheus · Graph</strong> — ad-hoc PromQL against scraped CCAM series; starter expressions ship in the CCAM console and <code>monitoring/README.md</code>, with derived rates in <code>monitoring/prometheus/ccam-rules.yml</code></span></div>
+            </div>
+          </div>
+
+          <p>
+            CCAM exposes a read-only <strong>Prometheus text-exposition</strong> endpoint at
+            <code>GET /api/metrics</code> — sessions and agents by status, cumulative events and
+            tokens, connected WebSocket clients, configured remote sources, process uptime/RSS, and
+            build version — so the same dashboard you use for Claude Code monitoring can be scraped
+            into your own observability stack. A turnkey stack lives in
+            <code>monitoring/</code>: npm-managed binaries (no Homebrew/apt) or optional Docker
+            Compose, with Grafana datasource and four dashboards auto-provisioned on first start.
+          </p>
+
+          <p>
+            <strong>Quick start (npm):</strong> run the dashboard on loopback, then
+            <code>npm run monitoring:install</code> once and <code>npm run monitoring:up</code>.
+            Open Grafana at <code>http://localhost:3000</code> and Prometheus at
+            <code>http://localhost:9090</code>. The pre-built CCAM console is at
+            <code>http://localhost:9090/consoles/index.html</code> (also reachable from the
+            Prometheus UI under <strong>Consoles</strong>). For an all-Docker path use
+            <code>npm run monitoring:docker:up</code> or <code>npm run docker:full:up</code> for
+            dashboard + Prometheus + Grafana together. Verify with
+            <code>npm run monitoring:verify</code> — the <code>ccam</code> scrape target should read
+            <strong>UP</strong>.
+          </p>
+
+          <div class="feature-grid">
+            <div class="feature-card">
+              <div class="feature-icon ic-amber">📊</div>
+              <h3>Four Grafana boards</h3>
+              <p>
+                <strong>CCAM — Overview</strong> (default home),
+                <strong>CCAM — Sessions &amp; Agents</strong>,
+                <strong>CCAM — Tokens &amp; Events</strong>, and
+                <strong>CCAM — Platform</strong> — all provisioned from
+                <code>monitoring/grafana/dashboards/</code> with PromQL against your live scrape.
+                Credentials default to <code>admin</code> / <code>admin</code> via
+                <code>monitoring/grafana.defaults.env</code>.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon ic-rose">🔥</div>
+              <h3>Prometheus console</h3>
+              <p>
+                Prometheus 3.x dropped the legacy console template libraries, so CCAM ships a
+                <strong>static HTML console</strong> at
+                <code>monitoring/prometheus/consoles/index.html</code> that fetches
+                <code>/api/v1/query</code> directly — live cards, session tables, and Graph links
+                without Go-template errors on <code>/consoles/index.html</code>.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon ic-cyan">📈</div>
+              <h3>Recording rules</h3>
+              <p>
+                <code>monitoring/prometheus/ccam-rules.yml</code> derives convenient rates and
+                aggregates from raw <code>ccam_*</code> series (e.g.
+                <code>rate(ccam_tokens_total[5m])</code>) so Grafana panels and ad-hoc Graph queries
+                stay fast without hand-rolling every expression.
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon ic-violet">🛡</div>
+              <h3>Scrape &amp; auth guard</h3>
+              <p>
+                Loopback scrapes (<code>127.0.0.1:4820</code>) work out of the box. When Prometheus
+                runs in Docker and reaches the host via <code>host.docker.internal</code>, add that
+                host to <code>DASHBOARD_ALLOWED_HOSTS</code> or the scrape returns
+                <code>403 EBADHOST</code>. If <code>DASHBOARD_TOKEN</code> is set, scrapers must send
+                the same bearer token.
+              </p>
+            </div>
+          </div>
+
+          <div class="callout callout-info">
+            <div class="callout-icon">ℹ</div>
+            <div class="callout-body">
+              <strong>Full reference</strong>
+              <p>
+                Commands, Docker vs npm paths, dashboard UIDs, starter PromQL, and troubleshooting
+                (Grafana login reset, target DOWN) are documented in
+                <a href="../monitoring/README.md"><code>monitoring/README.md</code></a> and the
+                <a href="#api-reference">API reference</a> entry for <code>GET /api/metrics</code>.
+              </p>
+            </div>
+          </div>
         </section>
 
         <!-- ─── Internationalization ──────────────────────────────────────── -->
@@ -6274,8 +6849,8 @@ npm run install-hooks</code></pre>
     <!-- Body-content translations (zh/vi) — must load before script.js so the
          i18n engine sees window.__WIKI_CONTENT_I18N. Both are deferred, so they
          run in document order. -->
-    <script src="i18n-content.js?v=35" defer></script>
-    <script src="script.js?v=31" defer></script>
+    <script src="i18n-content.js?v=40" defer></script>
+    <script src="script.js?v=32" defer></script>
     <script>
       (function () {
         var carousel = document.getElementById("feature-carousel");

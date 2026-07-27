@@ -39,6 +39,7 @@
   },
   "common": {
     "search": "Tìm theo tên…",
+    "clearSearch": "Xóa tìm kiếm",
     "empty": "Chưa có nội dung.",
     "viewSource": "Xem nguồn",
     "close": "Đóng",
@@ -98,7 +99,16 @@
     "context": "Ngữ cảnh",
     "key": "Phím",
     "action": "Hành động",
-    "docsLink": "Xem tài liệu phím tắt"
+    "docsLink": "Xem tài liệu phím tắt",
+    "contextPlaceholder": "Ngữ cảnh (vd: Global, Chat)",
+    "addContext": "Thêm ngữ cảnh",
+    "removeContext": "Xoá ngữ cảnh",
+    "addBinding": "Thêm phím tắt",
+    "removeBinding": "Xoá phím tắt",
+    "errContext": "Mỗi ngữ cảnh cần có tên.",
+    "errDupContext": "Ngữ cảnh trùng lặp: {{context}}",
+    "errEmpty": "Mỗi phím tắt trong \"{{context}}\" cần cả phím và hành động.",
+    "errDupKey": "Phím trùng lặp \"{{key}}\" trong ngữ cảnh \"{{context}}\"."
   },
   "statusline": {
     "title": "Statusline",
@@ -142,6 +152,7 @@
     "autoSubtitle": "Bộ nhớ theo tệp cho từng dự án trong ~/.claude/projects/<dự-án>/memory/ — một chỉ mục MEMORY.md cùng một tệp cho mỗi sự kiện được ghi nhớ. Chỉ đọc tại đây.",
     "noMatches": "Không có tệp bộ nhớ nào khớp với tìm kiếm.",
     "indexFiles": "Chỉ mục",
+    "jumpTo": "Nhảy tới tệp",
     "fileCount_one": "{{count}} tệp",
     "fileCount_other": "{{count}} tệp",
     "factFiles_one": "{{count}} sự kiện",

@@ -12,6 +12,56 @@
  *
  * @author Son Nguyen <hoangson091104@gmail.com>
  */
+/* =============================================================================
+ * MODULE_GUIDE — extended in-file reference (comments only; safe to read, never executed)
+ * =============================================================================
+ * **Path:** `/Users/davidnguyen/WebstormProjects/Claude-Code-Agent-Monitor/client/src/components/ImportHistory.tsx`
+ * **Purpose:** Dashboard module consumed by the React client, MCP tools, or desktop shell depending on deployment mode.
+ *
+ * ## Design constraints
+ * - Local-first: no telemetry leaves the machine unless the user configures webhooks.
+ * - Fail-safe hooks path on the server must never block Claude Code; UI mirrors that
+ *   philosophy by degrading gracefully (empty states, stale badges, reconnect loops).
+ * - Destructive flows stay behind explicit confirmation modals and server-side gates.
+ * - Internationalization: user-visible strings belong in i18n JSON, not literals here.
+ *
+ * ## Remote data & SSH
+ * Remote Data Sources let operators aggregate multiple machines. SSH entries describe
+ * how to reach a peer dashboard; the global data scope (`dataScope.ts`) narrows every
+ * scoped GET via `?sources=`. Health checks and import history surface in Settings.
+ *
+ * ## Observability
+ * Prometheus scrapes `GET /api/metrics` (see `monitoring/`). Grafana ships four
+ * provisioned boards (overview, sessions, tools, alerts). Native npm scripts and
+ * Docker Compose profiles are documented in `monitoring/README.md`.
+ *
+ * ## Internal dependencies
+ * - `../lib/api`
+ * - `../lib/eventBus`
+ * - `../lib/types`
+ *
+ * ## Public surface
+ * - `ImportHistory` — exported API; see TSDoc on the symbol for behavior.
+ *
+ * ## Testing pointers
+ * - Prefer colocated `__tests__` with Vitest + Testing Library for UI.
+ * - Server contract changes require `npm run test:server` and OpenAPI sync.
+ * - MCP edits: `npm run mcp:typecheck` and `npm run mcp:build`.
+ *
+ * ## Related docs
+ * - `ARCHITECTURE.md` — hooks → API → SQLite → WebSocket → UI pipeline.
+ * - `docs/API.md` — REST reference.
+ * - `.claude/skills/file-headers/` — mandatory `@author` header policy.
+ * ============================================================================= */
+/* -----------------------------------------------------------------------------
+ * EXPORT CATALOG — quick index of symbols defined below (documentation only).
+ * -----------------------------------------------------------------------------
+ * **ImportHistory**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * ----------------------------------------------------------------------------- */
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
@@ -32,12 +82,14 @@ import {
   XCircle,
   History,
   Terminal,
+  DatabaseBackup,
+  RotateCcw,
 } from "lucide-react";
-import { api, type ImportResult } from "../lib/api";
+import { api, type ImportResult, type ImportBackupResult } from "../lib/api";
 import { eventBus } from "../lib/eventBus";
 import type { WSMessage, ImportProgressMessage } from "../lib/types";
 
-type Mode = "rescan" | "path" | "upload";
+type Mode = "rescan" | "path" | "upload" | "backup";
 
 type GuideResponse = Awaited<ReturnType<typeof api.import.guide>>;
 type Progress = ImportProgressMessage;
@@ -56,6 +108,12 @@ export function ImportHistory() {
   const [copied, setCopied] = useState(false);
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // "Restore backup" mode: import a full dashboard export (.json) produced by
+  // the Export data button — the round-trip for consolidating machines.
+  const [backupFile, setBackupFile] = useState<File | null>(null);
+  const [backupResult, setBackupResult] = useState<ImportBackupResult | null>(null);
+  const backupInputRef = useRef<HTMLInputElement | null>(null);
 
   // Load the guide once. If the API isn't reachable, fall back to sensible
   // defaults so the UI still explains what to do.
@@ -91,6 +149,7 @@ export function ImportHistory() {
   const reset = useCallback(() => {
     setErrorMsg(null);
     setResult(null);
+    setBackupResult(null);
     setProgress(null);
   }, []);
 
@@ -139,6 +198,26 @@ export function ImportHistory() {
       setResult(res);
       setFiles([]);
       if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : String(err));
+    } finally {
+      setRunning(false);
+      setProgress(null);
+    }
+  };
+
+  const handleRestore = async () => {
+    reset();
+    if (!backupFile) {
+      setErrorMsg(t("import.errors.noFiles"));
+      return;
+    }
+    setRunning(true);
+    try {
+      const res = await api.settings.importData(backupFile);
+      setBackupResult(res);
+      setBackupFile(null);
+      if (backupInputRef.current) backupInputRef.current.value = "";
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : String(err));
     } finally {
@@ -211,7 +290,8 @@ export function ImportHistory() {
         <History className="w-4 h-4 text-gray-500" />
         {t("import.title")}
       </h3>
-      <p className="text-xs text-gray-500 mb-4">{t("import.description")}</p>
+      <p className="text-xs text-gray-500 mb-1">{t("import.description")}</p>
+      <p className="text-[11px] text-gray-600 italic mb-4 leading-snug">{t("cursorPathsNote")}</p>
 
       <div className="card p-5 space-y-5">
         {/* Step-by-step instructions */}
@@ -294,7 +374,7 @@ export function ImportHistory() {
         </div>
 
         {/* Mode switcher */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
           <ModeButton
             active={mode === "rescan"}
             icon={<RefreshCw className="w-3.5 h-3.5" />}
@@ -315,6 +395,13 @@ export function ImportHistory() {
             title={t("import.modeUpload")}
             desc={t("import.modeUploadDesc")}
             onClick={() => setMode("upload")}
+          />
+          <ModeButton
+            active={mode === "backup"}
+            icon={<DatabaseBackup className="w-3.5 h-3.5" />}
+            title={t("import.modeBackup")}
+            desc={t("import.modeBackupDesc")}
+            onClick={() => setMode("backup")}
           />
         </div>
 
@@ -439,6 +526,73 @@ export function ImportHistory() {
               </div>
             </div>
           )}
+
+          {mode === "backup" && (
+            <div className="space-y-3">
+              <div
+                onClick={() => backupInputRef.current?.click()}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setDragging(true);
+                }}
+                onDragLeave={() => setDragging(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setDragging(false);
+                  const f = e.dataTransfer.files?.[0];
+                  if (f) setBackupFile(f);
+                }}
+                className={`border-2 border-dashed rounded-lg px-4 py-8 text-center cursor-pointer transition-colors ${
+                  dragging
+                    ? "border-blue-400 bg-blue-500/5"
+                    : "border-border hover:border-gray-500 bg-surface-1"
+                }`}
+              >
+                <DatabaseBackup className="w-6 h-6 text-gray-500 mx-auto mb-2" />
+                <p className="text-sm text-gray-300">{t("import.backupHint")}</p>
+                <p className="text-[11px] text-gray-500 mt-1">{t("import.backupSub")}</p>
+                <input
+                  ref={backupInputRef}
+                  type="file"
+                  accept=".json,application/json"
+                  onChange={(e) => setBackupFile(e.target.files?.[0] || null)}
+                  className="hidden"
+                />
+              </div>
+              {backupFile && (
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs bg-surface-3 rounded-md px-3 py-2">
+                  <span className="text-gray-400 min-w-0">
+                    <FileArchive className="w-3.5 h-3.5 inline mr-1.5 text-gray-500" />
+                    <span className="font-mono truncate">{backupFile.name}</span>
+                    <span className="text-gray-600 ml-2">({formatBytes(backupFile.size)})</span>
+                  </span>
+                  <button
+                    onClick={() => {
+                      setBackupFile(null);
+                      if (backupInputRef.current) backupInputRef.current.value = "";
+                    }}
+                    className="text-gray-500 hover:text-gray-300 text-[11px]"
+                  >
+                    {t("import.clearSelection")}
+                  </button>
+                </div>
+              )}
+              <div className="flex justify-end">
+                <button
+                  onClick={handleRestore}
+                  disabled={running || !backupFile}
+                  className="btn-primary text-xs disabled:opacity-50"
+                >
+                  {running ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <RotateCcw className="w-3.5 h-3.5" />
+                  )}
+                  {t("import.runRestore")}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* In-flight progress */}
@@ -497,6 +651,50 @@ export function ImportHistory() {
                 {result.path ? ` · ${result.path}` : ""}
               </p>
             )}
+          </div>
+        )}
+
+        {/* Restore-from-backup result summary */}
+        {backupResult && !running && (
+          <div className="border border-emerald-500/20 bg-emerald-500/5 rounded-lg px-4 py-3 space-y-2">
+            <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400 uppercase tracking-wider">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              {t("import.backupResult.title")}
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+              <ResultStat
+                label={t("import.backupResult.sessionsImported", {
+                  count: backupResult.sessions_imported,
+                })}
+                value={backupResult.sessions_imported}
+                color="text-emerald-300"
+              />
+              <ResultStat
+                label={t("import.backupResult.sessionsSkipped", {
+                  count: backupResult.sessions_skipped,
+                })}
+                value={backupResult.sessions_skipped}
+                color="text-gray-400"
+              />
+              <ResultStat
+                label={t("import.backupResult.events", { count: backupResult.events })}
+                value={backupResult.events}
+                color="text-violet-300"
+              />
+              <ResultStat
+                label={t("import.backupResult.pricing", { count: backupResult.model_pricing })}
+                value={backupResult.model_pricing}
+                color="text-cyan-300"
+              />
+            </div>
+            <p className="text-[11px] text-gray-500">
+              {t("import.backupResult.detail", {
+                agents: backupResult.agents,
+                workflows: backupResult.workflows,
+                runs: backupResult.dashboard_runs,
+                rules: backupResult.alert_rules,
+              })}
+            </p>
           </div>
         )}
       </div>

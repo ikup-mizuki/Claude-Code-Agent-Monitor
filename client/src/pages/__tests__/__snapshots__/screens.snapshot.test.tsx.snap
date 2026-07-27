@@ -6414,9 +6414,44 @@ exports[`screen snapshots > Session detail 1`] = `
           class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1"
         >
           <span
-            class="inline-flex items-center gap-1.5 text-xs text-gray-500 font-mono bg-surface-2 px-2 py-1 rounded"
+            class="inline-flex items-center gap-1 text-xs text-gray-500 font-mono bg-surface-2 px-2 py-1 rounded"
           >
-            sess-1
+            <span
+              title="sess-1"
+            >
+              sess-1
+            </span>
+            <button
+              aria-label="Copy"
+              class="flex items-center gap-1 text-[10px] py-0.5 px-1.5 rounded text-gray-400 hover:text-gray-200 hover:bg-surface-2 cursor-pointer"
+              type="button"
+            >
+              <svg
+                class="lucide lucide-copy w-3 h-3"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  height="14"
+                  rx="2"
+                  ry="2"
+                  width="14"
+                  x="8"
+                  y="8"
+                />
+                <path
+                  d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                />
+              </svg>
+              Copy
+            </button>
           </span>
           <span
             class="inline-flex items-center gap-1.5 text-xs text-gray-400 bg-surface-2 px-2 py-1 rounded"
@@ -6502,7 +6537,7 @@ exports[`screen snapshots > Session detail 1`] = `
           </span>
         </div>
         <div
-          class="flex items-center gap-1.5 text-xs text-gray-500 mt-2"
+          class="flex items-center gap-1.5 text-xs text-gray-500 mt-2 min-w-0"
         >
           <svg
             class="lucide lucide-folder-open w-3 h-3 flex-shrink-0"
@@ -6522,9 +6557,41 @@ exports[`screen snapshots > Session detail 1`] = `
           </svg>
           <span
             class="font-mono truncate"
+            title="/test"
           >
             /test
           </span>
+          <button
+            aria-label="Copy"
+            class="flex items-center gap-1 text-[10px] py-0.5 px-1.5 rounded text-gray-400 hover:text-gray-200 hover:bg-surface-2 cursor-pointer"
+            type="button"
+          >
+            <svg
+              class="lucide lucide-copy w-3 h-3"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                height="14"
+                rx="2"
+                ry="2"
+                width="14"
+                x="8"
+                y="8"
+              />
+              <path
+                d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+              />
+            </svg>
+            Copy
+          </button>
         </div>
       </div>
       <button
@@ -6658,11 +6725,7 @@ exports[`screen snapshots > Session detail 1`] = `
             d="M8 6h13"
           />
         </svg>
-        Timeline (
-        0
-        /
-        0
-        )
+        Timeline (0/0)
       </button>
     </div>
     <div>
@@ -7737,6 +7800,28 @@ exports[`screen snapshots > Settings 1`] = `
           type="button"
         >
           <svg
+            class="lucide lucide-cloud w-3.5 h-3.5"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"
+            />
+          </svg>
+          Remote Data Sources
+        </button>
+        <button
+          class="inline-flex items-center gap-1.5 text-xs whitespace-nowrap px-2.5 py-1.5 rounded-lg border transition-colors flex-shrink-0 border-border text-gray-400 hover:text-gray-200 hover:bg-surface-3"
+          type="button"
+        >
+          <svg
             class="lucide lucide-cat w-3.5 h-3.5"
             fill="none"
             height="24"
@@ -8291,9 +8376,14 @@ exports[`screen snapshots > Settings 1`] = `
         CLAUDE_HOME
       </h3>
       <p
-        class="text-xs text-gray-500 mb-4"
+        class="text-xs text-gray-500 mb-1"
       >
         Root directory for Claude Code session data. Changing this updates the scan path for transcripts and imports immediately.
+      </p>
+      <p
+        class="text-[11px] text-gray-600 italic mb-4 leading-snug"
+      >
+        Informational: Cursor sessions count here too — Cursor happens to use the same ~/.claude paths as Claude Code (locally and on synced remotes).
       </p>
       <div
         class="card p-5 space-y-4"
@@ -8360,9 +8450,14 @@ exports[`screen snapshots > Settings 1`] = `
           Import History
         </h3>
         <p
-          class="text-xs text-gray-500 mb-4"
+          class="text-xs text-gray-500 mb-1"
         >
           Bring existing Claude Code sessions into the dashboard. Token counts, per-model cost, compactions, subagents, tool uses, and turn durations are reconstructed from the original JSONL transcripts - identical to how live sessions are captured.
+        </p>
+        <p
+          class="text-[11px] text-gray-600 italic mb-4 leading-snug"
+        >
+          Informational: Cursor sessions count here too — Cursor happens to use the same ~/.claude paths as Claude Code (locally and on synced remotes).
         </p>
         <div
           class="card p-5 space-y-5"
@@ -8650,7 +8745,7 @@ exports[`screen snapshots > Settings 1`] = `
             </div>
           </div>
           <div
-            class="grid grid-cols-1 sm:grid-cols-3 gap-2"
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2"
           >
             <button
               class="text-left p-3 rounded-lg border transition-colors border-blue-500/40 bg-blue-500/10"
@@ -8763,6 +8858,54 @@ exports[`screen snapshots > Settings 1`] = `
                 Drop JSONL files or an archive (.zip / .tar.gz) directly into the browser.
               </p>
             </button>
+            <button
+              class="text-left p-3 rounded-lg border transition-colors border-border bg-surface-2 hover:bg-surface-3"
+            >
+              <div
+                class="flex items-center gap-1.5 text-xs font-medium mb-1 text-gray-300"
+              >
+                <svg
+                  class="lucide lucide-database-backup w-3.5 h-3.5"
+                  fill="none"
+                  height="24"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <ellipse
+                    cx="12"
+                    cy="5"
+                    rx="9"
+                    ry="3"
+                  />
+                  <path
+                    d="M3 12a9 3 0 0 0 5 2.69"
+                  />
+                  <path
+                    d="M21 9.3V5"
+                  />
+                  <path
+                    d="M3 5v14a9 3 0 0 0 6.47 2.88"
+                  />
+                  <path
+                    d="M12 12v4h4"
+                  />
+                  <path
+                    d="M13 20a5 5 0 0 0 9-3 4.5 4.5 0 0 0-4.5-4.5c-1.33 0-2.54.54-3.41 1.41L12 16"
+                  />
+                </svg>
+                Restore backup
+              </div>
+              <p
+                class="text-[11px] text-gray-500 leading-snug"
+              >
+                Import a dashboard export (.json) from Export data — merge another machine's history in.
+              </p>
+            </button>
           </div>
           <div
             class="bg-surface-2 border border-border rounded-lg p-4"
@@ -8829,6 +8972,337 @@ exports[`screen snapshots > Settings 1`] = `
           </div>
         </div>
       </section>
+    </section>
+    <section
+      class="scroll-mt-24"
+      id="remote-sources"
+    >
+      <div>
+        <h3
+          class="text-sm font-medium text-gray-300 flex items-center gap-2 mb-1"
+        >
+          <svg
+            class="lucide lucide-cloud w-4 h-4 text-gray-500"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"
+            />
+          </svg>
+          Remote Data Sources
+        </h3>
+        <p
+          class="text-xs text-gray-500 mb-4"
+        >
+          Collect Claude Code usage from other machines over SSH - e.g. a dev box or cloud VM you drive over SSH while running this dashboard locally. Authentication uses your own SSH setup (~/.ssh/config, keys, agent); no passwords are stored here.
+        </p>
+        <p
+          class="text-[11px] text-gray-600 italic mb-4 leading-snug"
+        >
+          Informational: Cursor sessions count here too — Cursor happens to use the same ~/.claude paths as Claude Code (locally and on synced remotes).
+        </p>
+        <div
+          class="card p-5 mb-4"
+        >
+          <div
+            class="flex items-center gap-2 mb-1"
+          >
+            <svg
+              class="lucide lucide-wifi w-4 h-4 text-accent"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 20h.01"
+              />
+              <path
+                d="M2 8.82a15 15 0 0 1 20 0"
+              />
+              <path
+                d="M5 12.859a10 10 0 0 1 14 0"
+              />
+              <path
+                d="M8.5 16.429a5 5 0 0 1 7 0"
+              />
+            </svg>
+            <span
+              class="text-sm font-medium text-gray-200"
+            >
+              Data scope
+            </span>
+          </div>
+          <p
+            class="text-xs text-gray-500 mb-3"
+          >
+            Choose which machines' data the whole dashboard shows. Changes apply immediately across every page — sessions, analytics, and cost.
+          </p>
+          <div
+            aria-label="Data scope"
+            class="grid gap-2.5 sm:grid-cols-3"
+            role="radiogroup"
+          >
+            <button
+              aria-checked="true"
+              class="relative text-left rounded-xl border p-3 transition-colors border-accent bg-accent/10 ring-1 ring-accent/40"
+              role="radio"
+            >
+              <svg
+                class="lucide lucide-circle-check-big w-4 h-4 text-accent absolute top-2.5 right-2.5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M21.801 10A10 10 0 1 1 17 3.335"
+                />
+                <path
+                  d="m9 11 3 3L22 4"
+                />
+              </svg>
+              <svg
+                class="lucide lucide-globe w-5 h-5 mb-2 text-accent"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="12"
+                  cy="12"
+                  r="10"
+                />
+                <path
+                  d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"
+                />
+                <path
+                  d="M2 12h20"
+                />
+              </svg>
+              <div
+                class="text-sm font-medium text-gray-100"
+              >
+                All sources
+              </div>
+              <div
+                class="text-[11px] text-gray-500 mt-0.5 leading-snug"
+              >
+                This machine plus every configured remote source, combined.
+              </div>
+            </button>
+            <button
+              aria-checked="false"
+              class="relative text-left rounded-xl border p-3 transition-colors border-border bg-surface-2 hover:border-accent/40 hover:bg-surface-2/70"
+              role="radio"
+            >
+              <svg
+                class="lucide lucide-monitor w-5 h-5 mb-2 text-gray-400"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  height="14"
+                  rx="2"
+                  width="20"
+                  x="2"
+                  y="3"
+                />
+                <line
+                  x1="8"
+                  x2="16"
+                  y1="21"
+                  y2="21"
+                />
+                <line
+                  x1="12"
+                  x2="12"
+                  y1="17"
+                  y2="21"
+                />
+              </svg>
+              <div
+                class="text-sm font-medium text-gray-300"
+              >
+                This machine only
+              </div>
+              <div
+                class="text-[11px] text-gray-500 mt-0.5 leading-snug"
+              >
+                Only sessions collected locally — hides all remote-source data.
+              </div>
+            </button>
+            <button
+              aria-checked="false"
+              class="relative text-left rounded-xl border p-3 transition-colors border-border bg-surface-2 hover:border-accent/40 hover:bg-surface-2/70"
+              role="radio"
+            >
+              <svg
+                class="lucide lucide-list-checks w-5 h-5 mb-2 text-gray-400"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="m3 17 2 2 4-4"
+                />
+                <path
+                  d="m3 7 2 2 4-4"
+                />
+                <path
+                  d="M13 6h8"
+                />
+                <path
+                  d="M13 12h8"
+                />
+                <path
+                  d="M13 18h8"
+                />
+              </svg>
+              <div
+                class="text-sm font-medium text-gray-300"
+              >
+                Selected sources
+              </div>
+              <div
+                class="text-[11px] text-gray-500 mt-0.5 leading-snug"
+              >
+                Pick exactly which machines to include, below.
+              </div>
+            </button>
+          </div>
+        </div>
+        <div
+          class="flex items-center justify-between mb-3"
+        >
+          <span
+            class="text-xs font-medium text-gray-400 uppercase tracking-wider"
+          >
+            Configured sources
+          </span>
+          <div
+            class="flex items-center gap-2"
+          >
+            <button
+              class="btn-primary text-xs"
+            >
+              <svg
+                class="lucide lucide-plus w-3.5 h-3.5"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M5 12h14"
+                />
+                <path
+                  d="M12 5v14"
+                />
+              </svg>
+               
+              Add source
+            </button>
+          </div>
+        </div>
+        <div
+          class="card p-6 text-center"
+        >
+          <svg
+            class="lucide lucide-server w-6 h-6 text-gray-600 mx-auto mb-2"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              height="8"
+              rx="2"
+              ry="2"
+              width="20"
+              x="2"
+              y="2"
+            />
+            <rect
+              height="8"
+              rx="2"
+              ry="2"
+              width="20"
+              x="2"
+              y="14"
+            />
+            <line
+              x1="6"
+              x2="6.01"
+              y1="6"
+              y2="6"
+            />
+            <line
+              x1="6"
+              x2="6.01"
+              y1="18"
+              y2="18"
+            />
+          </svg>
+          <p
+            class="text-sm text-gray-400"
+          >
+            No remote sources yet.
+          </p>
+          <p
+            class="text-xs text-gray-600 mt-1"
+          >
+            Add a machine you reach over SSH to pull its Claude Code usage in.
+          </p>
+        </div>
+      </div>
     </section>
     <section
       class="scroll-mt-24"
@@ -9666,8 +10140,72 @@ exports[`screen snapshots > Settings 1`] = `
         class="card p-5"
       >
         <div
-          class="grid grid-cols-2 sm:grid-cols-4 gap-3"
+          class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3"
         >
+          <div
+            class="bg-surface-2 rounded-lg px-4 py-3"
+          >
+            <div
+              class="flex items-center gap-2 mb-1.5"
+            >
+              <svg
+                class="lucide lucide-server w-4 h-4 text-indigo-400"
+                fill="none"
+                height="24"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  height="8"
+                  rx="2"
+                  ry="2"
+                  width="20"
+                  x="2"
+                  y="2"
+                />
+                <rect
+                  height="8"
+                  rx="2"
+                  ry="2"
+                  width="20"
+                  x="2"
+                  y="14"
+                />
+                <line
+                  x1="6"
+                  x2="6.01"
+                  y1="6"
+                  y2="6"
+                />
+                <line
+                  x1="6"
+                  x2="6.01"
+                  y1="18"
+                  y2="18"
+                />
+              </svg>
+              <p
+                class="text-[11px] text-gray-500 uppercase tracking-wider"
+              >
+                Release
+              </p>
+            </div>
+            <p
+              class="text-sm font-semibold text-gray-200 font-mono"
+            >
+              v
+            </p>
+            <p
+              class="text-[10px] text-amber-400/90 mt-1"
+            >
+              UI build v1.4.6 (rebuild client to match)
+            </p>
+          </div>
           <div
             class="bg-surface-2 rounded-lg px-4 py-3"
           >

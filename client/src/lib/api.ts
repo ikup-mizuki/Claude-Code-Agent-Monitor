@@ -61,6 +61,320 @@
  *
  * @author Son Nguyen <hoangson091104@gmail.com>
  */
+/* =============================================================================
+ * MODULE_GUIDE — extended in-file reference (comments only; safe to read, never executed)
+ * =============================================================================
+ * **Path:** `/Users/davidnguyen/WebstormProjects/Claude-Code-Agent-Monitor/client/src/lib/api.ts`
+ * **Purpose:** Central typed HTTP client for every REST route; attaches auth token, data-scope `sources` query params, and normalizes error payloads.
+ *
+ * ## Design constraints
+ * - Local-first: no telemetry leaves the machine unless the user configures webhooks.
+ * - Fail-safe hooks path on the server must never block Claude Code; UI mirrors that
+ *   philosophy by degrading gracefully (empty states, stale badges, reconnect loops).
+ * - Destructive flows stay behind explicit confirmation modals and server-side gates.
+ * - Internationalization: user-visible strings belong in i18n JSON, not literals here.
+ *
+ * ## Remote data & SSH
+ * Remote Data Sources let operators aggregate multiple machines. SSH entries describe
+ * how to reach a peer dashboard; the global data scope (`dataScope.ts`) narrows every
+ * scoped GET via `?sources=`. Health checks and import history surface in Settings.
+ *
+ * ## Observability
+ * Prometheus scrapes `GET /api/metrics` (see `monitoring/`). Grafana ships four
+ * provisioned boards (overview, sessions, tools, alerts). Native npm scripts and
+ * Docker Compose profiles are documented in `monitoring/README.md`.
+ *
+ * ## Internal dependencies
+ * - `./types`
+ * - `./dataScope`
+ *
+ * ## Public surface
+ * - `dashboardToken` — exported API; see TSDoc on the symbol for behavior.
+ * - `api` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcArtifactType` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcWriteArgs` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcDeleteArgs` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcMutationResult` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcBackup` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcScope` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcMdItem` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcPluginContributions` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcPlugin` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcPluginsResponse` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcMcpServer` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcMcpResponse` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcHookEntry` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcHookSource` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcSettingsSource` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcMemoryItem` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcFileResponse` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcOverview` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcMarketplace` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcMarketplacesResponse` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcKeybindingGroup` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcKeybindings` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcStatuslineScript` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcStatusline` — exported API; see TSDoc on the symbol for behavior.
+ * - `CcHookScripts` — exported API; see TSDoc on the symbol for behavior.
+ * - `RunMode` — exported API; see TSDoc on the symbol for behavior.
+ * - `RunStatus` — exported API; see TSDoc on the symbol for behavior.
+ * - `PermissionMode` — exported API; see TSDoc on the symbol for behavior.
+ * - `EffortLevel` — exported API; see TSDoc on the symbol for behavior.
+ * - `RunStartArgs` — exported API; see TSDoc on the symbol for behavior.
+ * - `RunHandle` — exported API; see TSDoc on the symbol for behavior.
+ * - `RunListResponse` — exported API; see TSDoc on the symbol for behavior.
+ * - `DashboardRunHistoryItem` — exported API; see TSDoc on the symbol for behavior.
+ * - `CwdSuggestion` — exported API; see TSDoc on the symbol for behavior.
+ * - `ModelChoice` — exported API; see TSDoc on the symbol for behavior.
+ * - `EffortChoice` — exported API; see TSDoc on the symbol for behavior.
+ * - `RUN_EFFORT_CHOICES` — exported API; see TSDoc on the symbol for behavior.
+ * - `RUN_MODEL_CHOICES` — exported API; see TSDoc on the symbol for behavior.
+ * - … plus 6 additional exports
+ *
+ * ## Testing pointers
+ * - Prefer colocated `__tests__` with Vitest + Testing Library for UI.
+ * - Server contract changes require `npm run test:server` and OpenAPI sync.
+ * - MCP edits: `npm run mcp:typecheck` and `npm run mcp:build`.
+ *
+ * ## Related docs
+ * - `ARCHITECTURE.md` — hooks → API → SQLite → WebSocket → UI pipeline.
+ * - `docs/API.md` — REST reference.
+ * - `.claude/skills/file-headers/` — mandatory `@author` header policy.
+ * ============================================================================= */
+/* -----------------------------------------------------------------------------
+ * EXPORT CATALOG — quick index of symbols defined below (documentation only).
+ * -----------------------------------------------------------------------------
+ * **dashboardToken**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **api**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcArtifactType**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcWriteArgs**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcDeleteArgs**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcMutationResult**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcBackup**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcScope**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcMdItem**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcPluginContributions**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcPlugin**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcPluginsResponse**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcMcpServer**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcMcpResponse**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcHookEntry**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcHookSource**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcSettingsSource**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcMemoryItem**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcFileResponse**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcOverview**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcMarketplace**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcMarketplacesResponse**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcKeybindingGroup**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcKeybindings**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcStatuslineScript**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcStatusline**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CcHookScripts**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **RunMode**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **RunStatus**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **PermissionMode**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **EffortLevel**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **RunStartArgs**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **RunHandle**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **RunListResponse**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **DashboardRunHistoryItem**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **CwdSuggestion**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **ModelChoice**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **EffortChoice**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **RUN_EFFORT_CHOICES**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **RUN_MODEL_CHOICES**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **ImportResult**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **RemoteSource**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **RemoteSourceInput**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **RemoteSourceTestResult**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **RemoteSourceSyncResult**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * **ImportBackupResult**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * ----------------------------------------------------------------------------- */
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared response/entity DTOs. These are the cross-cutting types produced by the
@@ -95,9 +409,26 @@ import type {
   WorkflowRunDetail,
 } from "./types";
 
+import { activeSourcesParam } from "./dataScope";
+
 // Root path all endpoint paths are appended to. Kept relative (no host) so the
 // same client bundle works behind the Vite dev proxy and in same-origin prod.
 const BASE = "/api";
+
+/**
+ * Append the current global data-scope (see {@link activeSourcesParam}) as a
+ * `sources` query param, unless the caller already set one. Called by the
+ * scoped list/aggregate endpoints (sessions, events, agents, stats, analytics)
+ * so changing the scope narrows the whole app without every call site threading
+ * it. `mode: "all"` yields no param, so unscoped installs hit clean URLs.
+ */
+function applyScope(qs: URLSearchParams): URLSearchParams {
+  if (!qs.has("sources")) {
+    const sources = activeSourcesParam();
+    if (sources) qs.set("sources", sources);
+  }
+  return qs;
+}
 
 /**
  * Optional dashboard auth token (GHSA-gr74-4xfh-6jw9). Only needed when the
@@ -243,7 +574,11 @@ export const api = {
      * @returns {@link Stats} — the small set of headline counters (totals,
      *   active counts, events-today, etc.) shown in the dashboard header.
      */
-    get: () => request<Stats>(`/stats?tz_offset=${new Date().getTimezoneOffset()}`),
+    get: () => {
+      const qs = new URLSearchParams({ tz_offset: String(new Date().getTimezoneOffset()) });
+      applyScope(qs);
+      return request<Stats>(`/stats?${qs.toString()}`);
+    },
   },
 
   // ─────────────────────────────── Sessions API ───────────────────────────────
@@ -256,9 +591,11 @@ export const api = {
      * returns the set of distinct project directories seen across sessions so
      * the UI can offer them as filter options.
      *
-     * @returns An object with `cwds`: the distinct working-directory strings.
+     * @returns An object with `cwds`: the distinct working-directory strings,
+     *   and `sources`: the distinct machine origins present in the data (always
+     *   includes at least `"local"`), for the data-scope selector.
      */
-    facets: () => request<{ cwds: string[] }>("/sessions/facets"),
+    facets: () => request<{ cwds: string[]; sources: string[] }>("/sessions/facets"),
     /**
      * GET /api/sessions - paginated, filterable, sortable session list.
      *
@@ -300,6 +637,7 @@ export const api = {
       if (params?.sort_desc !== undefined) qs.set("sort_desc", String(params.sort_desc));
       if (params?.limit) qs.set("limit", String(params.limit));
       if (params?.offset) qs.set("offset", String(params.offset));
+      applyScope(qs); // narrow to the active data scope (source machines)
       const queryString = qs.toString();
       // Omit the "?" entirely when there are no params, for a clean/cacheable URL.
       return request<{ sessions: Session[]; total: number; limit: number; offset: number }>(
@@ -425,6 +763,7 @@ export const api = {
       if (params?.session_id) qs.set("session_id", params.session_id);
       if (params?.limit) qs.set("limit", String(params.limit));
       if (params?.offset) qs.set("offset", String(params.offset));
+      applyScope(qs); // narrow to the active data scope (source machines)
       const q = qs.toString();
       return request<{ agents: Agent[] }>(`/agents${q ? `?${q}` : ""}`);
     },
@@ -487,6 +826,7 @@ export const api = {
       // `!= null` so an explicit 0 page size / offset is still sent.
       if (params?.limit != null) qs.set("limit", String(params.limit));
       if (params?.offset != null) qs.set("offset", String(params.offset));
+      applyScope(qs); // narrow to the active data scope (source machines)
       const q = qs.toString();
       return request<{
         events: DashboardEvent[];
@@ -520,7 +860,11 @@ export const api = {
      *
      * @returns {@link Analytics} — the chart-ready analytics payload.
      */
-    get: () => request<Analytics>(`/analytics?tz_offset=${new Date().getTimezoneOffset()}`),
+    get: () => {
+      const qs = new URLSearchParams({ tz_offset: String(new Date().getTimezoneOffset()) });
+      applyScope(qs);
+      return request<Analytics>(`/analytics?${qs.toString()}`);
+    },
   },
 
   // ─────────────────────────────── Settings API ───────────────────────────────
@@ -539,9 +883,9 @@ export const api = {
      *     `load_stats` (5-/15-/60-minute rates).
      *   - `hooks`: whether the dashboard's Claude Code hooks are installed, the
      *     settings.json path, and a per-hook installed map.
-     *   - `server`: process uptime, Node version, platform/arch, live WebSocket
-     *     connection count, process memory, CPU load averages, and host memory/
-     *     cpu counts.
+     *   - `server`: dashboard release `version`, process uptime, Node version,
+     *     platform/arch, live WebSocket connection count, process memory, CPU
+     *     load averages, and host memory/cpu counts.
      *   - `transcript_cache`: LRU cache occupancy, capacity, hit/miss counts,
      *     and the currently-cached keys.
      *
@@ -565,6 +909,7 @@ export const api = {
         };
         hooks: { installed: boolean; path: string; hooks: Record<string, boolean> };
         server: {
+          version: string;
           uptime: number;
           node_version: string;
           platform: string;
@@ -675,6 +1020,30 @@ export const api = {
      * @returns The absolute-on-origin URL (`/api/settings/export`) to link to.
      */
     exportData: () => `${BASE}/settings/export`,
+    /**
+     * POST /api/settings/import (multipart) - restore a bundle previously
+     * produced by {@link exportData}. Idempotent and non-destructive: sessions
+     * already present are skipped whole, so importing a backup (or another
+     * machine's export) never duplicates or overwrites live data.
+     *
+     * Like {@link api.import.upload}, this bypasses {@link request} to send a
+     * `multipart/form-data` body (field name "file") and let the browser set the
+     * boundary. No auth token is attached (local/zero-config flow).
+     *
+     * @param file The `.json` export file the user selected.
+     * @returns {@link ImportBackupResult} — per-table restore counts.
+     * @throws {Error} On a non-2xx response, mirroring {@link request}.
+     */
+    importData: async (file: File): Promise<ImportBackupResult> => {
+      const form = new FormData();
+      form.append("file", file, file.name);
+      const res = await fetch(`${BASE}/settings/import`, { method: "POST", body: form });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.error?.message || `HTTP ${res.status}`);
+      }
+      return res.json();
+    },
     /**
      * POST /api/settings/cleanup - DESTRUCTIVE: marks sessions idle longer
      * than `abandon_hours` as "abandoned", and purges rows older than
@@ -817,8 +1186,14 @@ export const api = {
      *
      * @returns {@link CostResult} — the aggregate cost breakdown across sessions.
      */
-    totalCost: () =>
-      request<CostResult>(`/pricing/cost?tz_offset=${new Date().getTimezoneOffset()}`),
+    totalCost: () => {
+      // Scope the aggregate to the active data-scope, exactly like the sessions /
+      // stats / analytics endpoints — otherwise switching the Data scope selector
+      // left the Dashboard "total cost" showing the un-narrowed global total.
+      const qs = new URLSearchParams({ tz_offset: String(new Date().getTimezoneOffset()) });
+      applyScope(qs);
+      return request<CostResult>(`/pricing/cost?${qs.toString()}`);
+    },
     /**
      * GET /api/pricing/cost/:sessionId - cost for one session, priced as of
      * the session's start date.
@@ -1049,6 +1424,21 @@ export const api = {
      * @returns {@link CcKeybindings} — grouped key/action bindings + file metadata.
      */
     keybindings: () => request<CcKeybindings>("/cc-config/keybindings"),
+    /**
+     * PUT /api/cc-config/keybindings - overwrite the user's `keybindings.json`
+     * from a structured list of groups. The server backs the file up first and
+     * preserves any top-level metadata (`$schema`/`$docs`), replacing only the
+     * `bindings` array.
+     *
+     * @param groups Full set of {@link CcKeybindingGroup}s to persist.
+     * @returns {@link CcMutationResult} — the written path, backup path, and
+     *   whether the file was newly `created`.
+     */
+    writeKeybindings: (groups: CcKeybindingGroup[]) =>
+      request<CcMutationResult>("/cc-config/keybindings", {
+        method: "PUT",
+        body: JSON.stringify({ groups }),
+      }),
     /**
      * GET /api/cc-config/statusline - active statusline config + scripts.
      * @returns {@link CcStatusline} — the active config plus discovered scripts.
@@ -1401,6 +1791,84 @@ export const api = {
         `/webhooks/${encodeURIComponent(id)}/deliveries${q ? `?${q}` : ""}`
       );
     },
+  },
+
+  // ───────────────────────────── Remote Sources API ────────────────────────────
+  /** Remote (SSH) machines whose Claude Code history this dashboard pulls in.
+   *  Maps to `server/routes/remote-sources.js`; see also the global data-scope
+   *  selector ({@link "./dataScope"}) which decides which sources are shown. */
+  remoteSources: {
+    /**
+     * GET /api/remote-sources — list every configured source with live status.
+     * @returns `{ sources }` — the {@link RemoteSource} rows (config + status).
+     */
+    list: () => request<{ sources: RemoteSource[] }>("/remote-sources"),
+    /**
+     * POST /api/remote-sources — add a source. No secrets are sent; auth defers
+     * to the host's SSH stack (see the route/lib docs).
+     * @param data {@link RemoteSourceInput} — label + ssh destination (+ options).
+     * @returns `{ source }` — the created {@link RemoteSource}.
+     */
+    create: (data: RemoteSourceInput) =>
+      request<{ source: RemoteSource }>("/remote-sources", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    /**
+     * PATCH /api/remote-sources/:id — partial update (any subset of fields).
+     * @param id   The source id.
+     * @param data Partial {@link RemoteSourceInput}.
+     * @returns `{ source }` — the updated {@link RemoteSource}.
+     */
+    update: (id: string, data: Partial<RemoteSourceInput>) =>
+      request<{ source: RemoteSource }>(`/remote-sources/${encodeURIComponent(id)}`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
+    /**
+     * DELETE /api/remote-sources/:id — remove a source. Pass `purge` to also
+     * delete the sessions it imported (destructive); default detaches them to
+     * `local`.
+     * @param id    The source id.
+     * @param purge When true, also delete this source's imported sessions.
+     * @returns `{ ok, purged }` — success flag and count of purged sessions.
+     */
+    remove: (id: string, purge = false) =>
+      request<{ ok: boolean; purged: number }>(
+        `/remote-sources/${encodeURIComponent(id)}${purge ? "?purge=true" : ""}`,
+        { method: "DELETE" }
+      ),
+    /**
+     * POST /api/remote-sources/:id/test — probe SSH connectivity + remote dir.
+     * @param id The source id.
+     * @returns {@link RemoteSourceTestResult}.
+     */
+    test: (id: string) =>
+      request<RemoteSourceTestResult>(`/remote-sources/${encodeURIComponent(id)}/test`, {
+        method: "POST",
+      }),
+    /**
+     * POST /api/remote-sources/:id/sync — pull the remote history now. Progress
+     * also streams over the `import.progress` / `remote_source.status` WS
+     * messages; this resolves with the final counters.
+     * @param id The source id.
+     * @returns {@link RemoteSourceSyncResult}.
+     */
+    sync: (id: string) =>
+      request<RemoteSourceSyncResult>(`/remote-sources/${encodeURIComponent(id)}/sync`, {
+        method: "POST",
+      }),
+    /**
+     * POST /api/remote-sources/sync-all — sync every enabled source now
+     * (sequential; per-source failures isolated).
+     * @returns `{ ok, synced, results }` — one entry per enabled source.
+     */
+    syncAll: () =>
+      request<{
+        ok: boolean;
+        synced: number;
+        results: Array<{ id: string; ok: boolean; error?: string }>;
+      }>("/remote-sources/sync-all", { method: "POST" }),
   },
 };
 
@@ -1966,4 +2434,98 @@ export interface ImportResult {
   entries_extracted?: number;
   /** Entries skipped during parsing (e.g. malformed lines). */
   entries_skipped?: number;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Remote Sources types — SSH machines whose Claude Code history is pulled in.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** A configured remote source with its live sync status (server response). */
+export interface RemoteSource {
+  /** Stable id (`src_…`), also the value written to `sessions.source`. */
+  id: string;
+  /** Human-friendly name shown in the UI and on session source badges. */
+  label: string;
+  /** SSH destination: `user@host` or a `~/.ssh/config` alias. */
+  host: string;
+  /** Optional non-default SSH port. */
+  ssh_port: number | null;
+  /** Optional path to a private key the host already controls. */
+  identity_file: string | null;
+  /** Optional remote CLAUDE_HOME (default `~/.claude`). */
+  remote_home: string | null;
+  /** Whether the background poller pulls this source. */
+  enabled: boolean;
+  /** Last known sync state. */
+  status: "idle" | "syncing" | "ok" | "error";
+  /** Last error message, when `status === "error"`. */
+  last_error: string | null;
+  /** ISO timestamp of the last successful sync, or null. */
+  last_sync_at: string | null;
+  /** Import counters from the last successful sync, or null. */
+  last_sync_counts: {
+    imported?: number;
+    skipped?: number;
+    backfilled?: number;
+    errors?: number;
+    sessions_seen?: number;
+    sessions_tagged?: number;
+  } | null;
+  /** Live number of sessions currently attributed to this source. */
+  session_count?: number;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Request body for creating/updating a remote source. */
+export interface RemoteSourceInput {
+  label: string;
+  host: string;
+  ssh_port?: number | null;
+  identity_file?: string | null;
+  remote_home?: string | null;
+  enabled?: boolean;
+}
+
+/** Result of a connectivity probe (POST /:id/test). */
+export interface RemoteSourceTestResult {
+  ok: boolean;
+  message: string;
+  remoteProjects?: string;
+}
+
+/** Result of an on-demand sync (POST /:id/sync). */
+export interface RemoteSourceSyncResult {
+  ok?: boolean;
+  imported?: number;
+  skipped?: number;
+  backfilled?: number;
+  errors?: number;
+  sessions_seen?: number;
+  sessions_tagged?: number;
+  /** Present when the sync was skipped because one was already running. */
+  skipped_reason?: string;
+}
+
+/** Result of POST /api/settings/import — restoring a full export bundle
+ *  ({@link api.settings.importData}). Session-scoped tables report rows that
+ *  were newly inserted; `sessions_skipped` counts sessions already present
+ *  (skipped whole to stay idempotent). Config tables report new rows only. */
+export interface ImportBackupResult {
+  ok: boolean;
+  /** The uploaded filename or server-side path the bundle was read from. */
+  source: string;
+  /** Bundle format marker, or null for a legacy (pre-versioning) export. */
+  format: string | null;
+  sessions_imported: number;
+  sessions_skipped: number;
+  agents: number;
+  events: number;
+  token_usage: number;
+  workflows: number;
+  dashboard_runs: number;
+  alert_rules: number;
+  model_pricing: number;
+  /** Bundle entries that could not be restored (e.g. a session with no id). */
+  errors: number;
 }

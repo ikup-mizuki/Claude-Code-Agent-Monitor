@@ -3,6 +3,66 @@
  * @description Displays detailed information about a specific session, including its agents, events, and cost breakdown, with real-time updates and an expandable agent hierarchy view.
  * @author Son Nguyen <hoangson091104@gmail.com>
  */
+/* =============================================================================
+ * MODULE_GUIDE — extended in-file reference (comments only; safe to read, never executed)
+ * =============================================================================
+ * **Path:** `/Users/davidnguyen/WebstormProjects/Claude-Code-Agent-Monitor/client/src/pages/SessionDetail.tsx`
+ * **Purpose:** Dashboard module consumed by the React client, MCP tools, or desktop shell depending on deployment mode.
+ *
+ * ## Design constraints
+ * - Local-first: no telemetry leaves the machine unless the user configures webhooks.
+ * - Fail-safe hooks path on the server must never block Claude Code; UI mirrors that
+ *   philosophy by degrading gracefully (empty states, stale badges, reconnect loops).
+ * - Destructive flows stay behind explicit confirmation modals and server-side gates.
+ * - Internationalization: user-visible strings belong in i18n JSON, not literals here.
+ *
+ * ## Remote data & SSH
+ * Remote Data Sources let operators aggregate multiple machines. SSH entries describe
+ * how to reach a peer dashboard; the global data scope (`dataScope.ts`) narrows every
+ * scoped GET via `?sources=`. Health checks and import history surface in Settings.
+ *
+ * ## Observability
+ * Prometheus scrapes `GET /api/metrics` (see `monitoring/`). Grafana ships four
+ * provisioned boards (overview, sessions, tools, alerts). Native npm scripts and
+ * Docker Compose profiles are documented in `monitoring/README.md`.
+ *
+ * ## Internal dependencies
+ * - `../lib/api`
+ * - `../lib/eventBus`
+ * - `../components/AgentCard`
+ * - `../components/SessionOverview`
+ * - `../components/conversation/ConversationView`
+ * - `../components/StatusBadge`
+ * - `../lib/types`
+ * - `../components/EventDetail`
+ * - `../components/EventFilters`
+ * - `../components/EventFiltersInfo`
+ * - `../components/Skeleton`
+ * - `../lib/event-grouping`
+ *
+ * ## Public surface
+ * - `SessionDetail` — exported API; see TSDoc on the symbol for behavior.
+ *
+ * ## Testing pointers
+ * - Prefer colocated `__tests__` with Vitest + Testing Library for UI.
+ * - Server contract changes require `npm run test:server` and OpenAPI sync.
+ * - MCP edits: `npm run mcp:typecheck` and `npm run mcp:build`.
+ *
+ * ## Related docs
+ * - `ARCHITECTURE.md` — hooks → API → SQLite → WebSocket → UI pipeline.
+ * - `docs/API.md` — REST reference.
+ * - `.claude/skills/file-headers/` — mandatory `@author` header policy.
+ * ============================================================================= */
+/* -----------------------------------------------------------------------------
+ * EXPORT CATALOG — quick index of symbols defined below (documentation only).
+ * -----------------------------------------------------------------------------
+ * **SessionDetail**
+ *   Part of this module's public contract. Downstream imports should treat
+ *   the signature and return type as stable unless release notes say otherwise.
+ *   When behavior changes, update the `@file` overview and relevant tests.
+ *
+ * ----------------------------------------------------------------------------- */
+
 import { useEffect, useState, useCallback, useMemo, useRef, type ReactNode } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -27,10 +87,12 @@ import {
 } from "lucide-react";
 import { api } from "../lib/api";
 import { eventBus } from "../lib/eventBus";
+import { isRemoteDataRefreshMessage } from "../lib/remoteDataEvents";
 import { AgentCard } from "../components/AgentCard";
 import { SessionOverview } from "../components/SessionOverview";
 import { ConversationView } from "../components/conversation/ConversationView";
 import { SessionStatusBadge, AgentStatusBadge, REASON_ICONS } from "../components/StatusBadge";
+import { CopyButton } from "../components/event-views/primitives";
 import {
   effectiveSessionStatus,
   isSessionAwaitingInput,
@@ -441,6 +503,15 @@ export function SessionDetail() {
 
   useEffect(() => {
     const unsubscribe = eventBus.subscribe((msg) => {
+      if (isRemoteDataRefreshMessage(msg)) {
+        load();
+        if (eventsRefreshTimerRef.current) clearTimeout(eventsRefreshTimerRef.current);
+        eventsRefreshTimerRef.current = setTimeout(() => {
+          eventsRefreshTimerRef.current = null;
+          refreshEventsWithPagination();
+        }, EVENTS_REFRESH_DEBOUNCE_MS);
+        return;
+      }
       if (
         msg.type === "agent_created" ||
         msg.type === "agent_updated" ||
@@ -533,8 +604,9 @@ export function SessionDetail() {
             />
           </div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
-            <span className="inline-flex items-center gap-1.5 text-xs text-gray-500 font-mono bg-surface-2 px-2 py-1 rounded">
-              {session.id.slice(0, 16)}
+            <span className="inline-flex items-center gap-1 text-xs text-gray-500 font-mono bg-surface-2 px-2 py-1 rounded">
+              <span title={session.id}>{session.id.slice(0, 16)}</span>
+              <CopyButton text={session.id} />
             </span>
             {session.model && (
               <span className="inline-flex items-center gap-1.5 text-xs text-gray-400 bg-surface-2 px-2 py-1 rounded">
@@ -559,9 +631,12 @@ export function SessionDetail() {
             )}
           </div>
           {session.cwd && (
-            <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-2">
+            <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-2 min-w-0">
               <FolderOpen className="w-3 h-3 flex-shrink-0" />
-              <span className="font-mono truncate">{session.cwd}</span>
+              <span className="font-mono truncate" title={session.cwd}>
+                {session.cwd}
+              </span>
+              <CopyButton text={session.cwd} />
             </div>
           )}
         </div>
@@ -689,7 +764,7 @@ export function SessionDetail() {
           }`}
         >
           <MessageSquare className="w-4 h-4" />
-          Conversation
+          {t("detail.conversation")}
         </button>
         <button
           onClick={() => {
@@ -703,7 +778,7 @@ export function SessionDetail() {
           }`}
         >
           <List className="w-4 h-4" />
-          Timeline ({events.length}/{eventsTotal})
+          {t("detail.timeline", { shown: events.length, total: eventsTotal })}
         </button>
       </div>
 
@@ -711,10 +786,7 @@ export function SessionDetail() {
       {transcriptNotFound && (
         <div className="flex items-center gap-2 px-4 py-2.5 mb-3 text-sm text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-lg">
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          <span>
-            Conversation transcript not found for this agent. The transcript file may be missing or
-            not yet linked.
-          </span>
+          <span>{t("detail.transcriptNotFound")}</span>
           <button
             onClick={() => setTranscriptNotFound(false)}
             className="ml-auto text-amber-400/60 hover:text-amber-400 transition-colors"

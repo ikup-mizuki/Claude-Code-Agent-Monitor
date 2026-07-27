@@ -39,6 +39,7 @@
   },
   "common": {
     "search": "按名称搜索…",
+    "clearSearch": "清除搜索",
     "empty": "暂无内容。",
     "viewSource": "查看源码",
     "close": "关闭",
@@ -98,7 +99,16 @@
     "context": "上下文",
     "key": "按键",
     "action": "动作",
-    "docsLink": "查看快捷键文档"
+    "docsLink": "查看快捷键文档",
+    "contextPlaceholder": "上下文（如 Global、Chat）",
+    "addContext": "添加上下文",
+    "removeContext": "删除上下文",
+    "addBinding": "添加快捷键",
+    "removeBinding": "删除快捷键",
+    "errContext": "每个上下文都需要名称。",
+    "errDupContext": "上下文重复：{{context}}",
+    "errEmpty": "“{{context}}”中的每个快捷键都需要按键和动作。",
+    "errDupKey": "上下文“{{context}}”中的按键“{{key}}”重复。"
   },
   "statusline": {
     "title": "状态行",
@@ -142,6 +152,7 @@
     "autoSubtitle": "位于 ~/.claude/projects/<项目>/memory/ 的按项目文件式记忆 —— 一个 MEMORY.md 索引外加每条记忆事实一个文件。此处为只读。",
     "noMatches": "没有与搜索匹配的记忆文件。",
     "indexFiles": "索引",
+    "jumpTo": "跳转到文件",
     "fileCount_one": "{{count}} 个文件",
     "fileCount_other": "{{count}} 个文件",
     "factFiles_one": "{{count}} 条事实",
