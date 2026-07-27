@@ -19,17 +19,21 @@ $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 Set-Location $RepoRoot
 
-if (-not (Test-Path (Join-Path $RepoRoot "node_modules"))) {
-  Write-Host "[start-ja] installing root dependencies..." -ForegroundColor Cyan
-  npm install
-}
+# Always run npm install rather than gating on "does node_modules exist" —
+# that check missed the case where node_modules already existed (e.g. from a
+# previous machine/commit) but package.json gained a new dependency via a
+# merge (e.g. cross-spawn added by an upstream update). npm install is a fast
+# no-op when nothing changed, so this costs a few seconds even when unneeded.
+Write-Host "[start-ja] syncing root dependencies..." -ForegroundColor Cyan
+npm install
+if ($LASTEXITCODE -ne 0) { Write-Host "[start-ja] npm install (root) failed" -ForegroundColor Red; exit 1 }
 
-if (-not (Test-Path (Join-Path $RepoRoot "client\node_modules"))) {
-  Write-Host "[start-ja] installing client dependencies..." -ForegroundColor Cyan
-  Push-Location (Join-Path $RepoRoot "client")
-  npm install
-  Pop-Location
-}
+Write-Host "[start-ja] syncing client dependencies..." -ForegroundColor Cyan
+Push-Location (Join-Path $RepoRoot "client")
+npm install
+$clientInstallExit = $LASTEXITCODE
+Pop-Location
+if ($clientInstallExit -ne 0) { Write-Host "[start-ja] npm install (client) failed" -ForegroundColor Red; exit 1 }
 
 function Test-ServerUp {
   try {
