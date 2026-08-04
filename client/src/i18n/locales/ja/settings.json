@@ -4,6 +4,12 @@
   "exportData": "データをエクスポート",
   "acrossSessions": "追跡されたすべてのセッション",
   "basedOnUsage": "モデルごとのトークン使用量に基づく",
+  "appearance": {
+    "title": "外観",
+    "description": "このデバイスでのダッシュボードの見た目を選択します。",
+    "lightTheme": "ライトテーマ",
+    "lightThemeDesc": "ダッシュボードを明るい背景に切り替えます。オフの場合は既定のダークテーマになります。"
+  },
   "tabby": {
     "title": "Tabby コンパニオン",
     "description": "ライブセッションに反応して浮かぶ猫。",

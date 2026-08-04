@@ -7483,6 +7483,55 @@ exports[`screen snapshots > Settings 1`] = `
         </button>
         <button
           class="inline-flex items-center gap-1.5 text-xs whitespace-nowrap px-2.5 py-1.5 rounded-lg border transition-colors flex-shrink-0 border-border text-gray-400 hover:text-gray-200 hover:bg-surface-3"
+          data-settings-section="appearance"
+          type="button"
+        >
+          <svg
+            class="lucide lucide-sun w-3.5 h-3.5"
+            fill="none"
+            height="24"
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            viewBox="0 0 24 24"
+            width="24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle
+              cx="12"
+              cy="12"
+              r="4"
+            />
+            <path
+              d="M12 2v2"
+            />
+            <path
+              d="M12 20v2"
+            />
+            <path
+              d="m4.93 4.93 1.41 1.41"
+            />
+            <path
+              d="m17.66 17.66 1.41 1.41"
+            />
+            <path
+              d="M2 12h2"
+            />
+            <path
+              d="M20 12h2"
+            />
+            <path
+              d="m6.34 17.66-1.41 1.41"
+            />
+            <path
+              d="m19.07 4.93-1.41 1.41"
+            />
+          </svg>
+          Appearance
+        </button>
+        <button
+          class="inline-flex items-center gap-1.5 text-xs whitespace-nowrap px-2.5 py-1.5 rounded-lg border transition-colors flex-shrink-0 border-border text-gray-400 hover:text-gray-200 hover:bg-surface-3"
           data-settings-section="tabby"
           type="button"
         >
@@ -9606,6 +9655,145 @@ exports[`screen snapshots > Settings 1`] = `
           >
             Add a machine you reach over SSH to pull its Claude Code and Codex usage in.
           </p>
+        </div>
+      </div>
+    </section>
+    <section
+      class="scroll-mt-24"
+      id="appearance"
+    >
+      <h3
+        class="text-sm font-medium text-gray-300 flex items-center gap-2 mb-1"
+      >
+        <svg
+          class="lucide lucide-sun w-4 h-4 text-gray-500"
+          fill="none"
+          height="24"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle
+            cx="12"
+            cy="12"
+            r="4"
+          />
+          <path
+            d="M12 2v2"
+          />
+          <path
+            d="M12 20v2"
+          />
+          <path
+            d="m4.93 4.93 1.41 1.41"
+          />
+          <path
+            d="m17.66 17.66 1.41 1.41"
+          />
+          <path
+            d="M2 12h2"
+          />
+          <path
+            d="M20 12h2"
+          />
+          <path
+            d="m6.34 17.66-1.41 1.41"
+          />
+          <path
+            d="m19.07 4.93-1.41 1.41"
+          />
+        </svg>
+        Appearance
+      </h3>
+      <p
+        class="text-xs text-gray-500 mb-4"
+      >
+        Choose how the dashboard looks on this device.
+      </p>
+      <div
+        class="card p-5"
+      >
+        <div
+          class="flex items-center gap-3"
+        >
+          <div
+            class="w-10 h-10 rounded-xl flex items-center justify-center transition-colors bg-surface-2 border border-border"
+          >
+            <svg
+              class="lucide lucide-sun w-5 h-5 text-gray-500"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="4"
+              />
+              <path
+                d="M12 2v2"
+              />
+              <path
+                d="M12 20v2"
+              />
+              <path
+                d="m4.93 4.93 1.41 1.41"
+              />
+              <path
+                d="m17.66 17.66 1.41 1.41"
+              />
+              <path
+                d="M2 12h2"
+              />
+              <path
+                d="M20 12h2"
+              />
+              <path
+                d="m6.34 17.66-1.41 1.41"
+              />
+              <path
+                d="m19.07 4.93-1.41 1.41"
+              />
+            </svg>
+          </div>
+          <label
+            class="flex items-center justify-between gap-3 cursor-pointer group"
+          >
+            <div
+              class="min-w-0"
+            >
+              <p
+                class="text-sm text-gray-300 group-hover:text-gray-200 transition-colors"
+              >
+                Light theme
+              </p>
+              <p
+                class="text-xs text-gray-500 mt-0.5"
+              >
+                Switch the dashboard to a light background. Off uses the default dark theme.
+              </p>
+            </div>
+            <button
+              aria-checked="false"
+              class="relative inline-flex h-5 w-9 flex-shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 bg-surface-4"
+              role="switch"
+              type="button"
+            >
+              <span
+                class="pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow transform transition-transform duration-200 translate-x-0"
+              />
+            </button>
+          </label>
         </div>
       </div>
     </section>

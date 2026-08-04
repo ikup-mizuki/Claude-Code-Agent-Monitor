@@ -65,6 +65,7 @@ import "@fontsource/jetbrains-mono/latin-400.css";
 import "@fontsource/jetbrains-mono/latin-500.css";
 import App from "./App";
 import "./i18n";
+import "./lib/themePrefs";
 import "./index.css";
 
 if ("serviceWorker" in navigator) {

@@ -109,11 +109,13 @@ import {
   ChevronLeft,
   ChevronRight,
   Cloud,
+  Sun,
 } from "lucide-react";
 import { api } from "../lib/api";
 import { eventBus } from "../lib/eventBus";
 import { isRemoteDataRefreshMessage } from "../lib/remoteDataEvents";
 import { tabbyPrefs } from "../components/Tabby/prefs";
+import { themePrefs } from "../lib/themePrefs";
 import { fmt, fmtCost, getCurrentLocale } from "../lib/format";
 import { subscribeToPush, unsubscribeFromPush } from "../lib/push";
 import { Tip } from "../components/Tip";
@@ -144,6 +146,7 @@ const SETTINGS_SECTIONS: {
     fallback: "Remote Data Sources",
     Icon: Cloud,
   },
+  { id: "appearance", labelKey: "appearance.title", fallback: "Appearance", Icon: Sun },
   { id: "tabby", labelKey: "tabby.title", fallback: "Tabby", Icon: Cat },
   { id: "notifications", labelKey: "notifications.title", Icon: Bell },
   { id: "alerts", labelKey: "alertsHub.title", Icon: BellRing },
@@ -948,6 +951,11 @@ export function Settings() {
   const setTabby = useCallback((v: boolean) => {
     tabbyPrefs.setEnabled(v);
     setTabbyEnabled(v);
+  }, []);
+  const [lightTheme, setLightThemeState] = useState(() => themePrefs.get() === "light");
+  const setLightTheme = useCallback((v: boolean) => {
+    themePrefs.set(v ? "light" : "dark");
+    setLightThemeState(v);
   }, []);
   const [abandonHours, setAbandonHours] = useState("24");
   const [purgeDays, setPurgeDays] = useState("90");
@@ -2029,6 +2037,40 @@ export function Settings() {
       {/* ─── REMOTE DATA SOURCES ─── */}
       <section id="remote-sources" className="scroll-mt-24">
         <RemoteSources />
+      </section>
+
+      {/* ─── APPEARANCE ─── */}
+      <section id="appearance" className="scroll-mt-24">
+        <h3 className="text-sm font-medium text-gray-300 flex items-center gap-2 mb-1">
+          <Sun className="w-4 h-4 text-gray-500" />
+          {t("appearance.title", "Appearance")}
+        </h3>
+        <p className="text-xs text-gray-500 mb-4">
+          {t("appearance.description", "Choose how the dashboard looks on this device.")}
+        </p>
+
+        <div className="card p-5">
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
+                lightTheme
+                  ? "bg-amber-400/10 border border-amber-400/20"
+                  : "bg-surface-2 border border-border"
+              }`}
+            >
+              <Sun className={`w-5 h-5 ${lightTheme ? "text-amber-400" : "text-gray-500"}`} />
+            </div>
+            <Toggle
+              checked={lightTheme}
+              onChange={setLightTheme}
+              label={t("appearance.lightTheme", "Light theme")}
+              description={t(
+                "appearance.lightThemeDesc",
+                "Switch the dashboard to a light background. Off uses the default dark theme."
+              )}
+            />
+          </div>
+        </div>
       </section>
 
       {/* ─── TABBY COMPANION ─── */}
