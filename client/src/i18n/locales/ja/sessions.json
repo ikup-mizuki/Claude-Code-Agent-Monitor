@@ -34,6 +34,27 @@
     "unparented": "親なしサブエージェント",
     "costBreakdown": "コスト内訳",
     "eventTimeline": "イベントタイムライン",
-    "noEvents": "イベントは記録されていません。"
-  }
+    "noEvents": "イベントは記録されていません。",
+    "conversation": "会話",
+    "timeline": "タイムライン ({{shown}}/{{total}})",
+    "transcriptNotFound": "このエージェントの会話トランスクリプトが見つかりません。トランスクリプトファイルが欠落しているか、まだリンクされていない可能性があります。",
+    "transcript": {
+      "loadOlder": "↑ 古いメッセージを読み込む"
+    }
+  },
+  "directoryFilterLabel": "プロジェクトディレクトリ",
+  "allDirectories": "すべてのプロジェクト",
+  "selectedDirectories": "{{count}} プロジェクト",
+  "directorySearchPlaceholder": "プロジェクトを絞り込む...",
+  "noDirectoriesFound": "一致するプロジェクトはありません",
+  "clearDirectories": "クリア",
+  "sortTimeNewest": "最終アクティブ: 新しい順",
+  "sortTimeOldest": "最終アクティブ: 古い順",
+  "sortDurationLongest": "期間: 長い順",
+  "sortDurationShortest": "期間: 短い順",
+  "sortPriceHighest": "コスト: 高い順",
+  "sortPriceLowest": "コスト: 低い順",
+  "sortDescending": "降順",
+  "sortAscending": "昇順",
+  "remoteSourceBadgeTitle": "リモートマシンから収集されました"
 }

@@ -1,6 +1,20 @@
 {
   "title": "会话",
   "searchPlaceholder": "搜索会话...",
+  "directoryFilterLabel": "项目目录",
+  "allDirectories": "所有项目",
+  "selectedDirectories": "{{count}} 个项目",
+  "directorySearchPlaceholder": "筛选项目...",
+  "noDirectoriesFound": "没有匹配的项目",
+  "clearDirectories": "清除",
+  "sortTimeNewest": "最后活跃：最新",
+  "sortTimeOldest": "最后活跃：最早",
+  "sortDurationLongest": "持续时间：最长",
+  "sortDurationShortest": "持续时间：最短",
+  "sortPriceHighest": "费用：最高",
+  "sortPriceLowest": "费用：最低",
+  "sortDescending": "降序",
+  "sortAscending": "升序",
   "filterAll": "全部",
   "filterActive": "活跃",
   "filterWaiting": "等待中",
@@ -11,7 +25,7 @@
   "sessionCount_plural": "已记录 {{count}} 个会话",
   "noSessions": "未找到会话",
   "noSessionsDesc": "请尝试调整搜索条件或筛选器。",
-  "noSessionsHint": "启动一个安装了 hooks 的 Claude Code 会话以开始追踪。",
+  "noSessionsHint": "启动已安装 hooks 的受监控 Agent 会话即可开始追踪。",
   "tableSession": "会话",
   "tableStatus": "状态",
   "tableLastActive": "最后活跃",
@@ -23,7 +37,7 @@
   "detail": {
     "waitingBanner": {
       "title": "正在等待你的输入",
-      "generic": "在你于终端中响应之前，此会话的 Claude Code 将保持暂停。"
+      "generic": "此会话已暂停，直到你在终端中响应。"
     },
     "failedLoad": "会话加载失败",
     "loading": "正在加载会话...",
@@ -37,6 +51,9 @@
     "noEvents": "暂无事件记录。",
     "conversation": "对话",
     "timeline": "时间线 ({{shown}}/{{total}})",
-    "transcriptNotFound": "未找到此 Agent 的对话记录。Transcript 文件可能缺失或尚未关联。"
+    "transcriptNotFound": "未找到此 Agent 的对话记录。Transcript 文件可能缺失或尚未关联。",
+    "transcript": {
+      "loadOlder": "↑ 加载更早的消息"
+    }
   }
 }

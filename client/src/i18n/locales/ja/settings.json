@@ -41,7 +41,24 @@
     "cacheWrite5m": "キャッシュ書き込み (5分)",
     "cacheWrite1h": "キャッシュ書き込み (1時間)",
     "fastInput": "高速入力",
-    "fastOutput": "高速出力"
+    "fastOutput": "高速出力",
+    "navClaude": "Claudeの料金",
+    "navGpt": "Codexの料金",
+    "gpt": {
+      "title": "OpenAI GPTモデルの料金",
+      "description": "Codexの使用に対する公開されているOpenAI APIレート。標準リクエストは272K入力トークン以下でShortレート、272Kより多い場合はLongレートを使用します。Fastモードは独自のレートカードを使用します。",
+      "unit": "USD / 1M トークン",
+      "unavailableNote": "すべての金額は 1M トークンあたりのUSDです。ダッシュ（—）は、OpenAIがそのコンテキストまたはFastモードのレートを公開していないことを意味し、ダッシュボードは一致する使用量を推測せずに未価格としてマークします。",
+      "name": "名前",
+      "short": "標準 · Short ≤272K",
+      "long": "標準 · Long >272K",
+      "fast": "Fastモード",
+      "input": "入力",
+      "cached": "キャッシュ済み",
+      "write": "キャッシュ書き込み",
+      "output": "出力",
+      "deleteConfirm": "このGPT料金ルールを削除しますか？"
+    }
   },
   "claudeHome": {
     "title": "CLAUDE_HOME",
@@ -59,7 +76,25 @@
     "incomplete": "フックが不完全です",
     "reinstall": "フックを再インストール",
     "success": "フックが正常にインストールされました",
-    "failed": "フックのインストールに失敗しました"
+    "failed": "フックのインストールに失敗しました",
+    "someInstalled": "フック設定済み",
+    "configure": "フックを設定",
+    "display": {
+      "title": "ダッシュボードデータ",
+      "description": "すべてのダッシュボードビューを直ちに特定の製品にフィルタリングします。マシンのデータソースフィルタリングは独立して維持されます。",
+      "both": "両方"
+    },
+    "modal": {
+      "title": "ダッシュボードフックをインストール",
+      "description": "1つまたは両方の製品を選択してください。既存のダッシュボードのフックエントリは更新されます。関係のないフックコマンドはそのまま保持されます。",
+      "claude": "~/.claude/settings.jsonからのライフサイクルフック。",
+      "codex": "~/.codex/hooks.jsonからのライフサイクルフック。ロールアウトJSONLをリアルタイムのフォールバックとして使用します。",
+      "installed": "インストール済み",
+      "overrideWarning": "1つ以上の選択された製品で既存のフック設定が見つかりました。続行すると、このダッシュボードの一致するエントリのみが置き換えられ、関係のないフックは保持されます。",
+      "preserveNote": "少なくとも1つの製品を選択する必要があります。",
+      "install": "選択したフックをインストール",
+      "failed": "選択したフックをインストールできませんでした。"
+    }
   },
   "notifications": {
     "title": "通知",
@@ -137,6 +172,56 @@
       "pathNotFound": "パスが存在しません",
       "pathNotDir": "パスはディレクトリではありません",
       "generic": "インポート失敗: {{message}}"
+    },
+    "providerLabel": "インポート元プロバイダー",
+    "providerHint": "このダッシュボードに取り込みたいローカルエージェントの履歴を選択してください。",
+    "providerClaude": "Claude Code",
+    "providerCodex": "Codex",
+    "backupProviderNote": "ダッシュボードのエクスポートには、Claude CodeとCodexの両方のデータを含めることができます。復元を行うと、エクスポートに含まれるすべてのプロバイダーがマージされます。",
+    "scopeNote": "このインポートはClaude Codeのトランスクリプトのみを処理します。Codexの履歴や、どちらのCLI設定も決して変更しません。",
+    "modeBackup": "バックアップを復元",
+    "modeBackupDesc": "設定上部の「データをエクスポート」からダッシュボードのエクスポート(.json)をインポートし、別のマシンの履歴をマージします。",
+    "backupHint": "ここにエクスポートの.jsonをドロップするか、クリックして選択",
+    "backupSub": "「データをエクスポート」ボタンで生成されたファイル",
+    "runRestore": "復元",
+    "backupResult": {
+      "title": "復元が完了しました",
+      "sessionsImported": "追加されたセッション: {{count}}",
+      "sessionsSkipped": "すでに存在: {{count}}",
+      "events": "イベント: {{count}}",
+      "pricing": "料金ルール: {{count}}",
+      "detail": "{{agents}} エージェント · {{workflows}} ワークフロー · {{runs}} 実行 · {{rules}} アラートルール"
+    },
+    "codex": {
+      "description": "既存のCodexセッションをダッシュボードに取り込みます。ユーザーメッセージ、アシスタントの出力、トークンのスナップショット、ツール呼び出し、待機/アクティブなライフサイクル状態は、リアルタイム監視と同じパイプラインを使用して元のロールアウトJSONLファイルから再構築されます。",
+      "scopeNote": "このインポートは{{provider}}のトランスクリプトのみを処理します。Claude Codeの履歴やCodexのCLI設定を決して変更しません。",
+      "accuracyNote": "再実行しても安全です。インポートされたロールアウトのカーソルは保持されるため、すでにカウントされたトークンの差分やツール呼び出しが二重に追加されることはありません。",
+      "stepLocate": "1. Codexのロールアウト履歴を見つける",
+      "stepLocateBody": "Codexは各セッションをsessionsフォルダーの配下に追記型のロールアウトJSONLファイルとして保存します。ネストされた日付フォルダーは自動的にスキャンされます。",
+      "stepArchive": "2. 転送用にバンドルする (オプション)",
+      "stepArchiveBody": "別のマシンから履歴を移動するには、まずsessionsフォルダーをアーカイブしてからコピーします（AirDrop、scp、USB、クラウドストレージなど）。そのマシンからのネイティブな/renameのタイトルが必要な場合は、session_index.jsonlも含めてください。",
+      "stepChoose": "3. 以下のインポートモードを選択する",
+      "stepChooseBody": "このマシンのCodexセッションを再スキャンするか、コピーまたは展開したフォルダーを指定するか、ロールアウトファイルとアーカイブを直接アップロードします。",
+      "stepVerify": "4. トークンとコストを確認する",
+      "stepVerifyBody": "インポート後、「アナリティクス → コスト」を開いて内訳を確認してください。同じロールアウトはいつでも安全に再度インポートできます。",
+      "defaultLocation": "このマシン上のデフォルトのCodexセッションの場所",
+      "locationFound": "セッションフォルダーが見つかりました",
+      "locationMissing": "セッションフォルダーが見つかりません",
+      "projectsLabel": "セッションフォルダー",
+      "jsonlLabel": "ロールアウトファイル",
+      "modeRescan": "Codexセッションを再スキャン",
+      "modeRescanDesc": "~/.codex/sessions を再読み込みし、ダッシュボードにまだないロールアウト履歴をインポートします。",
+      "modeFolder": "Codexフォルダーをスキャン",
+      "modeFolderDesc": "コピーまたは展開されたCodexディレクトリでロールアウトJSONLファイルをスキャンします（ネストされた日付フォルダーも含む）。",
+      "modeUpload": "Codex履歴をアップロード",
+      "modeUploadDesc": "ロールアウトJSONLファイルまたはアーカイブ (.zip / .tar.gz) をブラウザに直接ドロップします。",
+      "folderPlaceholder": "/absolute/path/to/codex-history",
+      "folderHelper": "絶対パス。(~)チルダは展開されます。フォルダーとすべてのネストされた日付フォルダーが、Codexロールアウトファイルに対して再帰的にスキャンされます。",
+      "runRescan": "今すぐCodexを再スキャン",
+      "runScan": "Codexフォルダーをスキャン",
+      "runUpload": "アップロードしてCodexをインポート",
+      "dropzoneHint": "ここにCodexロールアウトファイルをドラッグするか、クリックして選択",
+      "dropzoneSub": "ロールアウトの .jsonl ファイル、session_index.jsonl、.zip、.tar、.tar.gz、.tgz、.gz アーカイブを受け付けます"
     }
   },
   "data": {
@@ -170,7 +255,9 @@
     "nodejs": "Node.js",
     "platform": "プラットフォーム",
     "wsClients": "WSクライアント",
-    "loadingInfo": "サーバー情報を読み込んでいます..."
+    "loadingInfo": "サーバー情報を読み込んでいます...",
+    "release": "リリース",
+    "uiBuild": "UIビルド v{{version}} (一致させるにはクライアントを再ビルドしてください)"
   },
   "tables": {
     "sessions": "セッション",
@@ -368,5 +455,89 @@
         "ヒント: webhook.site のような無料のインスペクターを使用して、正確なペイロードを確認してください。"
       ]
     }
-  }
+  },
+  "codexHome": {
+    "title": "Codexホーム",
+    "description": "Codexのロールアウトセッションとフックのルートディレクトリ。新しい場所を保存すると、ライブモニタリングが再有効化され、すぐにそのセッションがスキャンされます。",
+    "save": "保存",
+    "saving": "保存中...",
+    "current": "現在:",
+    "placeholder": "/path/to/codex-home",
+    "saveFailed": "Codexホームの更新に失敗しました"
+  },
+  "homes": {
+    "title": "セッションデータの場所",
+    "description": "ダッシュボードが読み取るローカルのClaude CodeとCodexのディレクトリを設定します。保存された各場所は、アプリを再起動することなく適用されます。"
+  },
+  "display": {
+    "title": "ダッシュボードデータ",
+    "description": "アプリ全体に表示される製品のセッション、トークン、コスト、アクティビティを選択します。変更はすぐに適用され、マシンのデータソースフィルターとは独立して維持されます。",
+    "claude": "Claude Code",
+    "codex": "Codex",
+    "both": "両方",
+    "claudeDescription": "Claude Codeのデータのみを表示します。",
+    "codexDescription": "Codexのデータのみを表示します。",
+    "bothDescription": "Claude CodeとCodexのデータを統合します。",
+    "beta": "BETA"
+  },
+  "remoteSources": {
+    "title": "リモートデータソース",
+    "description": "他のマシン（開発用ボックスやSSH経由で操作するクラウドVMなど）からClaude CodeやCodexの使用状況をSSH経由で収集し、このローカルのダッシュボードに表示します。認証には自身のSSH設定（~/.ssh/config、キー、エージェント）が使用され、パスワードはここに保存されません。",
+    "scopeTitle": "データスコープ",
+    "scopeDesc": "ダッシュボード全体に表示するマシンのデータを選択します。変更は、セッション、アナリティクス、コストなどのすべてのページに直ちに適用されます。",
+    "scopeAll": "すべてのソース",
+    "scopeAllDesc": "このマシンと設定されたすべてのリモートソースの組み合わせ。",
+    "scopeLocal": "このマシンのみ",
+    "scopeLocalDesc": "ローカルで収集されたセッションのみ — リモートソースのデータをすべて非表示にします。",
+    "scopeSelected": "選択したソース",
+    "scopeSelectedDesc": "含めるマシンを以下から正確に選択します。",
+    "scopeSelectedCount": "{{total}}件中{{n}}件を選択中",
+    "scopePickMachines": "含めるマシン",
+    "thisMachine": "このマシン",
+    "listTitle": "設定済みのソース",
+    "add": "ソースを追加",
+    "addTitle": "リモートソースを追加",
+    "editTitle": "ソースを編集",
+    "fieldLabel": "ラベル",
+    "fieldHost": "SSHホスト",
+    "fieldPort": "ポート (オプション)",
+    "fieldIdentity": "IDファイル (オプション)",
+    "fieldRemoteHome": "リモートClaudeホーム (オプション)",
+    "fieldRemoteHomeHint": "Linux/macOS: デフォルトは ~/.claude (または /home/you/.claude のような絶対パス)。Windows SSH + WSLのClaude: 空白 (自動検出) または wsl:~/.claude を使用。ネイティブWindows: C:/Users/you/.claude。",
+    "fieldRemoteCodexHome": "リモートCodexホーム (オプション)",
+    "fieldRemoteCodexHomeHint": "デフォルトは ~/.codex で、そのセッションとネイティブのリネームされたタイトルをインポートします。WSLでCodexを使用するWindows SSHの場合は、空白（自動検出）のままにするか、wsl:~/.codexを使用します。",
+    "fieldEnabled": "バックグラウンドで自動的に同期する",
+    "empty": "リモートソースはまだありません。",
+    "emptyHint": "SSH経由でアクセスするマシンを追加して、そのClaude CodeとCodexの使用状況を取り込みます。",
+    "paused": "自動同期オフ",
+    "sessionCount": "{{n}} セッション",
+    "sessionCountLinked": "{{n}} リンク済み",
+    "sessionCountHint": "このソースにリンクされているセッション（データスコープが「すべて」のときに表示されるすべてのセッションではありません）",
+    "lastSync": "最終同期: {{when}}",
+    "neverSynced": "未同期",
+    "imported": "{{n}} インポート済み",
+    "syncNew": "新規 {{n}}",
+    "syncOnRemote": "リモート上の {{n}}",
+    "providerClaude": "Claude Code",
+    "providerCodex": "Codex",
+    "providerSessions": "{{n}} セッション",
+    "providerStatus": {
+      "idle": "未確認",
+      "syncing": "確認中",
+      "ok": "準備完了",
+      "unavailable": "見つかりません",
+      "error": "利用不可"
+    },
+    "test": "テスト",
+    "syncNow": "同期",
+    "syncAll": "すべて同期",
+    "enable": "有効にする",
+    "disable": "無効にする",
+    "confirmDelete": "このソースを削除しますか？",
+    "purgeData": "このソースからインポートしたセッションも削除する (元に戻せません)",
+    "deleteAndPurge": "削除 + データを削除",
+    "removeKeep": "削除 (データを保持)",
+    "remoteSourceBadgeTitle": "リモートマシンから収集されました"
+  },
+  "cursorPathsNote": "参考情報：ここでのカウントにはCursorのセッションも含まれます。Cursorは（ローカルでも同期されたリモートでも）Claude Codeと同じ ~/.claude パスを使用するためです。"
 }

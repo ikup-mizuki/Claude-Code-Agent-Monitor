@@ -16,7 +16,7 @@ describe("i18n resources", () => {
     expect(i18n.t("nav:languageShort.vi")).toBe("VI");
   });
 
-  it("should keep Agent terminology untranslated in zh, vi, and ko locales", async () => {
+  it("should keep Agent terminology untranslated in zh, vi, ko, and es locales", async () => {
     await i18n.changeLanguage("zh");
     expect(i18n.t("common:agent")).toBe("Agent");
     expect(i18n.t("common:subagent")).toBe("Subagent");
@@ -28,6 +28,36 @@ describe("i18n resources", () => {
     await i18n.changeLanguage("ko");
     expect(i18n.t("common:agent")).toBe("Agent");
     expect(i18n.t("common:subagent")).toBe("Subagent");
+
+    await i18n.changeLanguage("es");
+    expect(i18n.t("common:agent")).toBe("agente");
+    expect(i18n.t("common:subagent")).toBe("subagente");
+  });
+
+  it("should provide Spanish translations for navigation keys", async () => {
+    await i18n.changeLanguage("es");
+
+    expect(i18n.t("nav:dashboard")).toBe("Panel");
+    expect(i18n.t("nav:agentBoard")).toBe("Tablero Kanban");
+    expect(i18n.t("nav:languageShort.es")).toBe("ES");
+  });
+
+  it("should provide Spanish translations across every feature namespace", async () => {
+    await i18n.changeLanguage("es");
+
+    expect(i18n.t("common:awaitingReason.session_start.label")).toBe("Esperando una instrucción");
+    expect(i18n.t("analytics:total30d")).toBe("Total (30 días)");
+    expect(i18n.t("ccConfig:tabs.skills")).toBe("Habilidades");
+    expect(i18n.t("run:fields.prompt")).toBe("Instrucción");
+    expect(i18n.t("settings:hooks.title")).toBe("Configuración de ganchos");
+    expect(i18n.t("workflows:runs.promptLabel")).toBe("Instrucción");
+  });
+
+  it("should support non-explicit Spanish locale tags", async () => {
+    await i18n.changeLanguage("es-ES");
+
+    expect(i18n.resolvedLanguage?.startsWith("es")).toBe(true);
+    expect(i18n.t("nav:dashboard")).toBe("Panel");
   });
 
   it("should support non-explicit Vietnamese locale tags", async () => {
@@ -63,5 +93,60 @@ describe("i18n resources", () => {
     // The main-agent card subtitle carries its own kanban plural key.
     expect(i18n.t("kanban:session.subagentSummary", { count: 1 })).toBe("1 subagent");
     expect(i18n.t("kanban:session.subagentSummary", { count: 3 })).toBe("3 subagents");
+  });
+
+  it("ships every first-run hook setup control in each supported locale", () => {
+    const keys = [
+      "provider.both.label",
+      "provider.both.description",
+      "hookGate.kicker",
+      "hookGate.title",
+      "hookGate.description",
+      "hookGate.selectedProviders",
+      "hookGate.realTime",
+      "hookGate.checking",
+      "hookGate.installed",
+      "hookGate.existing",
+      "hookGate.ready",
+      "hookGate.overrideWarning",
+      "hookGate.output",
+      "hookGate.failure",
+      "hookGate.checkFailed",
+      "hookGate.preserveNote",
+      "hookGate.alreadyInstalled",
+      "hookGate.install",
+      "hookGate.installing",
+      "hookGate.continue",
+    ];
+
+    for (const language of ["en", "zh", "vi", "ko", "es"]) {
+      for (const key of keys) {
+        expect(i18n.getResource(language, "splash", key)).toBeTruthy();
+      }
+    }
+  });
+
+  it("ships the global provider and session-home settings in every supported locale", () => {
+    const keys = [
+      "display.title",
+      "display.claude",
+      "display.codex",
+      "display.both",
+      "display.claudeDescription",
+      "display.codexDescription",
+      "display.bothDescription",
+      "homes.title",
+      "codexHome.title",
+      "pricing.navClaude",
+      "pricing.navGpt",
+      "pricing.gpt.title",
+      "pricing.gpt.unavailableNote",
+    ];
+
+    for (const language of ["en", "zh", "vi", "ko", "es"]) {
+      for (const key of keys) {
+        expect(i18n.getResource(language, "settings", key)).toBeTruthy();
+      }
+    }
   });
 });

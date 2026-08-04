@@ -30,7 +30,17 @@
     "permissionPlan": "plan (読み取り専用の計画)",
     "permissionBypass": "bypassPermissions (危険 - 確認なしにすべてを許可します)",
     "effort": "思考努力",
-    "effortHint": "回答前にモデルがどの程度推論するかを決定します。高いほど思考トークンが増え、遅く、深くなります。空にするとモデルのデフォルトを継承します。"
+    "effortHint": "回答前にモデルがどの程度推論するかを決定します。高いほど思考トークンが増え、遅く、深くなります。空にするとモデルのデフォルトを継承します。",
+    "approvalUntrusted": "信頼されていない場合 (信頼できないコマンドの前に確認する)",
+    "approvalOnRequest": "リクエスト時 (Codexが確認のタイミングを判断する)",
+    "approvalNever": "しない (実行の失敗を直接返す)",
+    "sandbox": "Sandbox",
+    "sandboxReadOnly": "読み取り専用",
+    "sandboxWorkspaceWrite": "ワークスペースの書き込み",
+    "sandboxDanger": "危険：フルアクセス",
+    "modelLiveCatalog": "サインインしたCodex CLIからのライブカタログ",
+    "modelCuratedCatalog": "Claude Codeはアカウントのモデルリストを公開していません。安定したエイリアスを選択するか、別のモデルIDを入力してください。",
+    "modelCustomClaudeHint": "以前のモデルやアカウント固有のClaudeモデルについては、正確な --model 値を入力してください。"
   },
   "actions": {
     "start": "実行",
@@ -157,5 +167,26 @@
     "session": "セッション",
     "envelopes": "イベント",
     "duration": "経過時間"
+  },
+  "provider": {
+    "aria": "実行プロバイダー",
+    "kicker": "エージェントの実行",
+    "chooseTitle": "どのエージェントを実行しますか？",
+    "chooseDescription": "インタラクティブなローカルエージェントを選択してください。新しく実行を開始する前に切り替えられます。",
+    "choose": "選択",
+    "cancel": "キャンセル",
+    "beta": "BETA",
+    "claude": {
+      "label": "Claude Code",
+      "subtitle": "ライブストリーミング、会話、そしてターミナルと同じフック駆動のアナリティクスを備えたClaude Codeセッションを開始します。",
+      "description": "Claude Codeを会話モード、またはワンショットタスクとして実行します。"
+    },
+    "codex": {
+      "label": "Codex",
+      "subtitle": "ライブリプライ、ツールのアクティビティ、フォローアップターンを備えたネイティブでインタラクティブなCodexスレッドを開始します。",
+      "description": "サインインしたローカルCLIから、永続的なCodexアプリケーションサーバーのスレッドを実行します。",
+      "interactiveLabel": "インタラクティブなCodexスレッド",
+      "interactiveHint": "ライブリプライ、ツールのアクティビティ、キャンセル、フォローアップターンを備えたローカルの永続スレッドを開始します。"
+    }
   }
 }
