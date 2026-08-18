@@ -8,7 +8,7 @@ Bảng điều khiển chuyên nghiệp để theo dõi và trực quan hóa cá
 ![OpenAI Codex](https://img.shields.io/badge/OpenAI_Codex-blue?style=flat-square&logo=githubcopilot&logoColor=white)
 ![Claude Code Plugins](https://img.shields.io/badge/Claude_Code_&_Codex-Plugins_&_Skills-orange?style=flat-square&logo=anthropic&logoColor=white)
 ![Model Context Protocol](https://img.shields.io/badge/Model_Context_Protocol-1.0-0f766e?style=flat-square&logo=modelcontextprotocol&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-339933?style=flat-square&logo=node.js&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-%3E%3D22.22-339933?style=flat-square&logo=node.js&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-%3E%3D3.6-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Express](https://img.shields.io/badge/Express-4.21-000000?style=flat-square&logo=express&logoColor=white)
 ![ws](https://img.shields.io/badge/ws-WebSocket_server-010101?style=flat-square&logo=socketdotio&logoColor=white)
@@ -17,14 +17,14 @@ Bảng điều khiển chuyên nghiệp để theo dõi và trực quan hóa cá
 ![multer](https://img.shields.io/badge/multer-multipart_upload-FF6B6B?style=flat-square&logo=express&logoColor=white)
 ![adm-zip](https://img.shields.io/badge/adm--zip-archive_extract-FBBF24?style=flat-square&logo=files&logoColor=white)
 ![tar](https://img.shields.io/badge/tar-tgz_extract-A78BFA?style=flat-square&logo=gnu&logoColor=white)
-![React](https://img.shields.io/badge/React-18.3-61DAFB?style=flat-square&logo=react&logoColor=white)
+![React](https://img.shields.io/badge/React-19.2-61DAFB?style=flat-square&logo=react&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![Javascript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?style=flat-square&logo=javascript&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-6.1-646CFF?style=flat-square&logo=vite&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-7.3-646CFF?style=flat-square&logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
 ![PostCSS](https://img.shields.io/badge/PostCSS-8.5-DD3A0A?style=flat-square&logo=postcss&logoColor=white)
 ![Autoprefixer](https://img.shields.io/badge/Autoprefixer-10.4-DD3735?style=flat-square&logo=autoprefixer&logoColor=white)
-![React Router](https://img.shields.io/badge/React_Router-6.28-CA4245?style=flat-square&logo=reactrouter&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-8.3-CA4245?style=flat-square&logo=reactrouter&logoColor=white)
 ![Lucide](https://img.shields.io/badge/Lucide_Icons-0.474-F56565?style=flat-square&logo=lucide&logoColor=white)
 ![D3.js](https://img.shields.io/badge/D3.js-7-F9A03C?style=flat-square&logo=d3&logoColor=white)
 ![Mermaid](https://img.shields.io/badge/Mermaid-10.2-ff3333?style=flat-square&logo=mermaid&logoColor=white)
@@ -51,11 +51,11 @@ Bảng điều khiển chuyên nghiệp để theo dõi và trực quan hóa cá
 ![Prettier](https://img.shields.io/badge/Prettier-3.8-F7B93E?style=flat-square&logo=prettier&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-20.10-2496ED?style=flat-square&logo=docker&logoColor=white)
 ![Podman](https://img.shields.io/badge/Podman-4.0-CC342D?style=flat-square&logo=podman&logoColor=white)
-![Prometheus](https://img.shields.io/badge/Prometheus-2.x-E6522C?style=flat-square&logo=prometheus&logoColor=white)
-![Grafana](https://img.shields.io/badge/Grafana-10.x-F46800?style=flat-square&logo=grafana&logoColor=white)
-![Terraform](https://img.shields.io/badge/Terraform-%3E%3D1.5-844FBA?style=flat-square&logo=terraform&logoColor=white)
-![Kubernetes](https://img.shields.io/badge/Kubernetes-%3E%3D1.24-326CE5?style=flat-square&logo=kubernetes&logoColor=white)
-![Helm](https://img.shields.io/badge/Helm-3-0F1689?style=flat-square&logo=helm&logoColor=white)
+![Prometheus](https://img.shields.io/badge/Prometheus-3.13-E6522C?style=flat-square&logo=prometheus&logoColor=white)
+![Grafana](https://img.shields.io/badge/Grafana-13.1-F46800?style=flat-square&logo=grafana&logoColor=white)
+![Terraform](https://img.shields.io/badge/Terraform-%3E%3D1.7-844FBA?style=flat-square&logo=terraform&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-%3E%3D1.29-326CE5?style=flat-square&logo=kubernetes&logoColor=white)
+![Helm](https://img.shields.io/badge/Helm-4-0F1689?style=flat-square&logo=helm&logoColor=white)
 ![Kustomize](https://img.shields.io/badge/Kustomize-5.0-326CE5?style=flat-square&logo=kubernetes&logoColor=white)
 ![Nginx](https://img.shields.io/badge/Nginx-Ingress-009639?style=flat-square&logo=nginx&logoColor=white)
 ![Coralogix](https://img.shields.io/badge/Coralogix-Observability-1a1a2e?style=flat-square&logo=datadog&logoColor=white)
@@ -65,7 +65,6 @@ Bảng điều khiển chuyên nghiệp để theo dõi và trực quan hóa cá
 ![Azure](https://img.shields.io/badge/Azure-AKS%20%7C%20SQL-0078D4?style=flat-square&logo=cloudflare&logoColor=white)
 ![Oracle Cloud](https://img.shields.io/badge/Oracle_Cloud-OKE%20%7C%20DB-F80000?style=flat-square&logo=cloudways&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-pipelines-2088FF?style=flat-square&logo=githubactions&logoColor=white)
-![GitLab CI](https://img.shields.io/badge/GitLab_CI-pipelines-FC6D26?style=flat-square&logo=gitlab&logoColor=white)
 ![Make](https://img.shields.io/badge/Make-4.3-000000?style=flat-square&logo=make&logoColor=white)
 ![Auto Release](https://img.shields.io/badge/CI-auto--release_to_GitHub-22c55e?style=flat-square&logo=githubactions&logoColor=white)
 ![MIT License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
@@ -73,6 +72,9 @@ Bảng điều khiển chuyên nghiệp để theo dõi và trực quan hóa cá
 **Hỗ trợ ngôn ngữ**: Tiếng Anh (`en`) · 中文 (`zh`) · Tiếng Việt (`vi`) · Tiếng Hàn (`ko`) · Tiếng Tây Ban Nha (`es`)
 
 Tài liệu đã bản địa hóa: [`README.md`](./README.md) · [`README-CN.md`](./README-CN.md) · [`README-VN.md`](./README-VN.md) · [`README-KO.md`](./README-KO.md) · [`README-ES.md`](./README-ES.md)
+
+> [!NOTE]
+> Bạn cần hướng dẫn theo tác vụ? [GitHub Wiki](https://github.com/hoangsonww/Claude-Code-Agent-Monitor/wiki) là sổ tay thực hành về sử dụng hằng ngày, vận hành theo nhóm, khắc phục sự cố, tự động hóa CLI/MCP và các quy trình triển khai. [Wiki tĩnh đã bản địa hóa](https://hoangsonww.github.io/Claude-Code-Agent-Monitor/wiki/) vẫn là phần giới thiệu sản phẩm và kiến trúc bằng tiếng Anh, Việt, Trung, Hàn và Tây Ban Nha; các hợp đồng kỹ thuật chính xác vẫn nằm trong [`docs/`](./docs/README.md).
 
 ---
 
@@ -151,6 +153,12 @@ flowchart LR
 </p>
 
 <p align="center">
+  <img src="images/tasks-overview.png" alt="Tổng quan tiến độ công việc trên thẻ Agent của Dashboard" width="100%">
+  <br>
+  <em>📋 <strong>Tiến độ công việc · Tổng quan</strong> — thẻ Agent trên Dashboard và hàng trong Sessions dùng cùng donut hoàn thành nhỏ gọn cạnh trạng thái; hover hoặc focus mở bản xem trước theo chủ sở hữu về công việc hiện tại và trạng thái tác vụ</em>
+</p>
+
+<p align="center">
   <img src="images/dashboard-health.png" alt="Dashboard — tab Sức khỏe hệ thống" width="100%">
   <br>
   <em>🩺 <strong>Dashboard · Health</strong> — vòng điểm sức khỏe tổng hợp, biểu đồ donut lưu trữ, thước đo cache / lỗi / thành công, thanh công cụ sử dụng, hiệu quả subagent, phân bổ token mô hình, thống kê nén — tự làm mới mỗi 5 giây</em>
@@ -178,6 +186,12 @@ flowchart LR
   <img src="images/session-agents.png" alt="Chi tiết phiên — tab Agent" width="100%">
   <br>
   <em>🤖 <strong>Chi tiết phiên · Agent</strong> — bảng tổng quan thời gian thực (sự kiện, lượt gọi công cụ, subagent, lần nén, lỗi, thời lượng), thanh sử dụng top công cụ, phân tích theo loại subagent, dòng chảy token và cây phân cấp Agent</em>
+</p>
+
+<p align="center">
+  <img src="images/tasks-details.png" alt="Bảng tiến độ công việc trong Chi tiết phiên" width="100%">
+  <br>
+  <em>✅ <strong>Tiến độ công việc · Chi tiết phiên</strong> — trình theo dõi đầy đủ theo chủ sở hữu kết hợp donut hoàn thành phân đoạn, tác vụ đang chạy, thanh hoàn thành, phân tích chủ sở hữu và danh sách phân trang 10 hàng mỗi trang</em>
 </p>
 
 <p align="center">
@@ -288,27 +302,26 @@ Bảng điều khiển cung cấp một bộ tính năng toàn diện để giá
 
 | Tính năng                            | Sự miêu tả                                                                                                                                                                                                                                                                  |
 |------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Tiến độ công việc**              | Theo dõi công việc theo Agent sở hữu từ trạng thái mà provider thực sự phát ra: Claude hiện tại qua `TaskCreate` / `TaskGet` / `TaskUpdate` / `TaskList` và sự kiện vòng đời, Claude cũ qua `TodoWrite`, còn Codex qua `update_plan` trực tiếp hoặc được bọc trong unified `exec`. Phiên có danh sách công việc hiển thị cùng một donut nhỏ và tooltip xem trước cạnh huy hiệu trạng thái trong bảng Sessions lẫn mọi thẻ Agent trên Dashboard; Chi tiết phiên hiển thị bảng tiến độ đầy đủ với phân đoạn trạng thái, công việc đang chạy, phân tích theo Agent và danh sách 10 hàng mỗi trang. Tiến độ chỉ thuộc công việc cấp cao nhất mới nhất: lượt người dùng Claude hoặc tác vụ Codex mới không phát tracker sẽ xóa trạng thái cũ, và trạng thái chưa hoàn tất bị loại bỏ khi lượt/tác vụ kết thúc mà không có cập nhật cuối. Lịch sử đã hoàn tất vẫn được giữ lại. |
 | **Bảng điều khiển**                      | Hai tab lưu trong `localStorage`: **Monitor** — số liệu thống kê tổng quan (6 thẻ), thẻ Agent đang hoạt động với hệ thống phân cấp Subagent có thể thu gọn, nguồn cấp dữ liệu hoạt động gần đây với số mục hiển thị tự động lấp đầy chiều cao viewport qua `ResizeObserver`. **Health** — vòng điểm sức khỏe hệ thống tổng hợp (trọng số: 0,4 × tỷ lệ thành công + 0,25 × tỷ lệ cache hit + 0,25 × (100 − tỷ lệ lỗi) + 0,1 × (100 − heap %)), biểu đồ donut phân bổ bản ghi, thước đo hiệu suất cache / tỷ lệ lỗi / tỷ lệ thành công, biểu đồ thanh ngang top 8 công cụ, thanh hiệu quả subagent, phân bổ token theo mô hình, và thống kê nén. Tự làm mới mỗi 5 giây từ `/api/settings/info` và `/api/workflows`. Tooltip theo con trỏ với phát hiện cạnh viewport trên mọi biểu đồ |
 | **Bảng Kanban**                   | Hai chế độ với nút chuyển ở đầu trang (lưu trong `localStorage`): **Agent** — 4 cột (Đang làm / Đang chờ / Hoàn tất / Lỗi), và **Phiên** — 5 cột (Hoạt động / Đang chờ / Hoàn tất / Lỗi / Bỏ dở). Cột **Đang chờ** ánh xạ trực tiếp trạng thái lưu trữ `waiting` của Agent — được đặt khi Claude Code & Codex đang ngồi ở dòng nhập (phiên mới, giữa các lượt, hoặc đang bị chặn bởi Notification xin quyền) và chuyển sang `working` ngay khi người dùng tiếp tục (UserPromptSubmit / PreToolUse). Mỗi tiêu đề cột có biểu tượng `?` với tooltip giải thích vòng đời. Mỗi cột tìm nạp theo trạng thái từ máy chủ (không giới hạn thực tế mỗi cột), sau đó phân trang phía client với 10 thẻ mỗi cột kèm nút "Hiện thêm". Đăng ký WebSocket bám theo chế độ đang xem (`agent_*` so với `session_*`) nên cập nhật khác chế độ không gây tải lại. Huy hiệu Đang chờ hiển thị `awaiting_reason` của hàng dưới dạng tooltip khi hover — **Cần phản hồi** (`notification`), **Xong lượt** (`stop`), **Chờ prompt** (`session_start`), **Bị ngắt** (`interrupted`) — chỉ giữ ở dạng tooltip trên các thẻ nhỏ gọn để tiêu đề giữ nguyên không gian; các bề mặt rộng hơn (bảng Phiên, đầu trang chi tiết phiên) hiển thị thêm lý do ngay trên dòng dưới dạng chip lồng bên trong, với các lý do khẩn cấp (lời nhắc xin quyền, bị ngắt) dùng sắc hổ phách nóng hơn |
-| **Phiên**                       | Bảng toàn bộ phiên có tìm kiếm, bộ lọc và **phân trang phía máy chủ**. Mỗi lần đổi trang gọi `/api/sessions?status=&q=&limit=10&offset=…`, nên tính toán chi phí chỉ chạy trên trang đang hiển thị — không phụ thuộc số phiên trong CSDL. Ô tìm kiếm (`q=`) thực hiện so khớp không phân biệt hoa thường trên `id` / `name` / `cwd` ở máy chủ với debounce 300 ms; phản hồi kèm `total` cho bộ phân trang. Bộ lọc trạng thái, tìm kiếm và phân trang kết hợp với nhau. Tên dễ đọc của mỗi phiên được đọc từ bản ghi và đồng bộ thời gian thực — tiêu đề rõ ràng do người dùng đặt qua `/rename`, `claude -n` hoặc `Ctrl+R` trong picker (dòng `custom-title` của JSONL) luôn thắng, nếu không thì dùng `ai-title` tự sinh, nếu vẫn chưa có thì **prompt đầu tiên của người dùng** (được cắt ngắn, bỏ qua nhiễu tool-result / lệnh slash) sẽ điền tên placeholder của phiên cùng tên/nhiệm vụ placeholder của main agent — nhờ đó các phiên không bao giờ có tiêu đề (kể cả phiên được nhập) vẫn cho biết mình đang làm gì; dashboard hiển thị tên đó (lùi về ID rút gọn khi chưa đặt) trên thẻ tác nhân, Dashboard, Activity Feed và picker tiếp tục của trang Run |
+| **Phiên**                       | Bảng toàn bộ phiên có tìm kiếm, bộ lọc và **phân trang phía máy chủ**. Mỗi lần đổi trang gọi `/api/sessions?status=&q=&limit=10&offset=…`, nên tính toán chi phí chỉ chạy trên trang đang hiển thị — không phụ thuộc số phiên trong CSDL. Trang đầu cũng hiển thị hàng khởi động Codex cục bộ chỉ tồn tại trong bộ nhớ giống Dashboard và Kanban; hàng này xuất hiện ngay nhưng không thể điều hướng cho đến khi ID phiên bền vững thay thế, và không làm thay đổi `total` bền vững hay phân trang. Ô tìm kiếm (`q=`) thực hiện so khớp không phân biệt hoa thường trên `id` / `name` / `cwd` ở máy chủ với debounce 300 ms; phản hồi kèm `total` cho bộ phân trang. Bộ lọc trạng thái, tìm kiếm và phân trang kết hợp với nhau. Tên dễ đọc của mỗi phiên được đọc từ bản ghi và đồng bộ thời gian thực — tiêu đề rõ ràng do người dùng đặt qua `/rename`, `claude -n` hoặc `Ctrl+R` trong picker (dòng `custom-title` của JSONL) luôn thắng, nếu không thì dùng `ai-title` tự sinh, nếu vẫn chưa có thì **prompt đầu tiên của người dùng** (được cắt ngắn, bỏ qua nhiễu tool-result / lệnh slash) sẽ điền tên placeholder của phiên cùng tên/nhiệm vụ placeholder của main agent — nhờ đó các phiên không bao giờ có tiêu đề (kể cả phiên được nhập) vẫn cho biết mình đang làm gì; dashboard hiển thị tên đó (lùi về ID rút gọn khi chưa đặt) trên thẻ tác nhân, Dashboard, Activity Feed và picker tiếp tục của trang Run |
 | **Chi tiết phiên**                 | Bảng tổng quan thời gian thực mỗi phiên với banner tác nhân đang hoạt động (công cụ + tác vụ hiện tại), sáu ô đếm (sự kiện kèm tốc độ sự kiện/phút, lượt gọi công cụ, subagent, lần nén, lỗi, thời lượng đang đếm), thanh sử dụng top công cụ, phân tích theo loại subagent, dải dòng chảy token, và đám mây chip loại sự kiện — tất cả được làm mới trực tiếp theo sự kiện hook. Bên dưới: cây phân cấp tác nhân, dòng thời gian sự kiện đầy đủ với bộ lọc đa chiều, nhóm Pre/Post theo `tool_use_id`, khối tóm tắt dễ đọc, bộ kết xuất nhận biết công cụ (terminal cho Bash, diff cho Edit, code có số dòng cho Read/Write, danh sách kết quả khớp cho Grep, thẻ key/value cho công cụ MCP), và tab Conversation hiển thị bản ghi — bao gồm tin nhắn gõ giữa lượt (xếp hàng khi Claude còn đang làm việc), đặt đúng vị trí Claude thực sự nhận được, và thông báo từ harness được gán cho System — với markdown (tiêu đề, danh sách, blockquote, bảng, danh sách công việc), khối code có syntax highlight (js/ts, python, json, bash, html, css, sql, yaml, diff) kèm số dòng và nút sao chép, cùng các khối tool call có style theo từng công cụ (Bash → terminal, Edit → cũ/mới song song, Write → nhãn file, Read → chip đường dẫn, Grep → thẻ pattern). Khi phiên đang bị chặn chờ người dùng, một **banner chờ phản hồi** màu vàng dưới đầu trang nêu rõ `awaiting_reason`, lời giải thích của nó, và phiên đã chờ trong bao lâu (chấm nhấp nháy + thời gian tương đối); huy hiệu Đang chờ ở đầu trang mang cùng lý do dưới dạng chip lồng bên trong |
 | **Nguồn cấp dữ liệu hoạt động**                  | Nhật ký sự kiện phát trực tuyến theo thời gian thực với tính năng tạm dừng/tiếp tục và phân trang; nhấp vào bất kỳ hàng sự kiện nào để mở rộng nội dung hook payload ngay tại chỗ (bảng EventDetail nội tuyến); nút "Phiên →" chuyên biệt ở cuối mỗi hàng điều hướng trực tiếp đến chi tiết phiên mà không thu gọn feed                                                                   |
-| **Phân tích**                      | Mức sử dụng mã thông báo, tần suất công cụ, bản đồ nhiệt hoạt động (trung tâm, căn chỉnh ngày trong tuần bắt đầu từ Chủ nhật, chú thích công cụ tên ngày), xu hướng phiên, chỉ báo kết nối trực tiếp/ngoại tuyến. Khi đang tải, vùng biểu đồ hiển thị các khung xương (skeleton) nhấp nháy chứ không chỉ các ô thống kê đầu trang |
+| **Phân tích**                      | Mức sử dụng mã thông báo, tần suất công cụ, bản đồ nhiệt hoạt động (trung tâm, căn chỉnh ngày trong tuần bắt đầu từ Chủ nhật, chú thích công cụ tên ngày), xu hướng phiên, chỉ báo kết nối trực tiếp/ngoại tuyến. Khi đang tải, vùng biểu đồ hiển thị các khung xương (skeleton) nhấp nháy chứ không chỉ các ô thống kê đầu trang. Chú giải dài trong Analytics và Workflows được phân trang; chú giải vừa một trang giữ nguyên |
 | **Cập nhật trực tiếp**                   | Đẩy WebSocket -- không bỏ phiếu, cập nhật giao diện người dùng tức thì                                                                                                                                                                                                                             |
-| **Tự động khám phá**                 | Phiên và tác nhân được tạo tự động từ các sự kiện hook                                                                                                                                                                                                               |
+| **Tự động khám phá**                 | Phiên và tác nhân được tạo tự động từ tín hiệu của nhà cung cấp. Claude Code tạo thẻ **Đang chờ** ngay tại `SessionStart`. Codex trước tiên hiển thị một thẻ **Đang chờ** cục bộ chỉ tồn tại trong bộ nhớ ngay khi tiến trình TUI tương tác khởi động, kể cả trước khi Codex cấp ID phiên ổn định. Hook, hàng live-thread hoặc rollout sau đó tạo phiên bền vững và thay thế thẻ tạm thời đó. Nếu người dùng chọn một luồng hiện có trong bộ chọn Resume của Codex, CCAM đọc rollout hoặc writer lock mà chính PID Codex đó đã mở và chuyển ngay sang phiên bền vững được tiếp tục trước tin nhắn mới đầu tiên. Thẻ trước định danh không bao giờ được ghi vào SQLite, lịch sử, phân tích, giá, workflow, cảnh báo hay thông báo hoàn tất, và biến mất khi tiến trình thoát. |
 | **Nhập lịch sử**                 | Import History theo nhà cung cấp nhập transcript Claude Code từ `~/.claude/` và rollout JSONL Codex từ `~/.codex/sessions`. Mỗi tab có đường dẫn mặc định, hướng dẫn, quét thư mục và tải lên riêng; cả hai dùng lại logic ingest thời gian thực, giữ đúng token/chi phí/tool và bảo đảm bất biến. Rollout Codex từ bên ngoài được snapshot vào bộ nhớ dashboard để hội thoại vẫn mở được sau khi archive hoặc thư mục nguồn bị xóa. |
 | **Phân cấp Subagent**             | Cây tác nhân cha-con có thể thu gọn trên Bảng điều khiển và Chi tiết phiên. Các Agent có các Subagent hiển thị các chữ V mở rộng/thu gọn; tác nhân lá hiển thị một chỉ báo dấu chấm. Tự động mở rộng khi các tác nhân phụ đang hoạt động                                                                           |
 | **Agent nền**              | Theo dõi chính xác các tác nhân phụ có nền mà không cần hoàn thành sớm                                                                                                                                                                                                         |
 | **Quy kết tool của Subagent** | Các tool call nội bộ của subagent (Read, Bash, Edit, Grep, …) chỉ tồn tại trong các tệp JSONL riêng của từng subagent — Claude Code không phát hook cho chúng. Mỗi lần `SubagentStop`, dashboard chạy fire-and-forget `scanAndImportSubagents`: phân tích từng `subagents/agent-*.jsonl`, ghép cặp khối `tool_use` với `tool_result` tương ứng theo `tool_use_id`, và phát các sự kiện `PreToolUse` + `PostToolUse` dưới `agent_id` của chính subagent đó. Có cơ chế idempotent (kiểm tra trùng bằng `data LIKE '%"tool_use_id":"X"%'`) và hợp nhất với row live do hook tạo trước đó khi khớp loại + thời điểm bắt đầu trong vòng 30 giây, nên không sinh row trùng `<sid>-jsonl-*`. Cùng đường này chạy trên import khởi động `npm run setup` để backfill toàn bộ — các phiên cũ trước khi cài dashboard đều có timeline tool đầy đủ cho từng subagent. Activity Feed và Chi tiết phiên hiển thị chuỗi cha-con dạng `main › coder › explorer` cho subagent lồng nhau. Chuỗi cha-con đó được dựng lại chính xác bởi `reconcileSubagentParents`: mỗi row subagent ban đầu được chèn phẳng dưới main agent (một hook đơn lẻ hay tệp JSONL không mang danh tính của agent đã spawn), sau đó agent spawn được khôi phục từ kết quả tool Task trong transcript của từng subagent (`toolUseResult.agentId`, thu thập dưới dạng `spawnedChildren`), nên subagent tự spawn subagent con sẽ lồng dưới **đúng** agent cha thay vì dồn phẳng về một cấp dưới main. Idempotent và chỉ bổ sung — chỉ trỏ lại `parent_agent_id`, không chèn hay xóa row — và chạy trong cùng lần quét `SubagentStop`, vốn trả về số đếm `reparented` để dashboard fetch lại ngay cả khi chỉ có thay đổi cấu trúc cây do reparent |
 | **Theo dõi chi phí**                  | Ước tính chi phí cho mỗi mô hình với các quy tắc định giá có thể định cấu hình và phân tích chi tiết theo từng phiên. Tính toán mã thông báo nhận biết nén sẽ duy trì tổng số trong các lần nén ngữ cảnh. Việc đọc bản ghi được lưu vào bộ nhớ đệm với các bản cập nhật bù byte tăng dần để trích xuất mã thông báo hiệu quả. Mức giá giới thiệu có thể chỉnh sửa hoàn toàn trong Settings — trình chỉnh sửa Model Pricing cho phép đặt ngày kết thúc khuyến mãi cùng giá giới thiệu theo từng hạng mục (input / output / cache-read / cache-write 5m & 1h), nên một đợt khuyến mãi ra mắt mô hình trong tương lai không cần thay đổi mã, chỉ cần chỉnh sửa. Thẻ subagent hiển thị chi phí RIÊNG của từng subagent (suy ra từ mức sử dụng token trong transcript của chính subagent đó và tính theo mức giá hiện hành), không phải tổng của cả session — thẻ main-agent đại diện cho toàn bộ session và hiển thị tổng chi phí session, còn thẻ subagent chỉ hiển thị phần mà subagent đó tiêu tốn, nên thẻ subagent không còn gây hiểu nhầm như thể nó tiêu tốn chi phí của cả session        |
-| **Bộ nhớ đệm bản ghi**               | Trích xuất theo thời gian thực từ bản ghi JSONL: mã thông báo, nén, lỗi API (`isApiErrorMessage` được lưu trữ dưới dạng sự kiện `APIError`), thời lượng lượt (được lưu dưới dạng sự kiện `TurnDuration`), số lượng khối suy nghĩ và các tính năng bổ sung sử dụng (service_tier, tốc độ, inference_geo). Siêu dữ liệu phiên được làm phong phú với các trường này trong thời gian thực |
+| **Bộ nhớ đệm bản ghi**               | Trích xuất theo thời gian thực từ bản ghi JSONL: mã thông báo, nén, lỗi API (`isApiErrorMessage` được lưu trữ dưới dạng sự kiện `APIError`), thời lượng lượt (được lưu dưới dạng sự kiện `TurnDuration`), số lượng khối suy nghĩ và các tính năng bổ sung sử dụng (service_tier, tốc độ, inference_geo). Mỗi thời lượng lượt có định danh transcript ổn định; lần phân tích đầy đủ sửa các hàng trùng và tổng metadata bị phồng từ phiên bản cũ, còn phần đuôi bị giới hạn chỉ bổ sung. Siêu dữ liệu phiên được làm phong phú với các trường này trong thời gian thực |
 | **Thông báo**                  | Hệ thống Web Push (VAPID) đầy đủ để phân phối đáng tin cậy. Thông báo đến ngay cả khi tab ở chế độ nền hoặc trình duyệt đã đóng. Được cấu hình đặc biệt để hỗ trợ âm thanh trên macOS. Có thể định cấu hình chuyển đổi theo sự kiện với quản lý đăng ký |
 | **Thông báo cập nhật**         | Máy chủ định kỳ chạy `git fetch` không chặn và so sánh checkout cục bộ với nhánh mặc định của remote chuẩn được chọn. **Nhận biết nhánh và fork:** nếu có cả `upstream` và `origin`, ưu tiên `upstream` (quy ước chuẩn cho fork); lệnh cũng tự điều chỉnh theo tình huống — chỉ đề xuất `git pull --ff-only` khi nhánh cục bộ thực sự theo dõi ref chuẩn, ngược lại đưa `git fetch` (kèm fast-forward merge ở trường hợp fork) để lệnh không bao giờ nói dối. Thanh bên cũng có nút "Kiểm tra cập nhật" thường trực kèm badge trạng thái. Bảng điều khiển **không bao giờ** tự pull hoặc tự khởi động lại — người dùng chạy lệnh trong terminal — nên cơ chế này không phá vỡ phiên dev, tiến trình dưới pm2/systemd/Docker, và không để lại tiến trình mồ côi |
-| **Cài đặt**                       | Thông tin hệ thống, trạng thái hook, quản lý giá mô hình, tùy chọn thông báo, xuất dữ liệu **và khôi phục** (chế độ **Restore backup** của bảng Import History nhập lại một tệp xuất `.json` — idempotent và không phá hủy, nên có thể hợp nhất lịch sử từ nhiều máy vào một bảng điều khiển), dọn dẹp phiên. Mục **Định giá mô hình** có một popover thông tin (biểu tượng `i` cạnh tiêu đề) giải thích cách tra cứu quy tắc (mẫu khớp đầu tiên thắng), cú pháp wildcard `%` kiểu SQL kèm ví dụ cụ thể (`claude-opus-4-7%`, `claude-%-haiku`, id chính xác), và nhắc nhở rằng giá phải được cập nhật thủ công khi Anthropic công bố giá mới — phiên đã lưu vẫn giữ nguyên giá tại thời điểm nạp. Trình chỉnh sửa của mỗi quy tắc cũng có một khối Introductory rates có thể thu gọn (một ngày kết thúc khuyến mãi dạng YYYY-MM-DD + giá giới thiệu theo từng hạng mục); để trống ngày nghĩa là không có khuyến mãi, và ngày trống sẽ xóa mọi mức giá giới thiệu đã lưu. Khung CLAUDE_HOME và bảng Import History đã được i18n đầy đủ ở en/vi/zh |
-> **Phạm vi nhà cung cấp và vị trí dữ liệu:** Cài đặt giữ lựa chọn Claude Code / Codex / Cả hai nhất quán trên toàn ứng dụng và cho phép đổi từng thư mục dữ liệu phiên mà không cần khởi động lại dashboard.
-
-| **Cấu hình Agent Codex**             | Nửa Codex của Agent Config đọc đầy đủ danh mục model tài khoản cục bộ mà không bị giới hạn preview chung làm tab Models hiển thị sai là 0, đồng thời luôn gồm các override cơ sở/profile. Tạo trực tiếp các lớp phủ `<name>.config.toml` chuẩn của Codex trong ứng dụng; mỗi thẻ sao chép lệnh chính xác `codex --profile <name>` bằng một cú nhấp và mở trình chỉnh sửa có bảo vệ. Profile, hook, rule, skill và hướng dẫn dùng chung thao tác kiểu Claude **View source / Copy path / Edit / Delete**. Mọi lần xóa được phép đều cần xác nhận và sao lưu trước (skill giữ toàn bộ thư mục); `config.toml` luôn chỉ có thể chỉnh sửa. |
-| **Máy chủ MCP (Cục bộ)**             | Máy chủ MCP cục bộ cấp doanh nghiệp trong `mcp/` với ba chế độ truyền tải (stdio, HTTP+SSE, REPL tương tác), 25 công cụ được nhập trên 6 miền, lược đồ đầu vào nghiêm ngặt, thử lại/ngăn chặn, thực thi API chỉ dành cho máy chủ cục bộ và các cổng an toàn đột biến/phá hủy theo cấp bậc. Chế độ HTTP phục vụ HTTP có thể phát trực tuyến (25/11/2025) và SSE cũ (2024-11-05) trên cổng có thể định cấu hình. Chế độ REPL cung cấp lệnh gọi công cụ tương tác hoàn thành theo tab với đầu ra có màu |
+| **Cài đặt**                       | Thông tin hệ thống, trạng thái hook, quản lý giá mô hình, tùy chọn thông báo, xuất dữ liệu **và khôi phục** (chế độ **Restore backup** của bảng Import History nhận một tệp xuất `.json` tối đa 25 MiB và nhập lại theo cách idempotent, không ghi đè dữ liệu hiện có, nên có thể hợp nhất lịch sử từ nhiều máy vào một bảng điều khiển), dọn dẹp phiên. Mục Model Pricing tách **Anthropic Claude Model Pricing** và **OpenAI GPT Model Pricing** với bố cục tiêu đề giống nhau, nút **Reset Defaults** theo từng nhà cung cấp nằm bên trái **Add Model**, cùng popover thông tin giải thích quy tắc khớp đầu tiên, wildcard `%` kiểu SQL, cập nhật giá thủ công và lưu ý về đơn giá API. Popover GPT còn giải thích đơn vị USD trên 1M token, ngưỡng Short/Long 272K, Fast mode và lý do các mức giá chưa được công bố vẫn được đánh dấu chưa có giá thay vì bị ước đoán. Khung dữ liệu Claude Code và Codex cùng bảng Import History đều được i18n đầy đủ. |
+| **Cấu hình Agent Codex**             | Nửa Codex của Agent Config đọc đầy đủ danh mục model tài khoản cục bộ mà không bị giới hạn preview chung làm tab Models hiển thị sai là 0, đồng thời luôn gồm các override cơ sở/profile. Tạo trực tiếp các lớp phủ `<name>.config.toml` chuẩn của Codex trong ứng dụng; mỗi thẻ sao chép lệnh chính xác `codex --profile <name>` bằng một cú nhấp và mở trình chỉnh sửa có bảo vệ. Đường dẫn preview được chuẩn hóa trước khi kiểm tra phạm vi. Trình chỉnh sửa từ chối thành phần đường dẫn symlink bên dưới root tin cậy, xác minh thư mục cha chuẩn hóa vẫn nằm trong phạm vi cho phép và từ chối lưu nội dung preview có `[redacted]`. Profile, hook, rule, skill và hướng dẫn dùng chung thao tác kiểu Claude **View source / Copy path / Edit / Delete**. Mọi lần xóa được phép đều cần xác nhận và sao lưu trước (skill giữ toàn bộ thư mục); `config.toml` luôn chỉ có thể chỉnh sửa. |
+| **Máy chủ MCP (Cục bộ)**             | Máy chủ MCP toàn diện trong `mcp/` với ba chế độ truyền tải và 97 công cụ được định kiểu trên 16 mô-đun miền. Phạm vi bao phủ toàn bộ hành động được ứng dụng hỗ trợ: dữ liệu có scope, transcript và ảnh, định giá Claude/GPT, workflow, alert, webhook, import/restore, cấu hình Claude/Codex, Run Agent, remote source, hook/home/update, push và bảo trì. Mọi transport dùng chung một catalog đã xác thực với các cổng an toàn mutation/destructive. HTTP loopback trực tiếp có thể mang bearer token; alias host container có token phải dùng HTTPS. Redirect bị từ chối; upload lịch sử giới hạn 50 MiB mỗi tệp và 100 MiB mỗi lần gọi, phản hồi nhị phân 10 MiB, khôi phục backup 25 MiB |
 | **Quy trình làm việc**                      | Trang trực quan hóa được hỗ trợ bởi D3.js với 11 phần tương tác: điều phối tác nhân DAG, thực thi công cụ Sơ đồ Sankey, mạng cộng tác, hiệu quả của tác nhân phụ (sparkline ngày trong tuần với tooltip render qua portal — thoát khỏi `overflow:hidden` của thẻ và bám trong viewport nên không bao giờ bị cắt), mẫu quy trình làm việc được phát hiện, luồng ủy quyền mô hình, bản đồ lan truyền lỗi (thanh ngang với huy hiệu tỷ lệ, phân tích loại tác nhân, thẻ lỗi API/phiên), dòng thời gian đồng thời, độ phức tạp phân tán phiên, phân tích tác động nén và thông tin chi tiết về mỗi phiên. **Tooltip phong phú, đa ngôn ngữ ở mọi nơi:** mỗi tiêu đề biểu đồ có một biểu tượng `i` mở popover có cấu trúc "Biểu đồ thể hiện điều gì / Cách đọc / Vì sao quan trọng"; hover vào node, cạnh, thanh hay bong bóng đều hiển thị tooltip nhiều phần với diễn giải xác định, phụ thuộc giá trị (ví dụ tỷ trọng nguồn/đích, các mức sức khỏe của tỷ lệ thành công, mô tả họ Opus / Sonnet / Haiku, mẫu thời gian dồn-trước / giữa-phiên / dồn-cuối). Mỗi trong 6 thẻ thống kê đầu trang có popover thông tin ở góc dưới-phải giải thích cách tính chỉ số và ý nghĩa của giá trị hiện tại bằng ngôn ngữ tự nhiên. Tooltip được cập nhật trực tiếp qua một ref DOM duy nhất cho mỗi biểu đồ kèm fallback `mouseleave` ở cấp container, nên không bao giờ giật theo con trỏ hoặc dính lại sau khi re-render. Bấm vào một dòng trong **Mẫu quy trình phát hiện được** sẽ mở rộng tại chỗ một bảng chi tiết với chuỗi bước đầy đủ, lưới thống kê, mô tả xác định (phát hiện vòng lặp, mức tần suất) và một gợi ý thực tiễn. Các tab lọc trạng thái (Chỉ hoạt động / Đã hoàn thành / Tất cả) lọc tất cả 11 phần. Lọc chéo, xuất JSON và tự động làm mới WebSocket theo thời gian thực với khả năng gỡ lỗi trong 3 giây. Bảng **Lần chạy quy trình** hiển thị các "quy trình động" — những nhóm sub-agent do công cụ `Workflow` (và `/loop` tự định nhịp) tạo ra — vốn không phát ra hook, nên được dựng lại từ nhật ký chạy trên đĩa (`workflows/wf_<runId>.json`): mỗi lần chạy hiển thị các giai đoạn và bảng phân tích token / lệnh gọi công cụ / thời lượng theo từng agent, kèm phát hiện `running` theo thời gian thực trước khi nhật ký được ghi và một mục liên kết trên mỗi trang Chi tiết phiên. Biểu đồ **Tác động nén** đã được thiết kế lại thành biểu đồ tần suất "số phiên theo số lần nén" với nhãn trục, các ô thống kê (tổng / số phiên bị ảnh hưởng / trung bình / cao nhất), dòng giải thích và tooltip phong phú khi hover |
 | **Theo dõi quá trình nén**            | Phát hiện các sự kiện `/compact` từ bản ghi JSONL, tạo tác nhân và sự kiện nén. Chèn lấp các nén cũ khi khởi động. Máy quét định kỳ (tần suất được dẫn xuất từ `DASHBOARD_STALE_MINUTES`) phát hiện các vết nén ngay cả khi không có hook nào kích hoạt. Chia sẻ transcript cache để không xảy ra tình trạng đọc tệp trùng lặp |
 | **Phiên đăng ký/Phiên tiếp tục**   | Tự động kích hoạt lại các phiên khi có sự kiện mới, xử lý chính xác các phiên `/resume` và phiên mồ côi. Quét định kỳ (mỗi ¼ của `DASHBOARD_STALE_MINUTES`, kẹp giữa 60s–5 phút) đánh dấu các phiên bị bỏ qua vượt qua khả năng phát hiện dựa trên sự kiện                                                                     |
@@ -320,8 +333,8 @@ Bảng điều khiển cung cấp một bộ tính năng toàn diện để giá
 | **Dữ liệu hạt giống**                      | Tập lệnh hạt giống tích hợp cho các bản demo và phát triển                                                                                                                                                                                                                               |
 | **Dòng trạng thái**                     | Dòng trạng thái CLI được mã hóa màu hiển thị mô hình, cách sử dụng ngữ cảnh, nhánh git, mã thông báo                                                                                                                                                                                                  |
 | **Định dạng tên mô hình**          | Tên mô hình thân thiện trong toàn bộ giao diện: các định danh thô như `claude-opus-4-7-20260101` hoặc `claude-opus-4-7[1m]` hiển thị dạng "Claude Opus 4.7" hoặc "Claude Opus 4.7 (1M)". Hỗ trợ các họ Claude, GPT và Gemini với tự động nối phiên bản bằng dấu chấm, loại bỏ hậu tố ngày/latest, xóa tiền tố nhà cung cấp và định dạng thẻ cửa sổ ngữ cảnh. Trang Cài đặt giữ nguyên tên thô để cấu hình quy tắc giá |
-| **Thị trường plugin**             | Thị trường plugin Claude Code chính thức với 10 plugin (ccam-analytics, ccam-productivity, ccam-devtools, ccam-insights, ccam-dashboard, ccam-cost-guard, ccam-sessions, ccam-workflows, ccam-quality, ccam-config). 53 kỹ năng, 14 tác nhân, 30 lệnh slash, 3 công cụ CLI, 3 cấu hình hook. Tất cả đều dựa trên mô hình dữ liệu thực tế — đường cơ sở của mã thông báo, công cụ định giá, thông tin quy trình làm việc (11 bộ dữ liệu), siêu dữ liệu phiên. Cài đặt qua `claude plugin marketplace add` |
-| **Chạy Claude**                    | Khởi chạy tiến trình con `claude` ngay trong dashboard với UI streaming kiểu chat. Hai chế độ: **Hội thoại** (đa lượt — stdin mở liên tục, các lượt tiếp theo được đẩy qua stdin dạng stream-json) và **Một lần** (headless, một prompt → một phản hồi). Chế độ hội thoại còn hỗ trợ **tiếp tục bất kỳ phiên nào đã có** qua `claude --resume <id>` — chọn từ toàn bộ lịch sử phiên với picker tìm kiếm. Bộ chuyển đổi run đang chạy ở header cho phép bạn để run chạy nền, khởi động run mới và gắn lại sau. Việc gắn lại là bền vững: client đối chiếu envelope log trong bộ nhớ của spawner (`?envelopes=1`) với file JSONL transcript trên đĩa của session và ưu tiên bên có nhiều thông điệp user/assistant hơn, nên rời một run đã resume rồi quay lại vẫn thấy nguyên vẹn lịch sử trước đó (spawner chỉ thấy các lượt sau khi spawn; file transcript có cả lịch sử trước + hiện tại). Dropdown model (Opus 4.7 / 1M / Sonnet 4.6 / Haiku 4.5 / tuỳ chỉnh), picker permission-mode với cảnh báo `bypassPermissions` rõ ràng, trường **mức độ suy nghĩ** (low / medium / high — ánh xạ tới `--effort`), autocomplete cwd điền sẵn **thư mục home** của người dùng — vị trí spawn trung lập, không kế thừa ngữ cảnh dự án `.claude` của chính repo dashboard (agents, skills, rules, `CLAUDE.md`, `.mcp.json`); lùi về cwd của dashboard nếu không có gợi ý home, và nhóm home đứng đầu danh sách gợi ý (home → dashboard → gần đây). Render từng ký tự thực sự nhờ `--include-partial-messages`, cộng với **lớp làm mượt kiểu máy chữ** ở client dùng `requestAnimationFrame` để nhỏ giọt từng `text_delta` / `thinking_delta` — kể cả các phản hồi ngắn (claude gom toàn bộ vào 1-2 chunk) cũng hiện ra như đang gõ. Code merge giữ nguyên cờ `_streaming` và mảng `content` tích luỹ từ delta khi envelope `assistant` canonical đến giữa stream, nên thinking block không bị mất khi hoàn tất. Mỗi envelope WebSocket được dispatch qua `flushSync` để batching tự động của React 18 không gộp nhiều deltas thành một render. **Tương thích TUI (Tier 1)**: **banner giới hạn** thu gọn thành pill (không bao giờ biến mất) giải thích những gì stream-json làm được và không làm được; **trình soạn prompt với autocomplete lệnh slash** dùng chấm điểm theo bậc (tên chính xác → bắt đầu bằng → ranh giới từ → chứa → subsequence → mô tả chứa) liệt kê lệnh user / project / plugin (mở rộng theo template ở client trước khi gửi) và hiển thị các lệnh CLI built-in như `/clear`, `/model`, `/config` kèm nhãn "chỉ CLI — không chạy ở đây"; **tham chiếu file `@`** với fuzzy-search có debounce trên cwd của run (bỏ qua `node_modules`, `.git`, `dist`, `build`, …); **đồng hồ context window / token** trực tiếp hiển thị token input + output + cache-read và chi phí — khi streaming live tính từ `stream_event` / `result.usage`, khi nạp từ transcript trên resume / view / gắn-lại cũng đọc từ block `usage` của assistant đã hoàn tất (input / output / cache-read / cache-creation), nên không bị kẹt ở 0/200k; **header trạng thái** hiển thị model, effort, permission mode, cwd, session ID, số envelope và thời gian chạy. Dropdown autocomplete mở lên trên, không đè picker cwd phía dưới. Chip Live / Offline cạnh tiêu đề. Same-origin guard trên route ngăn chặn drive-by spawn từ trình duyệt. Concurrency thực tế không giới hạn (mức trần mặc định 10000, ngang với terminal TUI — chỉ để chặn fork-bomb từ client lỗi; đặt `RUN_MAX_CONCURRENT` nếu muốn giới hạn thật). Modal hợp nhất runs đang chạy / lịch sử cung cấp hai nút nhảy nhanh: **Resume** trên dòng hội thoại cũ lập tức spawn `claude --resume <id>` và nạp sẵn transcript vào chat view (không cần gõ lại prompt — tiến trình idle trên stdin cho đến khi bạn gửi follow-up); **View** trên dòng one-shot cũ nạp transcript đã ghi vào ngay run viewer ở chế độ chỉ-đọc (không spawn — cùng panel, không có Stop / ô gửi). Phiên được spawn kích hoạt cùng các hook như mọi tiến trình `claude`, nên tự động xuất hiện trong Sessions / Analytics / Kanban / Workflows — và Sessions / SessionDetail hiển thị huy hiệu / banner xanh **▶ Run** liên kết về trang Run cho mọi phiên đang được điều khiển từ đó |
+| **Thị trường plugin Claude + Codex** | Một cây nguồn gồm 14 plugin cung cấp manifest cho Claude Code và Codex, hai catalog marketplace, 66 skill đóng gói, 18 subagent Claude, 34 lệnh Claude và metadata OpenAI. CLI skills.sh phát hiện tổng cộng 75 skill trong repo qua `npx skills add hoangsonww/Claude-Code-Agent-Monitor --list`. Có thể cài bằng `claude plugin marketplace add`, `codex plugin marketplace add` hoặc `npx skills add` |
+| **Chạy Claude**                    | Khởi chạy tiến trình con `claude` ngay trong dashboard với UI streaming kiểu chat. Hai chế độ: **Hội thoại** (đa lượt — stdin mở liên tục, các lượt tiếp theo được đẩy qua stdin dạng stream-json) và **Một lần** (headless, một prompt → một phản hồi). Chế độ hội thoại còn hỗ trợ **tiếp tục bất kỳ phiên nào đã có** qua `claude --resume <id>` — chọn từ toàn bộ lịch sử phiên với picker tìm kiếm. Bộ chuyển đổi run đang chạy ở header cho phép bạn để run chạy nền, khởi động run mới và gắn lại sau. Việc gắn lại là bền vững: client đối chiếu envelope log trong bộ nhớ của spawner (`?envelopes=1`) với file JSONL transcript trên đĩa của session và ưu tiên bên có nhiều thông điệp user/assistant hơn, nên rời một run đã resume rồi quay lại vẫn thấy nguyên vẹn lịch sử trước đó (spawner chỉ thấy các lượt sau khi spawn; file transcript có cả lịch sử trước + hiện tại). Dropdown model (Opus 4.7 / 1M / Sonnet 4.6 / Haiku 4.5 / tuỳ chỉnh), picker permission-mode với cảnh báo `bypassPermissions` rõ ràng, trường **mức độ suy nghĩ** (low / medium / high — ánh xạ tới `--effort`), autocomplete cwd điền sẵn **thư mục home** của người dùng — vị trí spawn trung lập, không kế thừa ngữ cảnh dự án `.claude` của chính repo dashboard (agents, skills, rules, `CLAUDE.md`, `.mcp.json`); lùi về cwd của dashboard nếu không có gợi ý home, và nhóm home đứng đầu danh sách gợi ý (home → dashboard → gần đây). Render từng ký tự thực sự nhờ `--include-partial-messages`, cộng với **lớp làm mượt kiểu máy chữ** ở client dùng `requestAnimationFrame` để nhỏ giọt từng `text_delta` / `thinking_delta` — kể cả các phản hồi ngắn (claude gom toàn bộ vào 1-2 chunk) cũng hiện ra như đang gõ. Code merge giữ nguyên cờ `_streaming` và mảng `content` tích luỹ từ delta khi envelope `assistant` canonical đến giữa stream, nên thinking block không bị mất khi hoàn tất. Mỗi envelope WebSocket được dispatch qua `flushSync` để batching tự động của React không gộp nhiều deltas thành một render. **Tương thích TUI (Tier 1)**: **banner giới hạn** thu gọn thành pill (không bao giờ biến mất) giải thích những gì stream-json làm được và không làm được; **trình soạn prompt với autocomplete lệnh slash** dùng chấm điểm theo bậc (tên chính xác → bắt đầu bằng → ranh giới từ → chứa → subsequence → mô tả chứa) liệt kê lệnh user / project / plugin (mở rộng theo template ở client trước khi gửi) và hiển thị các lệnh CLI built-in như `/clear`, `/model`, `/config` kèm nhãn "chỉ CLI — không chạy ở đây"; **tham chiếu file `@`** với fuzzy-search có debounce trên cwd của run (bỏ qua `node_modules`, `.git`, `dist`, `build`, …); **đồng hồ context window / token** trực tiếp hiển thị token input + output + cache-read và chi phí — khi streaming live tính từ `stream_event` / `result.usage`, khi nạp từ transcript trên resume / view / gắn-lại cũng đọc từ block `usage` của assistant đã hoàn tất (input / output / cache-read / cache-creation), nên không bị kẹt ở 0/200k; **header trạng thái** hiển thị model, effort, permission mode, cwd, session ID, số envelope và thời gian chạy. Dropdown autocomplete mở lên trên, không đè picker cwd phía dưới. Chip Live / Offline cạnh tiêu đề. Same-origin guard trên route ngăn chặn drive-by spawn từ trình duyệt. Concurrency thực tế không giới hạn (mức trần mặc định 10000, ngang với terminal TUI — chỉ để chặn fork-bomb từ client lỗi; đặt `RUN_MAX_CONCURRENT` nếu muốn giới hạn thật). Modal hợp nhất runs đang chạy / lịch sử cung cấp hai nút nhảy nhanh: **Resume** trên dòng hội thoại cũ lập tức spawn `claude --resume <id>` và nạp sẵn transcript vào chat view (không cần gõ lại prompt — tiến trình idle trên stdin cho đến khi bạn gửi follow-up); **View** trên dòng one-shot cũ nạp transcript đã ghi vào ngay run viewer ở chế độ chỉ-đọc (không spawn — cùng panel, không có Stop / ô gửi). Phiên được spawn kích hoạt cùng các hook như mọi tiến trình `claude`, nên tự động xuất hiện trong Sessions / Analytics / Kanban / Workflows — và Sessions / SessionDetail hiển thị huy hiệu / banner xanh **▶ Run** liên kết về trang Run cho mọi phiên đang được điều khiển từ đó |
 | **Tabby** | Chú mèo SVG dễ thương được ghim ở góc dưới bên phải trên mọi trang, lắng nghe luồng phiên WebSocket thời gian thực và phản ứng theo đó. **Linh vật biết phản ứng**: 8 tâm trạng dựa trên luồng phiên thời gian thực — idle, watching, happy, worried, stuck, thinking, sleeping và disconnected; mắt mèo dõi theo con trỏ, mỗi tâm trạng có hoạt ảnh riêng. **Lời thoại bong bóng** bật lên khi có sự kiện đáng chú ý (phiên bắt đầu/kết thúc, có lỗi, lần chạy hoàn tất), được throttle và có thể tắt tiếng. Nhấp vào chú mèo hoặc nhấn **⌘B / Ctrl+B** để mở **bảng điều khiển** (Esc để đóng): dòng trạng thái thời gian thực (N đang chạy · M bị lỗi · trạng thái kết nối), các hành động nhanh (nhảy tới Run Claude / Activity / Sessions / các phiên bị lỗi, tắt tiếng, xóa cảnh báo) và một ô **Ask**. Ô Ask trả lời cục bộ các câu hỏi trạng thái đơn giản; những câu hỏi khác được chuyển sang trang **Run Claude** sẵn có (`/run?prompt=...`) để khởi chạy một phiên Claude Code thật sự — **không cần backend mới, không cần API key**. Được xây dựng hoàn toàn trên luồng WebSocket sẵn có, thân thiện với trợ năng (bàn phím, `aria-live`, tôn trọng `prefers-reduced-motion`), bật/tắt trong Settings. Mã nguồn tại `client/src/components/Tabby/` |
 | **Cảnh báo & Webhook**             | Công cụ cảnh báo dựa trên quy tắc đánh giá luồng sự kiện trực tiếp ở phía máy chủ với bốn loại điều kiện: **event pattern** (khớp loại sự kiện / tên công cụ / chuỗi con trong tóm tắt, tùy chọn yêu cầu N lần khớp trong một cửa sổ thời gian — vd "hơn 5 lỗi trong 2 phút"), **không hoạt động** (phiên đang hoạt động nhưng im lặng N phút), **agent bị kẹt** (agent ở trạng thái `working`/`waiting` không hoạt động N phút) và **ngưỡng token** (tổng token của phiên vượt giới hạn). Mỗi loại có khử trùng lặp theo thời gian chờ trên từng (quy tắc, phiên, agent). Cảnh báo đã kích hoạt hiển thị trong nguồn cấp trực tiếp (kèm acknowledge / acknowledge-all) và được gửi tới **14 nhà cung cấp webhook hạng nhất** — **Slack**, **Discord**, **Microsoft Teams** (Adaptive Card qua Power Automate Workflows), **Google Chat**, **Mattermost**, **Rocket.Chat**, **Telegram** (Bot API), **PagerDuty** (Events API v2), **Opsgenie** (Alert API), **Splunk On-Call** (VictorOps), **Zapier**, **Make**, **n8n**, **Pipedream** — cùng bất kỳ endpoint JSON chung nào (tùy chọn ký **HMAC-SHA256** + header tùy chỉnh). Mỗi nhà cung cấp có payload gốc riêng; có thể giới hạn theo từng quy tắc. Việc gửi tách rời khỏi luồng cảnh báo, an toàn tuyệt đối: timeout theo yêu cầu, thử lại có giới hạn (retry/backoff), kiểm tra thân phản hồi (Splunk On-Call trả 200 kèm `result:"failure"`), nút **"Gửi thử"** đồng bộ và nhật ký gửi cho từng đích. URL, secret và thông tin xác thực được lưu ở phía máy chủ và **không bao giờ trả về** qua API (được che/ẩn trong mọi phản hồi). Quản lý quy tắc và kênh cùng nhau tại **Settings → Cảnh báo**, kèm tooltip giải thích từng trường và hướng dẫn thiết lập theo từng nhà cung cấp (có ghi chú rằng các bước có thể lỗi thời — hãy kiểm tra tài liệu chính thức) |
 | **Trình khám phá cấu hình Claude** | Trình kiểm tra 12-tab tại `/cc-config` cho mọi thứ Claude Code biết: skills, subagents, lệnh slash, output styles, plugin (kèm số lượng đóng góp + author/license/homepage từ `plugin.json`), marketplaces (kèm số plugin đọc từ mỗi `marketplace.json`), máy chủ MCP, hooks (kèm danh sách script trong `~/.claude/hooks/`), settings (bản tóm tắt **Cấu hình hiện tại** xem nhanh các tuỳ chọn `/config` điều khiển — model, verbose, theme, output style, effort, auto-compact, thông báo, … — phân giải theo phạm vi user/project/project-local với tuỳ chọn chưa đặt hiển thị là mặc định, cùng chế độ key-value có cấu trúc theo từng tệp + chuyển đổi raw JSON, ẩn key bí mật), memory (các tệp `CLAUDE.md` của user + project **cùng** kho memory dựa-trên-tệp theo từng dự án — mọi `*.md` dưới `~/.claude/projects/<slug>/memory/`, tức một tệp chỉ mục `MEMORY.md` cộng một tệp cho mỗi sự kiện được ghi nhớ, thường 100+; nhóm theo dự án trong các mục thu gọn được, tách tệp chỉ mục khỏi tệp từng-sự-kiện, kèm ô tìm kiếm và các liên kết chỉ mục `MEMORY.md` có thể bấm để nhảy tới — cuộn tới + làm nổi bật — tệp sự kiện tương ứng), keybindings (nhóm theo context với chip `<kbd>`), và statusline (config + nội dung script). Với các bề mặt tệp văn bản rủi ro thấp (skills / agents / commands / output styles / memory — kể cả các tệp auto-memory theo từng dự án), trang hỗ trợ **tạo / sửa / xoá kèm sao lưu bắt buộc có dấu thời gian**, ghi atomically ra ngoài các thư mục Claude Code quét, kèm modal Backups với lệnh `mv` khôi phục được dựng tự động. Plugins, MCP, hooks-trong-settings và file `settings.json` vẫn chỉ-đọc với banner giải thích + lệnh CLI có thể sao chép để người dùng biết chính xác lệnh nào cần tự chạy. **Cập nhật trực tiếp**: `cc-watcher` chạy phía server dùng `fs.watch` trên `~/.claude/` (đệ quy nếu nền tảng hỗ trợ) cùng `~/.claude.json`, debounce 500 ms, để phát thông điệp WebSocket `cc_config_changed` mỗi khi cấu hình Claude Code thay đổi — qua thao tác trên dashboard hoặc công cụ ngoài (CLI cài plugin, sửa tay `settings.json`, thả skill mới). Trang đăng ký và tự fetch lại; chip Live / Offline cạnh tiêu đề cho thấy trạng thái WebSocket |
@@ -330,13 +343,17 @@ Bảng điều khiển cung cấp một bộ tính năng toàn diện để giá
 | **Màn hình splash thương hiệu** | Màn hình splash thương hiệu hiển thị một lần mỗi phiên trình duyệt khi tải ứng dụng — lời chào theo thời điểm trong ngày (Chào buổi sáng / chiều / tối), một dòng tiêu đề đậm cùng hai dòng phụ đã bản địa hóa, và một biểu tượng thương hiệu dạng đồ thị nút có hoạt ảnh trên nền tối (radial glow, chòm sao, hạt nhiễu). Đục hoàn toàn ngay từ khung hình đầu (không lóe nội dung ứng dụng phía sau), giữ ~2.5 giây rồi mờ dần, bấm để bỏ qua, tôn trọng `prefers-reduced-motion`, bản địa hóa en/zh/vi/ko/es |
 | **Ứng dụng máy tính để bàn (macOS & Windows)** | Ứng dụng máy tính để bàn gốc tùy chọn xây bằng Electron 35, nằm trong workspace `desktop/` cùng với `client/`, `server/`, `mcp/` và `vscode-extension/`. Phát hành dưới dạng `.app` macOS (`.dmg`) **và** `.exe` Windows (trình cài NSIS + bản portable không cần cài). Nó **nhúng máy chủ Express hiện có ngay trong tiến trình** (`require()` trực tiếp `server/index.js` — không có tiến trình con, không có IPC) và hiển thị ứng dụng React đã build trong một `BrowserWindow`. Bổ sung thanh tiêu đề gốc, biểu tượng tray ở menu-bar / khu vực thông báo mà nhấp một lần sẽ hiện **ảnh chụp trạng thái trực tiếp** (phiên, agent, sự kiện hôm nay) lấy từ SQLite tại thời điểm nhấp, trình đơn ứng dụng gốc, tự khởi động lúc đăng nhập (macOS Login Items qua `SMAppService`; Windows theo từng người dùng qua `HKCU\…\Run`), hộp thoại xác nhận **⌘Q / Ctrl+Q** (nhấn lần hai để bỏ qua), đóng cửa sổ thì ẩn đi nhưng máy chủ vẫn chạy, khóa một-phiên-bản, cùng các lệnh tray "Open in Browser", "Restart Server" và "Show Logs". Ưu tiên cổng 4820 (lùi về 4821–4829 rồi cổng cao ngẫu nhiên), tiếp quản một máy chủ khỏe mạnh sẵn có trên 4820 thay vì bind trùng, và **cùng tồn tại với dashboard web**. Thông báo bắn ra dưới dạng toast gốc của hệ điều hành (Web Push không hoạt động ổn định bên trong Electron). Lần khởi động đầu tiên với máy chủ do ứng dụng sở hữu sẽ tự cài hook Claude Code và chạy các dịch vụ nền, nên người dùng chỉ-cài-đặt cũng có sự kiện chảy về mà không cần thiết lập thủ công. Xem [`DESKTOP.md`](./DESKTOP.md) và [`desktop/README.md`](./desktop/README.md) |
 
+> **Phạm vi nhà cung cấp và vị trí dữ liệu:** Cài đặt giữ lựa chọn Claude Code / Codex / Cả hai nhất quán trên toàn ứng dụng và cho phép đổi từng thư mục dữ liệu phiên mà không cần khởi động lại dashboard.
+>
+> **Ranh giới an toàn cục bộ:** Run Agent chấp nhận mọi thư mục làm việc tuyệt đối đang tồn tại và chuẩn hóa đường dẫn trước khi dùng, nên vẫn hỗ trợ chạy từ thư mục home và dự án gần đây. Nhà cung cấp Webhook được lưu trữ phải dùng HTTPS; generic và n8n có thể dùng HTTP cho bên nhận cục bộ/tự lưu trữ, và quá trình gửi không theo redirect.
+
 ---
 
 ## Bắt đầu nhanh
 
 ### Điều kiện tiên quyết
 
-- **Node.js** >= 20.0.0 (khuyến nghị 22+)
+- **Node.js** >= 22.22.0 (khuyến nghị Node 24 LTS)
 - **npm** >= 9.0.0
 
 ### 1. Cài đặt
@@ -355,11 +372,11 @@ npm run install-hooks
 
 Trình cài đặt mở bộ chọn đa lựa chọn tương tác: dùng phím mũi tên, <kbd>Space</kbd> và <kbd>Enter</kbd> để chọn **Claude Code**, **Codex (beta)** hoặc cả hai (Claude Code được chọn sẵn). Mục Claude Code nằm trong `~/.claude/settings.json`; mục Codex nằm trong `~/.codex/hooks.json`. Nếu bộ hook dashboard đã tồn tại cho lựa chọn đó, trình cài đặt sẽ cảnh báo trước khi chỉ thay thế các mục của dashboard này — các hook không liên quan được giữ nguyên. Bạn cũng có thể chọn tương tự trong **Settings → Hook Configuration → Install hooks**.
 
-Khi vào dashboard lần đầu, hãy chọn nguồn dữ liệu; ứng dụng sẽ mở cổng thiết lập giám sát trực tiếp theo nguồn đã chọn. Bạn có thể cài hook ngay tại đó với cảnh báo ghi đè và kết quả lệnh, hoặc xác nhận rõ rằng hook đã được cài trước khi vào dashboard.
+Khi vào dashboard lần đầu, hãy chọn nguồn dữ liệu; ứng dụng chỉ kiểm tra mức sẵn sàng của hook cho lựa chọn đó. Claude Code cần hook Claude, Codex cần hook Codex, còn Cả hai cần đủ hai bộ hook. Nếu mọi hook cần thiết đã được cài, dashboard mở ngay. Nếu chưa, cổng thiết lập chỉ liệt kê và cài những nguồn đã chọn còn thiếu hook, vẫn giữ nguyên các hook không liên quan và chuyển sang thiết lập thủ công an toàn nếu không kiểm tra được trạng thái.
 
 Các rollout Codex trong `~/.codex/sessions` cũng được phát hiện liên tục. Dashboard đọc JSONL chỉ-ghi-nối thêm theo kiểu tăng dần, ưu tiên rollout mới nhất và cô lập tệp lịch sử lỗi để thử lại, vì vậy phiên, token, chi phí, hàng hội thoại và cập nhật WebSocket luôn mới ngay cả khi bỏ lỡ một thông báo hook.
 
-Bản ghi vòng đời rollout Codex điều khiển các trạng thái thẻ trực tiếp giống Claude Code: `user_message` và `task_started` đánh dấu agent chính là **Đang làm việc**; `task_complete` giữ phiên ở trạng thái active nhưng hiển thị **Đang chờ**; và `turn_aborted` hiển thị **Đang chờ** với lý do bị gián đoạn. Một bản ghi rollout mới sẽ tự khôi phục phiên bị đánh dấu completed sai, trong khi cơ chế kiểm tra tiến trình chỉ hoàn tất phiên Codex cục bộ sau khi CLI tương ứng đã kết thúc.
+Bản ghi vòng đời rollout Codex điều khiển các trạng thái thẻ trực tiếp giống Claude Code: `user_message` và `task_started` đánh dấu agent chính là **Đang làm việc**; `task_complete` giữ phiên ở trạng thái active nhưng hiển thị **Đang chờ**; và `turn_aborted` hiển thị **Đang chờ** với lý do bị gián đoạn. Một bản ghi rollout mới sẽ tự khôi phục phiên bị đánh dấu completed sai. Trên các máy cục bộ được hỗ trợ, liveness được khớp với đúng tệp `rollout-*.jsonl` mà từng tiến trình Codex đang mở, nên rollout cũ dùng chung thư mục dự án được nhập dưới dạng completed thay vì xuất hiện như agent active ảo. Tiến trình khởi chạy Node và tiến trình con Codex native được gộp thành một tiến trình logic, nên mỗi TUI chỉ tạo một thẻ.
 
 Tiêu đề `/rename` của Codex được đọc từ chỉ mục phiên gốc và cập nhật thẻ phiên cùng agent theo thời gian thực. Chế độ xem lại hội thoại gồm các lượt của người dùng, lời gọi và đầu ra custom tool `exec`, với phân trang bằng cursor để tải các tin nhắn cũ hơn ở đầu transcript.
 
@@ -390,17 +407,16 @@ npm run build && npm start
 ### 5. Tùy chọn: Xây dựng và chạy máy chủ MCP cục bộ
 
 ```bash
-npm run mcp:install
-npm run mcp:build
 npm run mcp:start              # stdio (default — for MCP host integration)
 npm run mcp:start:http         # HTTP + SSE server on port 8819
 npm run mcp:start:repl         # interactive CLI with tab completion
+ccam mcp stdio                 # launcher ổn định dùng bởi plugin đóng gói
 ```
 
 Đối với chế độ stdio, hãy định cấu hình máy chủ MCP của bạn (Claude Code / Claude Desktop / các máy khách MCP khác):
 
-- lệnh: `node`
-- lập luận: `["<ABSOLUTE_PATH>/mcp/build/index.js"]`
+- lệnh: `ccam`
+- lập luận: `["mcp", "stdio"]`
 
 Đối với chế độ HTTP, hãy trỏ các máy khách MCP từ xa tới `http://127.0.0.1:8819/mcp` (HTTP có thể phát trực tuyến) hoặc `http://127.0.0.1:8819/sse` (SSE kế thừa).
 
@@ -416,51 +432,27 @@ Tạo 8 phiên mẫu, 23 nhân viên hỗ trợ và 106 sự kiện để bạn 
 
 ### Thay thế: Docker/Podman
 
-Bao gồm `Dockerfile` và `docker-compose.yml`. Cả Docker và Podman đều được hỗ trợ.
-
-**Với Docker Compose:**
+Image OCI chạy non-root, drop mọi capability, dùng Tini làm PID 1 và có Git/OpenSSH/SQLite. Docker Compose và Podman Compose dùng cùng một file.
 
 ```bash
+# Chỉ dashboard
 docker compose up -d --build
+# hoặc
+podman compose up -d --build
+
+# Stack đầy đủ có auth
+umask 077
+openssl rand -hex 32 > deployments/secrets/dashboard-token
+openssl rand -hex 32 > deployments/secrets/hook-token
+openssl rand -hex 32 > deployments/secrets/mcp-token
+openssl rand -base64 32 > deployments/secrets/grafana-admin-password
+npm run docker:full:up
 ```
 
-**Với Podman Compose:**
+Các cổng host mặc định chỉ bind loopback: dashboard `4820`, MCP `8819`, Nginx `8080`, Prometheus `9090`, Grafana `3000`. Claude/Codex home được mount read-only; named volume giữ SQLite và config do dashboard sở hữu. Nginx proxy UI, REST có auth và WebSocket, nhưng chặn hooks, metrics và MCP ở edge theo mặc định.
 
-```bash
-CLAUDE_HOME="$HOME/.claude" podman compose up -d --build
-```
-
-**Với Docker hoặc Podman đơn giản (không có Compose):**
-
-```bash
-# Docker
-docker build -t agent-monitor .
-docker run -d --name agent-monitor \
-  -p 127.0.0.1:4820:4820 \
-  -v "$HOME/.claude:/root/.claude:ro" \
-  -v "$HOME/.claude/agent-dashboard:/app/data" \
-  agent-monitor
-
-# Podman
-podman build -t agent-monitor .
-podman run -d --name agent-monitor \
-  -p 127.0.0.1:4820:4820 \
-  -v "$HOME/.claude:/root/.claude:ro" \
-  -v "$HOME/.claude/agent-dashboard:/app/data" \
-  agent-monitor
-```
-
-Bảng điều khiển sau đó có sẵn tại `http://localhost:4820`. Image bind `0.0.0.0` **bên trong container** (`DASHBOARD_HOST`) và ghi SQLite vào volume `/app/data` (`DASHBOARD_DATA_DIR`) — cả hai đều được nướng sẵn vào `Dockerfile` nên Compose và `docker run` đơn giản đều hoạt động ngay lập tức. Ranh giới tin cậy là việc publish cổng trên **host**: các ví dụ chỉ publish trên `127.0.0.1`, nên bảng điều khiển không truy cập được từ mạng LAN theo mặc định. Để mở ra LAN, hãy publish trên `0.0.0.0` (bỏ tiền tố `127.0.0.1:`, ví dụ `-p 4820:4820`) **và** đặt `DASHBOARD_TOKEN` (xem [Cấu hình](#cấu-hình) và [`.github/SECURITY.md`](./.github/SECURITY.md)).
-
-**Gắn kết âm lượng:**
-
-| Gắn kết | Mục đích |
-|---|---|
-| `~/.claude:/root/.claude:ro` | Đọc lịch sử phiên kế thừa để nhập |
-| `~/.claude/agent-dashboard:/app/data` | **Cơ sở dữ liệu SQLite chuẩn** (dùng chung với cài đặt native) |
-
-> [!QUAN TRỌNG]
-> **Lưu ý:** Các hook của Claude Code vẫn phải trỏ đến một tiến trình xử lý hook đang chạy trên máy chủ. Bản thân vùng chứa không nhận được hook - chạy `npm run install-hooks` trên máy chủ để định cấu hình các hook POST tới `http://localhost:4820`.
+> [!IMPORTANT]
+> Cài hooks trên host. Với remote hook, đặt `CCAM_DASHBOARD_URL=https://...` và `CCAM_HOOK_TOKEN`; URL không phải loopback bắt buộc HTTPS. Xem [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ### Thay thế: Ứng dụng máy tính để bàn (macOS & Windows)
 
@@ -629,6 +621,11 @@ flowchart LR
 | `DASHBOARD_PORT`        | `4820`        | Cổng dành cho máy chủ Express                   |
 | `CLAUDE_DASHBOARD_PORT` | `4820`        | Cổng được trình xử lý hook sử dụng để đến máy chủ |
 | `NODE_ENV`              | `development` | Đặt thành `production` để phục vụ ứng dụng khách đã xây dựng |
+| `DASHBOARD_TOKEN_FILE` | _(unset)_ | Token dashboard từ file cho Docker/Kubernetes Secret |
+| `DASHBOARD_HOOK_TOKEN` / `_FILE` | _(unset)_ | Token riêng cho remote `/api/hooks/*` ingest |
+| `DASHBOARD_ENV_PATH` | repo `.env` | Đường dẫn dotenv có quyền ghi cho Settings |
+| `CCAM_DASHBOARD_URL` | local discovery | Remote hook destination; non-loopback bắt buộc HTTPS |
+| `CCAM_HOOK_TOKEN` / `_FILE` | _(unset)_ | Credential do hook handler gửi |
 | `DASHBOARD_STALE_MINUTES` | `180` (3 giờ) | Số phút không hoạt động trước khi một phiên vẫn `active` (kể cả phiên đang **Đang chờ** người dùng — "Đang chờ" là lớp phủ UI trên một hàng `active`, không phải trạng thái lưu trữ) bị tự động đánh dấu **abandoned** và rời khỏi danh sách hoạt động. Được thực thi bởi watchdog 15 giây và lượt quét bảo trì định kỳ (chạy mỗi ¼ giá trị này, kẹp giữa 60s – 5 phút). Giảm giá trị (ví dụ `60`) để có idle timeout ngắn hơn |
 | `DASHBOARD_WORKING_IDLE_SECONDS` | `120` | Idle-working timeout để khôi phục một lượt bị hủy bằng `Esc` **trước khi có bất kỳ output nào** (việc này không để lại dấu nào trong transcript). Khi Agent chính đã ở `working` mà không có tool nào đang chạy và cả sự kiện hook lẫn transcript đều không tiến triển trong khoảng thời gian này, watchdog chuyển phiên sang **Đang chờ**. Giảm giá trị để khôi phục nhanh hơn, đổi lại đôi khi có lần lật cờ sai trên các lượt suy nghĩ im lặng kéo dài (sẽ tự phục hồi) |
 | `DASHBOARD_LIVENESS_PROBE` | `1` (bật) | Đặt `0` để tắt **cơ chế thu dọn phiên đã chết** của watchdog (probe dựa trên `ps`/`lsof` hoàn tất các phiên local `active` của Claude Code hoặc Codex khi tiến trình CLI tương ứng không còn tồn tại — khôi phục một `SessionEnd` bị mất khi dashboard không chạy). Các phiên được chuyển tiếp từ **máy khác** (household hooks) báo cáo `cwd` không phải POSIX và được cơ chế thu dọn tự động bỏ qua, nên một triển khai hỗn hợp cục bộ + chuyển tiếp không còn cần tắt tùy chọn này; chỉ tắt nó cho cấu hình thuần từ xa nơi tiến trình cục bộ không chứng minh được gì. Tự động tắt trên Windows và trong container |
@@ -651,6 +648,7 @@ Toàn bộ bề mặt tính năng của dashboard cũng dùng được từ term
 # Máy chủ
 ccam status                       # chỉ báo ● đang chạy / ○ chưa chạy
 ccam start [--port N]             # khởi động server chạy nền (detached)
+ccam stop                         # dừng server chạy nền một cách nhẹ nhàng
 ccam repl                         # shell tương tác (cũng có: shell, i)
 
 # Giám sát
@@ -711,7 +709,7 @@ Các lệnh dựa trên API cần server đang chạy — khi chưa chạy, **c�
 
 | Yêu cầu                 | Sự miêu tả                                                |
 | ----------------------- | ---------------------------------------------------------- |
-| `npm run setup`         | Cài đặt phụ thuộc máy chủ và máy khách                     |
+| `npm run setup`         | Cài phụ thuộc root/client/extension/MCP, build MCP và link `ccam` |
 | `npm run dev`           | Khởi động đồng thời máy chủ (chế độ xem) + máy khách (Vite HMR) |
 | `npm run dev:server`    | Chỉ khởi động máy chủ Express với `--watch`               |
 | `npm run dev:client`    | Chỉ khởi động máy chủ Vite dev                             |
@@ -749,6 +747,11 @@ Các lệnh dựa trên API cần server đang chạy — khi chưa chạy, **c�
 | `npm run monitoring:start` | Khởi động foreground (Ctrl+C dừng cả hai) |
 | `npm run monitoring:docker:up` | Khởi động Prometheus + Grafana qua Docker Compose |
 | `npm run monitoring:docker:down` | Gỡ stack giám sát Docker |
+| `npm run docker:up` | Khởi động dashboard container |
+| `npm run docker:down` | Dừng dashboard container |
+| `npm run docker:full:up` | Dashboard + MCP có auth + Nginx + Prometheus + Grafana |
+| `npm run docker:full:down` | Dừng full container stack |
+| `npm run deploy:validate` | Kiểm tra Docker, Compose, Nginx, Helm, Kustomize, Terraform và one-writer invariant |
 
 ---
 
@@ -796,6 +799,7 @@ graph TD
 - Kỹ năng:
   - `repo-onboarding`
   - `ship-feature`
+  - `version-release`
   - `mcp-operations`
   - `debug-live-issue`
 - Chất phụ:
@@ -965,6 +969,9 @@ flowchart TD
 
 - Chế độ chỉ đọc (mặc định): `MCP_DASHBOARD_ALLOW_MUTATIONS=false`
 - Chế độ quản trị viên: `MCP_DASHBOARD_ALLOW_MUTATIONS=true`
+- Xác thực: `MCP_DASHBOARD_API_TOKEN` / `_FILE` phải khớp dashboard token; `MCP_HTTP_AUTH_TOKEN` / `_FILE` bảo vệ HTTP/SSE clients
+- Bảo vệ truyền tải: HTTP loopback trực tiếp có thể mang token; alias host container phải dùng HTTPS; mọi redirect bị từ chối
+- Bảo vệ payload: 50 MiB mỗi tệp upload lịch sử, 100 MiB tổng mỗi lần gọi, 10 MiB phản hồi nhị phân và 25 MiB khôi phục backup
 - Chế độ hủy diệt: yêu cầu cả hai:
   - `MCP_DASHBOARD_ALLOW_MUTATIONS=true`
   - `MCP_DASHBOARD_ALLOW_DESTRUCTIVE=true`
@@ -1009,7 +1016,7 @@ Tài liệu API hiện đã **đầy đủ**: mọi route phụ trợ đều đ�
 ```bash
 npm start                      # dashboard on :4820
 npm run monitoring:install       # một lần: npm postinstall tải binary
-npm run monitoring:up          # Grafana on :3000 (admin/admin), auto-provisioned
+npm run monitoring:up          # Grafana trên :3000 (npm local: admin/admin)
 ```
 
 **Docker / Podman** (khi dashboard chạy trong container hoặc bạn dùng Compose):
@@ -1129,9 +1136,9 @@ Xem [docs/API.md → Metrics](./docs/API.md#metrics) để biết danh sách ch�
 | `POST` | `/api/settings/reimport`       | Nhập lại các phiên kế thừa từ `~/.claude/`      |
 | `POST` | `/api/settings/reinstall-hooks`| Cài đặt lại móc Claude Code                      |
 | `POST` | `/api/settings/install-hooks` | Cài hook Claude Code, Codex hoặc cả hai; giữ nguyên hook không liên quan |
-| `POST` | `/api/settings/reset-pricing`  | Đặt lại bảng giá Claude và GPT về mặc định                        |
+| `POST` | `/api/settings/reset-pricing`  | Đặt lại bảng giá Claude, Codex hoặc cả hai về mặc định |
 | `GET`  | `/api/settings/export`         | Xuất tất cả dữ liệu dưới dạng tải xuống JSON                 |
-| `POST` | `/api/settings/import`         | Khôi phục bản xuất từ `/export` (multipart `file` hoặc JSON `{ path }`). Idempotent + không phá hủy — phiên đã có được bỏ qua toàn bộ |
+| `POST` | `/api/settings/import`         | Khôi phục một bản xuất tối đa 25 MiB từ `/export` (multipart `file` hoặc JSON `{ path }`). Idempotent + không phá hủy — phiên đã có được bỏ qua toàn bộ |
 | `POST` | `/api/settings/cleanup`        | Bỏ các phiên cũ, xóa dữ liệu cũ           |
 
 ### Nguồn dữ liệu từ xa
@@ -1751,28 +1758,65 @@ erDiagram
 
 ## Thị trường plugin
 
-Mở rộng Claude Code bằng các plugin Giám sát tác nhân chính thức — phân tích, công cụ năng suất, tiện ích dành cho nhà phát triển, thông tin chi tiết được hỗ trợ bởi AI, kết nối bảng điều khiển, lan can chi phí, điều tra phiên, điều phối quy trình làm việc, độ tin cậy/SLO và quản trị cấu hình. 10 plugin, 53 kỹ năng, 14 tác nhân, 30 lệnh slash, 3 công cụ CLI, 3 cấu hình hook, 1 máy chủ MCP.
+CCAM cung cấp 14 plugin dùng chung cho Claude Code và Codex, với 66 skill đóng gói, 18 subagent Claude, 34 lệnh Claude, 3 công cụ CLI, 3 cấu hình hook và 2 plugin có MCP. CLI skills.sh phát hiện 75 skill trong toàn bộ repo. Xem `docs/PLUGINS.md` để biết catalog, lệnh cài đặt, cơ chế skills.sh và quy trình xác thực.
 
 ### Thêm thị trường
 
 ```bash
 claude plugin marketplace add hoangsonww/Claude-Code-Agent-Monitor
+codex plugin marketplace add hoangsonww/Claude-Code-Agent-Monitor
 ```
+
+### Cài đặt skill bằng skills.sh
+
+```bash
+# Liệt kê toàn bộ 75 skill mà không cài đặt
+npx skills add hoangsonww/Claude-Code-Agent-Monitor --list
+
+# Cài một skill cho Claude Code và Codex trong dự án hiện tại
+npx skills add hoangsonww/Claude-Code-Agent-Monitor \
+  --skill mcp-server \
+  --agent claude-code \
+  --agent codex \
+  --yes
+
+# Xác minh, cập nhật và gỡ skill ở phạm vi dự án
+npx skills list --json
+npx skills update --project --yes
+npx skills remove mcp-server --yes
+
+# Thêm --global để cài ở phạm vi người dùng, rồi quản lý phạm vi đó
+npx skills add hoangsonww/Claude-Code-Agent-Monitor \
+  --skill mcp-server \
+  --agent claude-code \
+  --agent codex \
+  --global \
+  --yes
+npx skills list --global --json
+npx skills update --global --yes
+npx skills remove --global mcp-server --yes
+```
+
+Bản cài theo dự án sử dụng `.agents/skills/` cùng các liên kết dành riêng cho từng agent. Skill Claude Code toàn cục mặc định nằm trong `~/.claude/skills/`, hoặc trong thư mục `skills/` của `CLAUDE_CONFIG_DIR` khi biến này được đặt. Skill Codex toàn cục mặc định nằm trong `~/.codex/skills/`, hoặc trong thư mục `skills/` của `CODEX_HOME` khi biến này được đặt. Bản cài nhiều agent có thể khử trùng lặp qua một kho dùng chung rồi tạo liên kết đến các thư mục đích đó. CLI skills.sh phát hiện 75 skill trong repo, gồm 66 skill plugin và các skill bảo trì repo.
 
 ### Các plugin có sẵn
 
 | Trình cắm | Lệnh cài đặt | Kỹ năng |
 |--------|----------------|--------|
-| **phân tích ccam** | `claude plugin install ccam-analytics@hoangsonww-claude-code-agent-monitor` | `session-report`, `cost-breakdown`, `usage-trends`, `productivity-score` |
-| **lan can chi phí ccam** | `claude plugin install ccam-cost-guard@hoangsonww-claude-code-agent-monitor` | `budget-set`, `spend-forecast`, `cost-alert`, `model-savings`, `daily-budget-check` |
-| **năng suất ccam** | `claude plugin install ccam-productivity@hoangsonww-claude-code-agent-monitor` | `daily-standup`, `weekly-report`, `sprint-summary`, `workflow-optimizer` |
-| **ccam-devtools** | `claude plugin install ccam-devtools@hoangsonww-claude-code-agent-monitor` | `session-debug`, `hook-diagnostics`, `data-export`, `health-check` |
-| **thông tin chi tiết về ccam** | `claude plugin install ccam-insights@hoangsonww-claude-code-agent-monitor` | `pattern-detect`, `anomaly-alert`, `optimization-suggest`, `session-compare` |
-| **phiên ccam** | `claude plugin install ccam-sessions@hoangsonww-claude-code-agent-monitor` | `session-search`, `session-timeline`, `transcript-replay`, `cwd-rollup`, `session-cleanup` |
-| **quy trình làm việc ccam** | `claude plugin install ccam-workflows@hoangsonww-claude-code-agent-monitor` | `dag-map`, `delegation-audit`, `concurrency-report`, `error-propagation`, `fleet-runs` |
-| **chất lượng ccam** | `claude plugin install ccam-quality@hoangsonww-claude-code-agent-monitor` | `error-scan`, `api-error-report`, `hook-failure-audit`, `slo-check`, `regression-alert` |
-| **cấu hình ccam** | `claude plugin install ccam-config@hoangsonww-claude-code-agent-monitor` | `config-audit`, `memory-review`, `skill-inventory`, `mcp-audit`, `hook-inventory` |
-| **bảng điều khiển ccam** | `claude plugin install ccam-dashboard@hoangsonww-claude-code-agent-monitor` | `dashboard-status`, `quick-stats` + máy chủ MCP |
+| **phân tích ccam** | `claude plugin install ccam-analytics@claude-code-agent-monitor-plugins` | `session-report`, `cost-breakdown`, `usage-trends`, `productivity-score` |
+| **lan can chi phí ccam** | `claude plugin install ccam-cost-guard@claude-code-agent-monitor-plugins` | `budget-set`, `spend-forecast`, `cost-alert`, `model-savings`, `daily-budget-check` |
+| **năng suất ccam** | `claude plugin install ccam-productivity@claude-code-agent-monitor-plugins` | `daily-standup`, `weekly-report`, `sprint-summary`, `workflow-optimizer` |
+| **ccam-devtools** | `claude plugin install ccam-devtools@claude-code-agent-monitor-plugins` | `session-debug`, `hook-diagnostics`, `data-export`, `health-check` |
+| **thông tin chi tiết về ccam** | `claude plugin install ccam-insights@claude-code-agent-monitor-plugins` | `pattern-detect`, `anomaly-alert`, `optimization-suggest`, `session-compare` |
+| **phiên ccam** | `claude plugin install ccam-sessions@claude-code-agent-monitor-plugins` | `session-search`, `session-timeline`, `transcript-replay`, `cwd-rollup`, `session-cleanup` |
+| **quy trình làm việc ccam** | `claude plugin install ccam-workflows@claude-code-agent-monitor-plugins` | `dag-map`, `delegation-audit`, `concurrency-report`, `error-propagation`, `fleet-runs` |
+| **chất lượng ccam** | `claude plugin install ccam-quality@claude-code-agent-monitor-plugins` | `error-scan`, `api-error-report`, `hook-failure-audit`, `slo-check`, `regression-alert` |
+| **cấu hình ccam** | `claude plugin install ccam-config@claude-code-agent-monitor-plugins` | `config-audit`, `memory-review`, `skill-inventory`, `mcp-audit`, `hook-inventory` |
+| **bảng điều khiển ccam** | `claude plugin install ccam-dashboard@claude-code-agent-monitor-plugins` | `dashboard-status`, `quick-stats` + máy chủ MCP |
+| **ccam-runner** | `claude plugin install ccam-runner@claude-code-agent-monitor-plugins` | `run-agent`, `run-history` |
+| **ccam-integrations** | `claude plugin install ccam-integrations@claude-code-agent-monitor-plugins` | `alert-management`, `webhook-management`, `remote-collection` |
+| **ccam-platform** | `claude plugin install ccam-platform@claude-code-agent-monitor-plugins` | `config-explorer`, `history-portability`, `hook-setup`, `mcp-server` |
+| **ccam-reports** | `claude plugin install ccam-reports@claude-code-agent-monitor-plugins` | `executive-report`, `cost-report`, `reliability-report`, `workflow-report` |
 
 ### Bao gồm các công cụ CLI
 
@@ -1967,70 +2011,30 @@ graph LR
 
 ### Triển khai đám mây
 
-Thư mục `deployments/` cung cấp cơ sở hạ tầng cấp doanh nghiệp, không phụ thuộc vào đám mây để triển khai bảng thông tin vào sản xuất. Hỗ trợ Helm, Kustomize và Terraform trên AWS, GCP, Azure và OCI với các chiến lược phát hành xanh lam, xanh hoàng yến và luân phiên.
+`deployments/` chạy trên mọi Kubernetes tương thích, gồm EKS, GKE, AKS, OKE và cụm tự quản lý. CCAM dùng SQLite, vì vậy mọi manifest được hỗ trợ đều bắt buộc **chính xác một dashboard writer đang hoạt động trên mỗi persistent volume** với Recreate. HPA, active-active, nhiều replica, blue-green và canary không được hỗ trợ khi SQLite vẫn là persistence backend.
 
-```mermaid
-graph TB
-  subgraph "Deployment Methods"
-    HELM["⎈ Helm Chart<br/>Parameterized installs"]
-    KUST["📦 Kustomize<br/>Overlay-based patching"]
-    TF["🏗️ Terraform<br/>Full cloud provisioning"]
-  end
-
-  subgraph "Cloud Providers"
-    AWS["☁️ AWS<br/>ECS Fargate + ALB"]
-    GCP["☁️ GCP<br/>Cloud Run + GCLB"]
-    AZ["☁️ Azure<br/>ACI + App Gateway"]
-    OCI["☁️ OCI<br/>OKE + LBaaS"]
-  end
-
-  subgraph "Release Strategies"
-    ROLL["Rolling Update"]
-    BG["Blue-Green"]
-    CAN["Canary + Analysis"]
-  end
-
-  subgraph "Observability"
-    PROM["📊 Prometheus + Grafana"]
-    CX["📡 Coralogix<br/>Logs · Metrics · Traces · SLOs"]
-  end
-
-  HELM & KUST --> ROLL & BG & CAN
-  TF --> AWS & GCP & AZ & OCI
-  ROLL & BG & CAN --> PROM & CX
-
-  style HELM fill:#0f1689,color:#fff
-  style KUST fill:#326ce5,color:#fff
-  style TF fill:#7b42bc,color:#fff
-  style AWS fill:#ff9900,color:#fff
-  style GCP fill:#4285f4,color:#fff
-  style AZ fill:#0078d4,color:#fff
-  style OCI fill:#f80000,color:#fff
-  style PROM fill:#e6522c,color:#fff
-  style CX fill:#1a1a2e,color:#fff
-```
+- **Helm:** schema chặn nhiều replica/HPA, hỗ trợ image digest, retained PVC, Ingress hoặc Gateway API, external Secret, NetworkPolicy, MCP và ServiceMonitor tùy chọn.
+- **Kustomize:** Restricted PSS base, overlay dev/staging/production, component MCP, monitoring, Gateway API và CSI snapshot.
+- **Terraform:** triển khai Helm chart đã kiểm chứng lên Kubernetes cluster có sẵn; networking, identity, CSI, TLS và secret sync do lớp cloud quản lý.
+- **Operations:** SQLite online backup, integrity check, SHA-256, scale-to-zero restore, backup trước deploy/rollback/teardown và health check có auth.
+- **CI supply chain:** image app và MCP được scan, publish amd64/arm64 với SBOM, SLSA provenance và Cosign keyless signature.
 
 ```bash
-# Helm (recommended for Kubernetes)
-helm install agent-monitor deployments/helm/agent-monitor \
-  -f deployments/helm/agent-monitor/values-production.yaml \
-  -n agent-monitor --create-namespace
+npm run deploy:validate
+REGISTRY="ghcr.io/$(gh repo view --json owner -q .owner.login)"
+IMAGE_TAG="$(git rev-parse --short HEAD)"
 
-# Kustomize
-kubectl apply -k deployments/kubernetes/overlays/production
-
-# Terraform (full infra + app)
-cd deployments/terraform/providers/aws
-terraform init && terraform apply -var-file=../../environments/production/terraform.tfvars
-
-# Script orchestrator
-./deployments/scripts/deploy.sh --env production --method helm --strategy blue-green
+helm upgrade --install agent-monitor deployments/helm/agent-monitor \
+  --namespace agent-monitor-production --create-namespace \
+  --values deployments/helm/agent-monitor/values-production.yaml \
+  --set image.registry= \
+  --set image.repository=${REGISTRY}/claude-code-agent-monitor \
+  --set image.tag=${IMAGE_TAG} \
+  --atomic --wait --timeout 10m
 ```
 
-Ngăn triển khai bao gồm các quy trình CI/CD (GitHub Actions + GitLab CI), giám sát toàn diện (Prometheus, Grafana, Alertmanager với 13 quy tắc cảnh báo, khả năng quan sát toàn bộ ngăn xếp Coralogix với OpenTelemetry Collector để ghi nhật ký, số liệu, dấu vết và theo dõi SLO), tập lệnh vận hành (triển khai, khôi phục, chuyển đổi xanh lam, sao lưu/khôi phục, phá bỏ) và chế độ bảo mật đầy đủ (Tiêu chuẩn bảo mật Pod bị hạn chế, TLS 1.3, mạng chính sách, quét Trivy).
-
-> [!GHI CHÚ]
-> 📘 **Hướng dẫn triển khai đầy đủ:** Xem [TRIỂN KHAI.md](DEPLOYMENT.md) để biết hướng dẫn từng bước, sơ đồ kiến ​​trúc và quy trình vận hành.
+> [!NOTE]
+> Xem [DEPLOYMENT.md](DEPLOYMENT.md) và [deployments/README.md](deployments/README.md) để biết secrets, Docker/Podman, Gateway API, Terraform, backup, restore và rollback.
 
 ---
 
@@ -2046,7 +2050,9 @@ agent-dashboard/
 |   +-- skills/                 # Claude reusable project skills
 |   +-- agents/                 # Claude custom subagents
 |-- .claude-plugin/
-|   +-- marketplace.json        # Plugin marketplace manifest (10 plugins)
+|   +-- marketplace.json        # Manifest marketplace Claude Code (14 plugin)
+|-- .agents/plugins/
+|   +-- marketplace.json        # Manifest marketplace Codex (14 plugin)
 |-- plugins/
 |   |-- ccam-analytics/         # Analytics: session reports, cost breakdown, usage trends, productivity score
 |   |   |-- .claude-plugin/plugin.json
@@ -2140,7 +2146,7 @@ agent-dashboard/
 |   |   |-- config/              # Environment/CLI config parsing
 |   |   |-- core/                # Logger, tool registry, result helpers
 |   |   |-- policy/              # Mutation/destructive guards
-|   |   |-- tools/               # Domain-specific tool modules (6 domains)
+|   |   |-- tools/               # 16 mô-đun miền đăng ký 97 công cụ
 |   |   |-- transports/          # HTTP+SSE server, REPL, tool collector
 |   |   |-- ui/                  # ANSI banner, colors, formatter, tables
 |   |   +-- types/               # Shared MCP type definitions
@@ -2162,20 +2168,16 @@ agent-dashboard/
 |   |-- scripts/                 # prebuild, build-icons, notarize hooks
 |   +-- tests/smoke.test.mjs     # Spawn Electron + probe /api/health
 |-- deployments/
-|   |-- README.md                # Deployment infrastructure reference
-|   |-- terraform/               # Cloud provisioning (AWS, GCP, Azure, OCI)
-|   |   |-- modules/             # Reusable modules (networking, compute, db, lb, monitoring)
-|   |   |-- providers/           # Cloud-specific implementations
-|   |   +-- environments/        # Per-env tfvars (dev, staging, production)
-|   |-- kubernetes/              # Kustomize manifests
-|   |   |-- base/                # 11 base resources (deployment, service, ingress, hpa, etc.)
-|   |   |-- overlays/            # Environment overlays (dev, staging, production)
-|   |   |-- components/          # Optional add-ons (mcp-sidecar, monitoring)
-|   |   +-- strategies/          # Blue-green and canary deployment strategies
-|   |-- helm/agent-monitor/      # Helm chart with 12 templates and 4 value sets
-|   |-- scripts/                 # Operational scripts (deploy, rollback, backup, teardown)
-|   |-- monitoring/              # Prometheus, Grafana, Alertmanager, Coralogix (OTel Collector)
-|   +-- ci/                      # CI/CD pipelines (GitHub Actions, GitLab CI)
+|   |-- README.md                # Production deployment reference
+|   |-- nginx/                   # Rootless Nginx edge and opt-in hook/MCP policies
+|   |-- secrets/                 # Ignored Compose token/password files
+|   |-- terraform/               # Helm deployment to an existing Kubernetes cluster
+|   |-- kubernetes/              # One-writer Kustomize base + environment overlays
+|   |   |-- base/                # Restricted PSS, Recreate Deployment, PVC, Service, Ingress
+|   |   |-- overlays/            # Dev, staging, production namespaces and resources
+|   |   +-- components/          # MCP, ServiceMonitor, Gateway API, VolumeSnapshot
+|   |-- helm/agent-monitor/      # Schema-enforced Helm chart and environment values
+|   +-- scripts/                 # Validate, deploy, backup, restore, rollback, health, teardown
 |-- .codex/
 |   |-- config.toml              # Codex runtime configuration
 |   |-- README.md                # Codex setup guide for agents and skills

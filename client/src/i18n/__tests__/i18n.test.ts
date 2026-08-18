@@ -7,7 +7,60 @@
 import { describe, it, expect } from "vitest";
 import i18n from "i18next";
 
+const flattenResource = (
+  value: unknown,
+  prefix = "",
+  result: Record<string, unknown> = {}
+): Record<string, unknown> => {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    for (const [key, child] of Object.entries(value)) {
+      flattenResource(child, prefix ? `${prefix}.${key}` : key, result);
+    }
+  } else {
+    result[prefix] = value;
+  }
+
+  return result;
+};
+
+const interpolationTokens = (value: unknown): string[] => {
+  if (typeof value !== "string") return [];
+
+  return [...value.matchAll(/{{\s*([^},\s]+)[^}]*}}|%\{\s*([^}\s]+)\s*\}/g)]
+    .flatMap((match) => {
+      const token = match[1] ?? match[2];
+      return token ? [token] : [];
+    })
+    .sort();
+};
+
 describe("i18n resources", () => {
+  it("keeps every locale's keys, value types, and interpolation tokens aligned with English", () => {
+    const namespaces = Object.keys(i18n.getDataByLanguage("en") ?? {});
+
+    for (const namespace of namespaces) {
+      const english = flattenResource(i18n.getResourceBundle("en", namespace));
+
+      for (const language of ["zh", "vi", "ko", "es"]) {
+        const locale = flattenResource(i18n.getResourceBundle(language, namespace));
+
+        expect(Object.keys(locale).sort(), `${language}/${namespace} keys`).toEqual(
+          Object.keys(english).sort()
+        );
+
+        for (const key of Object.keys(english)) {
+          expect(typeof locale[key], `${language}/${namespace}:${key} type`).toBe(
+            typeof english[key]
+          );
+          expect(
+            interpolationTokens(locale[key]),
+            `${language}/${namespace}:${key} interpolation tokens`
+          ).toEqual(interpolationTokens(english[key]));
+        }
+      }
+    }
+  });
+
   it("should provide Vietnamese translations for navigation keys", async () => {
     await i18n.changeLanguage("vi");
 
@@ -95,6 +148,28 @@ describe("i18n resources", () => {
     expect(i18n.t("kanban:session.subagentSummary", { count: 3 })).toBe("3 subagents");
   });
 
+  it("pluralizes task-progress counts in English and Spanish", async () => {
+    await i18n.changeLanguage("en");
+    expect(i18n.t("sessions:taskProgress.more", { count: 1 })).toBe(
+      "+1 more task in Session Detail"
+    );
+    expect(i18n.t("sessions:taskProgress.more", { count: 2 })).toBe(
+      "+2 more tasks in Session Detail"
+    );
+    expect(i18n.t("sessions:taskProgress.hiddenTasks", { count: 1 })).toBe(
+      "1 additional task is not shown."
+    );
+    expect(i18n.t("sessions:taskProgress.hiddenTasks", { count: 2 })).toBe(
+      "2 additional tasks are not shown."
+    );
+
+    await i18n.changeLanguage("es");
+    expect(i18n.t("sessions:taskProgress.doneCount", { count: 1 })).toBe("1 completada");
+    expect(i18n.t("sessions:taskProgress.doneCount", { count: 2 })).toBe("2 completadas");
+    expect(i18n.t("sessions:taskProgress.remainingCount", { count: 1 })).toBe("1 pendiente");
+    expect(i18n.t("sessions:taskProgress.remainingCount", { count: 2 })).toBe("2 pendientes");
+  });
+
   it("ships every first-run hook setup control in each supported locale", () => {
     const keys = [
       "provider.both.label",
@@ -140,7 +215,9 @@ describe("i18n resources", () => {
       "pricing.navClaude",
       "pricing.navGpt",
       "pricing.gpt.title",
-      "pricing.gpt.unavailableNote",
+      "pricing.gpt.tooltip.title",
+      "pricing.gpt.tooltip.howItWorksBody",
+      "pricing.gpt.tooltip.apiPricingBody",
     ];
 
     for (const language of ["en", "zh", "vi", "ko", "es"]) {

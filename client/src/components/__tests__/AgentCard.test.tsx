@@ -7,14 +7,19 @@
 
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import type { ReactElement } from "react";
 // render is used inside renderCard helper
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, useLocation } from "react-router";
 import { AgentCard } from "../AgentCard";
-import type { Agent } from "../../lib/types";
+import type { Agent, Session, SessionTodoSummary } from "../../lib/types";
 import { formatModelName, fmtCost } from "../../lib/format";
 
-function renderCard(element: JSX.Element) {
+function renderCard(element: ReactElement) {
   return render(<MemoryRouter>{element}</MemoryRouter>);
+}
+
+function LocationProbe() {
+  return <span data-testid="location">{useLocation().pathname}</span>;
 }
 
 function makeAgent(overrides: Partial<Agent> = {}): Agent {
@@ -36,6 +41,22 @@ function makeAgent(overrides: Partial<Agent> = {}): Agent {
   };
 }
 
+const taskSummary: SessionTodoSummary = {
+  total: 3,
+  completed: 2,
+  inProgress: 1,
+  pending: 0,
+  cancelled: 0,
+  unknown: 0,
+  percentComplete: 67,
+  activeText: "Confirm the setup is ready for local testing",
+  sourceTool: "update_plan",
+  updatedAt: "2026-08-08T00:06:07.958Z",
+  previewItems: [],
+  overflowCount: 0,
+  ownerBreakdown: [],
+};
+
 describe("AgentCard", () => {
   it("should render agent name", () => {
     renderCard(<AgentCard agent={makeAgent({ name: "Test Agent" })} />);
@@ -45,6 +66,50 @@ describe("AgentCard", () => {
   it("should render status badge", () => {
     renderCard(<AgentCard agent={makeAgent({ status: "working" })} />);
     expect(screen.getByText("Working")).toBeInTheDocument();
+  });
+
+  it("renders session task progress immediately before the status badge", () => {
+    renderCard(
+      <AgentCard
+        agent={makeAgent({ status: "waiting" })}
+        session={
+          {
+            id: "sess-1",
+            name: "Codex session",
+            provider: "codex",
+            status: "active",
+            todo_summary: taskSummary,
+          } as Session
+        }
+      />
+    );
+
+    const progress = screen.getByRole("button", { name: "Task progress: 2 of 3 complete" });
+    const status = screen.getByText("Waiting");
+    expect(
+      progress.compareDocumentPosition(status) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+  });
+
+  it("keeps task-progress interaction from triggering the card click", () => {
+    const onClick = vi.fn();
+    renderCard(
+      <AgentCard
+        agent={makeAgent()}
+        session={
+          {
+            id: "sess-1",
+            name: "Task session",
+            status: "active",
+            todo_summary: taskSummary,
+          } as Session
+        }
+        onClick={onClick}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Task progress: 2 of 3 complete" }));
+    expect(onClick).not.toHaveBeenCalled();
   });
 
   it("should render subagent_type when present", () => {
@@ -335,6 +400,40 @@ describe("AgentCard", () => {
     renderCard(<AgentCard agent={makeAgent()} onClick={onClick} />);
     fireEvent.click(screen.getByText("Main Agent"));
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not navigate before a transient Codex process has a durable session id", () => {
+    const metadata = JSON.stringify({ transient: true, pre_identity_process: true });
+    const agent = makeAgent({
+      id: "codex:codex-process:4312:abc123",
+      session_id: "codex-process:4312:abc123",
+      name: "Codex",
+      status: "waiting",
+      metadata,
+    });
+    const session: Session = {
+      id: agent.session_id,
+      name: "Codex session",
+      status: "active",
+      cwd: "/workspace/pre-identity",
+      model: null,
+      started_at: "2026-08-05T12:00:00.000Z",
+      ended_at: null,
+      metadata,
+      provider: "codex",
+      awaiting_input_since: "2026-08-05T12:00:00.000Z",
+      awaiting_reason: "session_start",
+    };
+    const { container } = render(
+      <MemoryRouter initialEntries={["/kanban"]}>
+        <AgentCard agent={agent} session={session} />
+        <LocationProbe />
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByText("Codex · codex-pr"));
+    expect(screen.getByTestId("location")).toHaveTextContent("/kanban");
+    expect(container.querySelector(".card-hover")?.className).toContain("cursor-default");
   });
 
   it("renders waiting badge and yellow accent when awaiting_input_since is set", () => {

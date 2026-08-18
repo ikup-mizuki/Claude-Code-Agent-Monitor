@@ -1560,6 +1560,14 @@ const stmts = {
   listEventsBySession: db.prepare(
     "SELECT * FROM events WHERE session_id = ? ORDER BY created_at DESC, id DESC"
   ),
+  listTaskEventsBySession: db.prepare(
+    `SELECT * FROM events
+     WHERE session_id = ? AND event_type IN (
+       'TaskCreated', 'TaskCompleted',
+       'UserPromptSubmit', 'Stop', 'SubagentStop', 'SessionEnd', 'Interrupted'
+     )
+     ORDER BY created_at ASC, id ASC`
+  ),
   // Codex rollout lifecycle reconciliation reads only the terminal/current
   // turn markers, never the high-volume tool/result records.
   getLatestCodexLifecycleEvent: db.prepare(

@@ -6,11 +6,28 @@ Comprehensive documentation for the Agent Dashboard project.
 
 ## Quick Links
 
+- [Operator Handbook](https://github.com/hoangsonww/Claude-Code-Agent-Monitor/wiki) - Task-oriented usage, operations, automation, and troubleshooting
+- [Localized Product Wiki](https://hoangsonww.github.io/Claude-Code-Agent-Monitor/wiki/) - English, Vietnamese, Chinese, Korean, and Spanish product and architecture tour
 - [Architecture Overview](../ARCHITECTURE.md) - System design and technical reference
 - [I18N Architecture](./I18N.md) - Internationalization architecture and usage guide
 - [CLI Reference](./CLI.md) - The `ccam` terminal CLI: every command, discovery, safety model
 - [Setup Guide](../SETUP.md) - Installation and configuration
 - [Installation](../INSTALL.md) - Detailed installation instructions
+
+---
+
+## Choose a Reading Path
+
+Start with the smallest set of documents for the job at hand, then use the catalog below as a reference:
+
+| Goal | Start here | Continue with |
+| --- | --- | --- |
+| Use or troubleshoot CCAM day to day | [GitHub Wiki](https://github.com/hoangsonww/Claude-Code-Agent-Monitor/wiki) | [Localized product Wiki](https://hoangsonww.github.io/Claude-Code-Agent-Monitor/wiki/) or the exact references below |
+| Run CCAM locally | [INSTALL.md](../INSTALL.md) | [SETUP.md](../SETUP.md), then the dashboard |
+| Integrate with the API or WebSocket | [API.md](./API.md) | [MCP.md](./MCP.md) for an MCP-based integration |
+| Understand captured activity | [HOOKS.md](./HOOKS.md) | [DATABASE.md](./DATABASE.md) and [ARCHITECTURE.md](../ARCHITECTURE.md) |
+| Operate CCAM in production | [DEPLOYMENT.md](./DEPLOYMENT.md) | [server/README.md](../server/README.md) and [monitoring/README.md](../monitoring/README.md) |
+| Extend the UI or localization | [client/README.md](../client/README.md) | [I18N.md](./I18N.md) |
 
 ---
 
@@ -177,7 +194,7 @@ graph TB
     end
     
     subgraph "Backend"
-        Express[Express Server<br/>Node.js 20+]
+        Express[Express Server<br/>Node.js 22.22+]
         DB[(SQLite Database)]
         WS[WebSocket Server]
     end
@@ -214,8 +231,8 @@ graph TB
 
 | Layer | Technology |
 |-------|------------|
-| **Frontend** | React 18, TypeScript 5.7, Vite 6, Tailwind CSS |
-| **Backend** | Node.js 20+, Express 4.21, WebSocket |
+| **Frontend** | React 19, TypeScript 5.7, Vite 7, Tailwind CSS |
+| **Backend** | Node.js 22.22+, Express 4.22, WebSocket |
 | **Database** | SQLite 3 (better-sqlite3 or node:sqlite) |
 | **Integration** | Claude Code Hooks, MCP Server |
 

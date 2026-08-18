@@ -88,6 +88,13 @@ sequenceDiagram
     API-->>Client: 200 OK + Data
 ```
 
+### Client integration checklist
+
+- Prefer the `Authorization: Bearer <token>` header for regular integrations. The query parameter is supported for constrained clients, but URLs are more likely to end up in shell history, browser history, and access logs.
+- Keep `DASHBOARD_TOKEN` in a secret store or environment variable; do not place it in a checked-in client bundle or example URL.
+- Treat `/api/health` as a liveness probe only. It is intentionally exempt from token checks and cannot verify that a client is authorized for protected API routes.
+- When exposing the dashboard beyond loopback, terminate TLS before the API, configure `DASHBOARD_ALLOWED_HOSTS` with the hostname clients use, and test both an authenticated REST request and WebSocket connection from the intended origin.
+
 ---
 
 ## Base URL
@@ -125,7 +132,7 @@ returns the same optional field.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `limit` | integer | 50 | Maximum sessions to return (1-1000) |
+| `limit` | integer | 50 | Maximum durable sessions to return (up to 10000) |
 | `offset` | integer | 0 | Pagination offset |
 | `status` | string | - | Filter by persisted status: `active`, `completed`, `error`, `abandoned`. The UI **Waiting** state is derived from the `awaiting_input_since` column and is not a queryable enum — filter `status=active` and inspect `awaiting_input_since` (non-null = Waiting) |
 | `q` | string | - | Case-insensitive search across `id`, `name`, and `cwd` |
@@ -134,11 +141,13 @@ returns the same optional field.
 | `sort_desc` | boolean | `true` | Use descending order; set to `false` for ascending order |
 | `sources` | string | - | Comma-separated data-source ids to include (the built-in local history is `local`; remote SSH machines use their `remote_sources.id`). Omit for all sources. Also accepted on `/api/events`, `/api/agents`, `/api/stats`, `/api/analytics`, and `/api/pricing/cost`. See [Remote Data Sources](#remote-data-sources) |
 | `providers` | string | - | Comma-separated product providers: `claude`, `codex`, or both. It composes with `sources` and is accepted by the scoped list, aggregate, facet, per-session detail, cost, and workflow routes. Codex workflow responses include its recorded `response_item` tool calls, token/model totals, and `context_compacted` events; only Claude Code's Workflow-tool run journals are unavailable for Codex. |
+| `include_transient` | boolean | `false` | Opt in to local, in-memory Codex startup cards before Codex exposes a stable session ID. On `/api/sessions`, this is honored only on the first page when `status` is absent or `active`; on `/api/agents`, only on the first `status=waiting` page without `session_id`. These cards are prepended without changing durable `total`, pagination, analytics, pricing, workflows, alerts, or history. |
+| `include_task_progress` | boolean | `false` | Attach nullable `todo_summary` values for the latest top-level work item to at most the first 100 returned rows. A new Claude human turn or Codex task that emits no tracker clears older state; a turn/task ending without a final update drops unfinished state. Fully completed history remains available. Each transcript scan reads only the newest 32 MiB and each summary includes at most five preview tasks. Rows after the enrichment cap omit the field. |
 
 **Example Request:**
 
 ```bash
-curl http://localhost:4820/api/sessions?limit=10&status=active
+curl "http://localhost:4820/api/sessions?limit=10&status=active&include_task_progress=true"
 ```
 
 `last_activity` in every list row is the timestamp of the latest durable session event. It does **not** reuse the mutable `updated_at` bookkeeping timestamp, so a title, card-context, or watchdog repair cannot make an idle session appear newly active. Eventless historical rows fall back to their lifecycle timestamp.
@@ -149,15 +158,47 @@ curl http://localhost:4820/api/sessions?limit=10&status=active
 {
   "sessions": [
     {
-      "id": 1,
-      "session_id": "sess_abc123",
+      "id": "sess_abc123",
+      "name": "Implement task progress",
       "model": "claude-sonnet-4",
       "status": "active",
-      "total_cost": 1.23,
+      "cost": 1.23,
       "agent_count": 3,
-      "tool_count": 12,
-      "created_at": "2024-03-18T12:00:00Z",
-      "updated_at": "2024-03-18T14:30:00Z"
+      "started_at": "2024-03-18T12:00:00Z",
+      "updated_at": "2024-03-18T14:30:00Z",
+      "todo_summary": {
+        "total": 2,
+        "completed": 1,
+        "inProgress": 1,
+        "pending": 0,
+        "cancelled": 0,
+        "unknown": 0,
+        "percentComplete": 50,
+        "activeText": "Implement tracker",
+        "sourceTool": "TaskList",
+        "updatedAt": "2024-03-18T14:29:00Z",
+        "previewItems": [
+          {
+            "id": "task-2",
+            "text": "Implement tracker",
+            "status": "in_progress",
+            "sourceStatus": "in_progress",
+            "order": 1,
+            "agentId": "sess_abc123-main",
+            "agentType": "main",
+            "description": null
+          }
+        ],
+        "overflowCount": 1,
+        "ownerBreakdown": [
+          {
+            "agentId": "sess_abc123-main",
+            "agentType": "main",
+            "completed": 1,
+            "total": 2
+          }
+        ]
+      }
     }
   ],
   "total": 42,
@@ -205,7 +246,20 @@ classDiagram
 GET /api/sessions/:id
 ```
 
-Returns single session details.
+Returns single session details. The `session.todo_snapshot` field contains the latest observable,
+owner-attributed task state when Claude emitted `TaskCreate` / `TaskGet` / `TaskUpdate` /
+`TaskList`, legacy `TodoWrite`, task lifecycle events, or Codex emitted `update_plan`; otherwise
+it is `null`. State is scoped to the latest top-level work boundary: a real Claude human turn or
+Codex `task_started` clears all prior owners, and a subagent's next assigned turn clears only that
+owner. If no fresh task state follows, older trackers stay removed. Harness task notifications do
+not count as human turns. Claude turn-end records and Codex `task_complete` / `turn_aborted` also
+discard owner snapshots that still contain unfinished work, while fully completed/cancelled snapshots
+remain as history. Persisted Claude prompt/stop/session lifecycle events apply those boundaries even
+when the corresponding transcript marker has not flushed yet, so an immediate live refetch returns
+the latest state. The parser scans only the newest 32 MiB of each transcript at a complete-line
+boundary, and the full snapshot contains at most 200 task rows.
+`GET /api/sessions?include_task_progress=true` exposes the nullable `todo_summary` counterpart
+for list rows, including at most five preview tasks and enriching at most 100 returned rows.
 
 **Path Parameters:**
 
@@ -224,14 +278,54 @@ curl http://localhost:4820/api/sessions/sess_abc123
 ```json
 {
   "session": {
-    "id": 1,
-    "session_id": "sess_abc123",
+    "id": "sess_abc123",
+    "name": "Implement task progress",
     "model": "claude-sonnet-4",
     "status": "active",
-    "total_cost": 1.23,
-    "created_at": "2024-03-18T12:00:00Z",
-    "updated_at": "2024-03-18T14:30:00Z"
-  }
+    "started_at": "2026-08-07T10:00:00.000Z",
+    "updated_at": "2026-08-07T10:15:00.000Z",
+    "todo_snapshot": {
+      "provider": "claude",
+      "source": "transcript",
+      "sourceTool": "TaskList",
+      "sourceLine": 42,
+      "updatedAt": "2026-08-07T10:14:00.000Z",
+      "explanation": null,
+      "confidence": "full",
+      "items": [
+        {
+          "id": "task-1",
+          "text": "Implement task progress",
+          "status": "in_progress",
+          "sourceStatus": "in_progress",
+          "order": 0,
+          "agentId": "sess_abc123-main",
+          "agentType": "main",
+          "description": null
+        }
+      ],
+      "total": 1,
+      "completed": 0,
+      "inProgress": 1,
+      "pending": 0,
+      "cancelled": 0,
+      "unknown": 0,
+      "percentComplete": 0,
+      "activeText": "Implement task progress",
+      "includesSubagents": false,
+      "ownerBreakdown": [
+        {
+          "agentId": "sess_abc123-main",
+          "agentType": "main",
+          "completed": 0,
+          "total": 1
+        }
+      ]
+    }
+  },
+  "agents": [],
+  "events": [],
+  "workflows": []
 }
 ```
 
@@ -752,6 +846,8 @@ DELETE /api/pricing/gpt/:pattern
 
 These endpoints manage the separate GPT rate card used only for Codex sessions. Each row has four USD-per-million-token rates for each of three groups: `short_*` for standard requests at or below 272K input tokens, `long_*` for larger standard requests, and `fast_*` for Fast mode. The four rates are input, cached input, cache writes, and output. Every present rate must be a finite non-negative number. A published but unavailable tier is stored as an all-zero group and surfaced in cost responses as unpriced, rather than silently guessing a price.
 
+`POST /api/settings/reset-pricing` accepts an optional JSON body `{ "provider": "claude" }` or `{ "provider": "codex" }` to reset only that provider's table. Omitting the body preserves the CLI/MCP compatibility behavior and resets both tables. The response returns `provider`, `pricing`, and `gpt_pricing`.
+
 ```json
 {
   "model_pattern": "gpt-5.6-terra%",
@@ -870,6 +966,22 @@ curl http://localhost:4820/api/sessions/sess_abc123/notifications
 }
 ```
 
+### Webhooks
+
+The `/api/webhooks/*` namespace manages alert-delivery targets and their audit log.
+
+```http
+GET    /api/webhooks/providers
+GET    /api/webhooks
+POST   /api/webhooks
+PATCH  /api/webhooks/:id
+DELETE /api/webhooks/:id
+POST   /api/webhooks/:id/test
+GET    /api/webhooks/:id/deliveries
+```
+
+Hosted provider URLs require HTTPS. The `generic` and `n8n` types may use HTTP for local or self-hosted receivers. Delivery rejects redirects, so provider credentials, custom headers, and HMAC signatures are never forwarded to a second destination. List and mutation responses mask URLs and redact secrets.
+
 ### Remote Data Sources
 
 The `/api/remote-sources/*` namespace configures **remote SSH machines** the dashboard pulls Claude Code, Codex, or both histories from, so one dashboard can consolidate sessions from several machines. Each provider is mirrored and imported independently; a source succeeds when either provider is present. Codex additionally mirrors its lightweight `session_index.jsonl` so native renamed titles survive import. **No secrets are stored** — SSH authentication defers entirely to the host's SSH stack (ssh-agent, `~/.ssh/config`, key files). Every imported session is tagged with the source's id in the `sessions.source` column (the built-in local history uses the id `local`), which powers the `sources` filter below.
@@ -934,10 +1046,9 @@ POST /api/remote-sources
 | `identity_file` | string | No | Private-key path passed to ssh (`-i`) |
 | `remote_home` | string | No | Remote Claude home (defaults to remote `~/.claude`) |
 | `remote_codex_home` | string | No | Remote Codex home (defaults to remote `~/.codex`) |
+| `enabled` | boolean | No | Whether the source is eligible for syncs (default `true`) |
 
 > **Cursor (informational):** Sessions imported from `~/.claude` include **Cursor** agent usage on that machine too — Cursor happens to use the same paths as Claude Code. CCAM does not tag which app created a session.
-
-| `enabled` | boolean | No | Whether the source is eligible for syncs (default `true`) |
 
 Returns `{ "source": RemoteSource }` with HTTP **201**.
 
@@ -1037,14 +1148,27 @@ curl "http://localhost:4820/api/sessions?sources=local,4d1f0e2a-7b9c-4c33-8a21-9
 
 | Method | Path | Description |
 | --- | --- | --- |
+| `GET` | `/api/settings/info` | Database, hook, server, process, and transcript-cache status |
+| `GET` | `/api/settings/export` | Download a versioned full-dashboard JSON bundle |
+| `POST` | `/api/settings/import` | Restore an export by multipart `file` or JSON `{ "path": "/absolute/file" }`; idempotent and non-destructive |
+| `POST` | `/api/settings/install-hooks` | Install the selected `claude` and/or `codex` hook sets |
+| `POST` | `/api/settings/cleanup` | Abandon stale sessions and/or purge old terminal sessions |
+| `POST` | `/api/settings/clear-data` | Delete captured sessions, agents, events, token usage, fired alerts, and webhook delivery history |
 | `GET` / `PUT` | `/api/settings/claude-home` | Read or update the Claude Code transcript/configuration root |
 | `GET` / `PUT` | `/api/settings/codex-home` | Read or update the Codex rollout/hooks root; saving re-arms the live watcher and schedules an immediate session scan |
 
 Both home updates accept `{ "path": "/absolute/path" }` (a leading `~/` is expanded). The resolved path must exist and be a directory; invalid input returns `400 INVALID_PATH`. Codex changes are persisted as `DASHBOARD_CODEX_HOME` and notify the background synchronizer after the response so a large history cannot delay the Settings action.
 
+`POST /api/settings/import` accepts one export file up to 25 MiB. Multipart
+callers use field `file`; CLI/MCP callers may send an absolute server-side
+`path`. The restore skips existing sessions as a whole and inserts independent
+run, alert-rule, and pricing rows only when absent. It never overwrites existing
+rows. Malformed JSON returns `400 INVALID_JSON`, an invalid bundle returns
+`400 INVALID_FORMAT`, and an oversized file returns `413 IMPORT_TOO_LARGE`.
+
 ### Agent Config
 
-The `/api/cc-config/*` namespace powers the Claude Config Explorer page. All read endpoints are pure file reads under `CLAUDE_HOME` and the project's `.claude/` dir; mutations are limited to low-risk text-file artifacts (skills, subagents, slash commands, output styles, memory) and always create a timestamped backup before writing. Plugins, MCP servers, hooks-in-settings, and live `settings.json` files stay read-only because they are written concurrently by the running Claude Code CLI.
+The `/api/cc-config/*` namespace powers the Claude Config Explorer page. All read endpoints are pure file reads under `CLAUDE_HOME` and the project's `.claude/` dir; requested files and allowed roots are canonicalized with `realpath`, so a symlink cannot escape those roots. Mutations are limited to low-risk text-file artifacts (skills, subagents, slash commands, output styles, memory) and always create a timestamped backup before writing. Plugins, MCP servers, hooks-in-settings, and live `settings.json` files stay read-only because they are written concurrently by the running Claude Code CLI.
 
 ```http
 GET /api/cc-config/overview
@@ -1096,7 +1220,7 @@ Content-Type: application/json
 { "name": "deep-review" }
 ```
 
-The normal file endpoint also accepts this repository's `AGENTS.md`, rejects every other path, and caps returned bodies at 256 KiB. The editor endpoint is stricter: only `config.toml`, named profile overlays, `hooks.json`, user `*.rules`, user `skills/**/SKILL.md`, and the Codex or current-project `AGENTS.md` are editable. It returns unredacted local text so a user can edit without turning secret placeholders into real file contents. `POST /profiles` creates a commented, non-overwriting profile template, then the UI opens it in that editor. The UI also exposes a one-click **Copy path** control for every managed artifact. `DELETE /file` is narrower still: it can back up then remove a named profile, `hooks.json`, a user rule, a whole user skill directory, or a Codex/project instruction file. `config.toml` is edit-only and always rejected for deletion. The dashboard does **not** validate TOML, JSON, hook, rule, skill, or instruction syntax. Every overwrite and allowed deletion receives a timestamped backup; writes are capped at 256 KiB and atomic. `codex_config_changed` is emitted over WebSocket when relevant configuration, skill, rule, or plugin files change.
+The normal file endpoint also accepts this repository's `AGENTS.md`, rejects every other path, canonicalizes the target before checking containment, and caps returned bodies at 256 KiB. The editor endpoint is stricter: only `config.toml`, named profile overlays, `hooks.json`, user `*.rules`, user `skills/**/SKILL.md`, and the Codex or current-project `AGENTS.md` are editable. Reads and writes reject symlinked path components beneath the trusted root, and writes also verify the canonical parent remains contained. The editor returns unredacted local text so a user can edit without turning secret placeholders into real file contents. `POST /profiles` creates a commented, non-overwriting profile template, then the UI opens it in that editor. The UI also exposes a one-click **Copy path** control for every managed artifact. `DELETE /file` is narrower still: it can back up then remove a named profile, `hooks.json`, a user rule, a whole user skill directory, or a Codex/project instruction file. `config.toml` is edit-only and always rejected for deletion. The dashboard does **not** validate TOML, JSON, hook, rule, skill, or instruction syntax. Every overwrite and allowed deletion receives a timestamped backup; writes are capped at 256 KiB and atomic. A write containing the preview marker `[redacted]` is rejected so a copied redacted preview cannot overwrite real secrets. `codex_config_changed` is emitted over WebSocket when relevant configuration, skill, rule, or plugin files change.
 
 ### Import History
 
@@ -1133,7 +1257,7 @@ providers return `400 INVALID_PROVIDER`.
 
 ### Run Agent
 
-The `/api/run/*` namespace spawns and supervises Claude Code subprocesses **and native interactive Codex app-server threads** from the dashboard. Every route enforces a same-origin / loopback-Origin guard; browser requests must come from `localhost`, `127.0.0.1`, `::1`, or `0.0.0.0`. CLI / curl requests with no `Origin` header pass through. When `DASHBOARD_TOKEN` is set, a valid token is also required here (like the rest of `/api/*` — see [Authentication](#authentication)).
+The `/api/run/*` namespace spawns and supervises Claude Code subprocesses **and native interactive Codex app-server threads** from the dashboard. Every route enforces a same-origin / loopback-Origin guard; browser requests must come from `localhost`, `127.0.0.1`, `::1`, or `0.0.0.0`. CLI / curl requests with no `Origin` header pass through. When `DASHBOARD_TOKEN` is set, a valid token is also required here (like the rest of `/api/*` — see [Authentication](#authentication)). A supplied `cwd` must be an existing absolute directory and is canonicalized with `realpath`. It intentionally may be outside the repository so Run Agent can operate from the user's home or any recent project.
 
 ```http
 GET    /api/run                       List all handles + concurrency state

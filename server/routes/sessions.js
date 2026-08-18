@@ -1,8 +1,9 @@
 /**
  * @file Express router for session endpoints, allowing creation, retrieval, and
  * updating of sessions with pagination plus status, search, and multi-directory
- * filtering. It computes costs, adds card-ready main-task/Codex prompt context,
- * safely exposes persisted transcript images, and broadcasts live changes.
+ * filtering. It computes costs, derives optional owner-aware task progress,
+ * adds card-ready prompt context, safely exposes transcript images, and
+ * broadcasts live changes.
  * @author Son Nguyen <hoangson091104@gmail.com>
  */
 
@@ -15,6 +16,8 @@ const { broadcast } = require("../websocket");
 const { calculateProviderCost, attachAgentCosts } = require("./pricing");
 const { parseSources, sourceColumnClause } = require("../lib/source-filter");
 const { parseProviders, providerColumnClause } = require("../lib/provider-filter");
+const { getCodexProcessSessions } = require("../lib/codex-process-overlay");
+const { extractSessionTaskProgress } = require("../lib/task-progress");
 const {
   getClaudeHome,
   getProjectsDir,
@@ -27,6 +30,7 @@ const {
 } = require("../lib/claude-home");
 
 const router = Router();
+const MAX_TASK_PROGRESS_ROWS = 100;
 
 // A session's mutable `updated_at` also changes for metadata repair, title
 // discovery, and other bookkeeping. The UI's "Last active" label must instead
@@ -91,6 +95,46 @@ function sessionIsInScope(session, req) {
     (!sources || sources.includes(session.source || "local")) &&
     (!providers || providers.includes(session.provider || "claude"))
   );
+}
+
+function taskEventsForSession(sessionId) {
+  return stmts.listTaskEventsBySession.all(sessionId);
+}
+
+function taskProgressForSession(session, agents, events) {
+  const mainTranscriptPath =
+    session.transcript_path && fs.existsSync(session.transcript_path)
+      ? session.transcript_path
+      : resolveSessionTranscriptPath(session, session.id, null, null);
+  return extractSessionTaskProgress({
+    session,
+    agents,
+    events,
+    mainTranscriptPath,
+  });
+}
+
+function attachTaskSummaries(sessions) {
+  for (const [index, session] of sessions.entries()) {
+    if (index >= MAX_TASK_PROGRESS_ROWS) continue;
+    if (
+      session.metadata &&
+      (() => {
+        try {
+          return JSON.parse(session.metadata)?.transient_process === true;
+        } catch {
+          return false;
+        }
+      })()
+    ) {
+      session.todo_summary = null;
+      continue;
+    }
+    const agents = stmts.listAgentsBySession.all(session.id);
+    const events = taskEventsForSession(session.id);
+    session.todo_summary = taskProgressForSession(session, agents, events).summary;
+  }
+  return sessions;
 }
 
 // JSONL entry types the transcript reader turns into renderable messages.
@@ -194,6 +238,10 @@ router.get("/", (req, res) => {
   const limit = Math.min(parseInt(req.query.limit) || 50, 10000);
   const offset = parseInt(req.query.offset) || 0;
   const status = req.query.status;
+  const includeTransient =
+    req.query.include_transient === "1" || req.query.include_transient === "true";
+  const includeTaskProgress =
+    req.query.include_task_progress === "1" || req.query.include_task_progress === "true";
   const q = typeof req.query.q === "string" ? req.query.q.trim() : "";
   const cwds = Array.isArray(req.query.cwd)
     ? req.query.cwd.filter((cwd) => typeof cwd === "string" && cwd)
@@ -202,6 +250,8 @@ router.get("/", (req, res) => {
       : [];
   const sortBy = req.query.sort_by || "time"; // "time", "duration", "price"
   const sortDesc = req.query.sort_desc !== "false";
+  const sources = parseSources(req);
+  const providers = parseProviders(req);
 
   let where = [];
   let params = [];
@@ -221,12 +271,12 @@ router.get("/", (req, res) => {
   }
   // Data-scope filter: restrict to sessions collected from a chosen set of
   // machines (local + any configured remote sources). Absent = all sources.
-  const sourceFilter = sourceColumnClause(parseSources(req));
+  const sourceFilter = sourceColumnClause(sources);
   if (sourceFilter.clause) {
     where.push(sourceFilter.clause);
     params.push(...sourceFilter.params);
   }
-  const providerFilter = providerColumnClause(parseProviders(req));
+  const providerFilter = providerColumnClause(providers);
   if (providerFilter.clause) {
     where.push(providerFilter.clause);
     params.push(...providerFilter.params);
@@ -351,6 +401,38 @@ router.get("/", (req, res) => {
     }
   }
 
+  const includesLocal = !sources || sources.includes("local");
+  const includesCodex = !providers || providers.includes("codex");
+  const normalizedQuery = q.toLowerCase();
+  const transient =
+    includeTransient &&
+    (!status || status === "active") &&
+    includesLocal &&
+    includesCodex &&
+    offset === 0
+      ? getCodexProcessSessions(
+          db
+            .prepare(
+              `SELECT id, cwd FROM sessions
+               WHERE provider = 'codex' AND status = 'active'
+                 AND (source = 'local' OR source IS NULL)`
+            )
+            .all()
+        )
+          .filter(
+            (session) =>
+              !normalizedQuery ||
+              [session.id, session.name, session.cwd].some((value) =>
+                value?.toLowerCase().includes(normalizedQuery)
+              )
+          )
+          .filter((session) => cwds.length === 0 || cwds.includes(session.cwd))
+      : [];
+  if (transient.length > 0) {
+    rows = [...transient, ...rows];
+  }
+
+  if (includeTaskProgress) attachTaskSummaries(rows);
   res.json({ sessions: rows, limit, offset, total });
 });
 
@@ -390,6 +472,7 @@ router.get("/:id", (req, res) => {
   // the session-detail tree show their real cost, not the session total.
   const agents = attachAgentCosts(stmts.listAgentsBySession.all(req.params.id));
   const events = stmts.listEventsBySession.all(req.params.id);
+  session.todo_snapshot = taskProgressForSession(session, agents, events).snapshot;
   // Workflow-tool runs launched within this session (issue #167). Parse the
   // JSON-blob columns so the client gets arrays, not strings.
   const workflows = stmts.listWorkflowsBySession.all(req.params.id).map((w) => {

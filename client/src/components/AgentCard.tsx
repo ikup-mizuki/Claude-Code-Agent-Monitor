@@ -2,8 +2,9 @@
  * @file AgentCard.tsx
  * @description Defines the AgentCard component that displays a summary of an
  * agent's name, status, task, current tool, timestamps, and native Codex
- * title plus a latest-two-human-turn context. The card is clickable and
- * navigates to session details while visually distinguishing active agents.
+ * title plus a latest-two-human-turn context. Cards reuse session task-progress
+ * donuts beside status when available. Durable cards navigate to session
+ * details while the brief pre-identity Codex process card stays non-navigable.
  * @author Son Nguyen <hoangson091104@gmail.com>
  */
 /* =============================================================================
@@ -59,8 +60,9 @@
 
 import { useTranslation } from "react-i18next";
 import { Bot, GitBranch, Clock, Wrench, Cpu, Coins } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { AgentStatusBadge } from "./StatusBadge";
+import { TodoProgressIndicator } from "./TodoProgressIndicator";
 import { effectiveAgentStatus, isAgentAwaitingInput, agentAwaitingReason } from "../lib/types";
 import type { Agent, Session } from "../lib/types";
 import { formatDuration, timeAgo, formatModelName, pathBasename, fmtCost } from "../lib/format";
@@ -105,6 +107,15 @@ interface AgentCardProps {
   session?: Session;
   label?: string;
   onClick?: () => void;
+}
+
+function isTransientProcessCard(metadata: string | null | undefined): boolean {
+  if (!metadata) return false;
+  try {
+    return JSON.parse(metadata)?.pre_identity_process === true;
+  } catch {
+    return false;
+  }
 }
 
 export function AgentCard({ agent, session, label, onClick }: AgentCardProps) {
@@ -155,6 +166,7 @@ export function AgentCard({ agent, session, label, onClick }: AgentCardProps) {
     ? session?.prompt_preview?.trim() || agent.task?.trim() || null
     : agent.task?.trim() || null;
   const taskPreviewLines = promptPreviewLines(taskPreview);
+  const isTransient = isTransientProcessCard(agent.metadata);
   // A subagent's own model lives in its metadata (resolved from its transcript,
   // not the parent session's — see issue #185). Use it everywhere this card
   // shows a model so a Haiku QA agent under an Opus orchestrator reads as
@@ -205,7 +217,7 @@ export function AgentCard({ agent, session, label, onClick }: AgentCardProps) {
   function handleClick() {
     if (onClick) {
       onClick();
-    } else {
+    } else if (!isTransient) {
       navigate(`/sessions/${agent.session_id}`);
     }
   }
@@ -213,7 +225,9 @@ export function AgentCard({ agent, session, label, onClick }: AgentCardProps) {
   return (
     <div
       onClick={handleClick}
-      className={`card-hover p-4 cursor-pointer overflow-hidden ${
+      className={`card-hover p-4 overflow-hidden ${
+        isTransient ? "cursor-default" : "cursor-pointer"
+      } ${
         isWaiting
           ? "border-l-2 border-l-yellow-500/60"
           : isActive
@@ -244,12 +258,17 @@ export function AgentCard({ agent, session, label, onClick }: AgentCardProps) {
         </div>
         {/* compact: cards are narrow — inline reason chip would squeeze the
             title, so the reason stays hover-tooltip-only here. */}
-        <AgentStatusBadge
-          status={status}
-          reason={agentAwaitingReason(agent)}
-          provider={session?.provider}
-          compact
-        />
+        <div className="flex flex-shrink-0 items-center gap-1.5">
+          {session?.todo_summary && (
+            <TodoProgressIndicator progress={session.todo_summary} stopClickPropagation />
+          )}
+          <AgentStatusBadge
+            status={status}
+            reason={agentAwaitingReason(agent)}
+            provider={session?.provider}
+            compact
+          />
+        </div>
       </div>
 
       {taskPreviewLines.length > 0 && (
