@@ -1,8 +1,10 @@
-# Agent Dashboard for Claude Code & Codex
+🇬🇧 English version: [README-EN.md](./README-EN.md)
 
-### Real-time monitoring platform for Claude Code & Codex agent activity 🚀
+# Claude Code & Codex 用エージェントダッシュボード
 
-A professional dashboard to track and visualize your Claude Code and Codex agent sessions, tool usage, and subagent orchestration in real-time. Built with Node.js, Express, React, and SQLite, it integrates directly with Claude Code and Codex via their native hook systems for seamless session tracking and analytics.
+### Claude Code & Codex エージェント活動のためのリアルタイム監視プラットフォーム 🚀
+
+Claude Code & Codex エージェントのセッション、ツール使用状況、サブエージェントのオーケストレーションをリアルタイムで追跡および視覚化するためのプロフェッショナルなダッシュボードです。Node.js、Express、React、SQLite を使用して構築されており、Claude Code および Codex のネイティブフックシステムと直接統合することで、シームレスなセッション追跡と分析を提供します。
 
 ![Claude Code](https://img.shields.io/badge/Claude_Code-orange?style=flat-square&logo=claude&logoColor=white)
 ![OpenAI Codex](https://img.shields.io/badge/OpenAI_Codex-blue?style=flat-square&logo=githubcopilot&logoColor=white)
@@ -70,54 +72,61 @@ A professional dashboard to track and visualize your Claude Code and Codex agent
 ![Auto Release](https://img.shields.io/badge/CI-auto--release_to_GitHub-22c55e?style=flat-square&logo=githubactions&logoColor=white)
 ![MIT License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
+> [!WARNING]
+> **本リポジトリについて**: これは [hoangsonww/Claude-Code-Agent-Monitor](https://github.com/hoangsonww/Claude-Code-Agent-Monitor) を有志が個人的にフォークした**非公式**の日本語訳版です。Anthropic公式のツールではありません。
+> - 翻訳はAI(Gemini)による機械翻訳ベースです。誤訳・不自然な表現が残っている可能性があります
+> - 本家アップデートの追従は不定期です(メンテナは気が向いたときに追従します)
+> - Issueでの報告は歓迎しますが、対応をお約束するものではありません。訳文の修正PRは歓迎します
+> - 動作確認は **Windows + Claude Code** の組み合わせでのみ行っています。macOS/Linuxや他環境では未検証です
+
 > [!TIP]
-> See also: [README-CN.md](./README-CN.md) (中文版本), [README-VN.md](./README-VN.md) (Phiên bản tiếng Việt), [README-KO.md](./README-KO.md) (한국어 버전), and [README-ES.md](./README-ES.md) (versión en español) for localized documentation with region-specific tips and best practices.
+> 参照: [README-EN.md](./README-EN.md) (English/本家オリジナル)、[README-CN.md](./README-CN.md) (中文版本)、[README-VN.md](./README-VN.md) (Phiên bản tiếng Việt)、[README-KO.md](./README-KO.md) (한국어 버전)、および [README-ES.md](./README-ES.md) (versión en español) には、地域固有のヒントやベストプラクティスが記載されたローカライズ版のドキュメントがあります。
 
 > [!NOTE]
-> Need task-first help? The [GitHub Wiki](https://github.com/hoangsonww/Claude-Code-Agent-Monitor/wiki) is the practical handbook for everyday use, team operations, troubleshooting, CLI/MCP automation, and deployment recipes. The [localized static Wiki](https://hoangsonww.github.io/Claude-Code-Agent-Monitor/wiki/) remains the English, Vietnamese, Chinese, Korean, and Spanish product and architecture tour; exact technical contracts stay in [`docs/`](./docs/README.md).
+> タスク指向のサポートが必要ですか？ [GitHub Wiki](https://github.com/hoangsonww/Claude-Code-Agent-Monitor/wiki) は、日常的な使用、チーム運用、トラブルシューティング、CLI/MCPの自動化、およびデプロイ手順のための実践的なハンドブックです。[ローカライズされた静的 Wiki](https://hoangsonww.github.io/Claude-Code-Agent-Monitor/wiki/) では、英語、ベトナム語、中国語、韓国語、スペイン語で製品およびアーキテクチャのツアーを引き続き提供しています。正確な技術仕様については [`docs/`](./docs/README.md) に記載されています。
 
 ---
 
-## Table of Contents
+## 目次
 
-- [Overview](#overview)
-- [Internationalization (i18n)](#internationalization-i18n)
-- [Features](#features)
-- [Quick Start](#quick-start)
-- [How It Works](#how-it-works)
-- [Configuration](#configuration)
-- [npm Scripts](#npm-scripts)
-- [Plugin Marketplace](#plugin-marketplace)
-- [Agent Extensions](#agent-extensions)
-- [MCP Integration](#mcp-integration)
-- [API Reference](#api-reference)
-- [Hook Events](#hook-events)
-- [Browser Notifications](#browser-notifications)
-- [Update Notifier](#update-notifier)
-- [Tabby — Floating Cat Companion](#tabby--floating-cat-companion)
-- [Connection Status Modal](#connection-status-modal)
-- [VS Code Extension](#vs-code-extension)
-- [Desktop App (macOS & Windows)](#desktop-app-macos--windows)
-- [Data Storage](#data-storage)
-- [Statusline](#statusline)
-- [Server Architecture](#server-architecture)
-- [Client Routing](#client-routing)
-- [Hook Handler Flow](#hook-handler-flow)
-- [Deployment Modes](#deployment-modes)
-- [Project Structure](#project-structure)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
+- [概要](#概要)
+- [国際化 (i18n)](#国際化-i18n)
+- [機能](#機能)
+- [クイックスタート](#クイックスタート)
+- [動作の仕組み](#動作の仕組み)
+- [構成](#構成)
+- [npm スクリプト](#npm-スクリプト)
+- [プラグインマーケットプレイス](#プラグインマーケットプレイス)
+- [エージェント拡張](#エージェント拡張)
+- [MCP 統合](#mcp-統合)
+- [API リファレンス](#api-リファレンス)
+- [フックイベント](#フックイベント)
+- [ブラウザ通知](#ブラウザ通知)
+- [アップデート通知](#アップデート通知)
+- [Tabby — フローティングキャットコンパニオン](#tabby--フローティングキャットコンパニオン)
+- [接続状態モーダル](#接続状態モーダル)
+- [VS Code 拡張機能](#vs-code-拡張機能)
+- [デスクトップアプリ (macOS & Windows)](#デスクトップアプリ-macos--windows)
+- [データストレージ](#データストレージ)
+- [ステータスライン](#ステータスライン)
+- [サーバーアーキテクチャ](#サーバーアーキテクチャ)
+- [クライアントルーティング](#クライアントルーティング)
+- [フックハンドラフロー](#フックハンドラフロー)
+- [デプロイモード](#デプロイモード)
+- [プロジェクト構造](#プロジェクト構造)
+- [トラブルシューティング](#トラブルシューティング)
+- [コントリビューション](#コントリビューション)
+- [ライセンス](#ライセンス)
 
 ---
 
-## Overview
+## 概要
 
-Track sessions, monitor agents in real-time, visualize tool usage, and observe subagent orchestration through a professional dark-themed web interface. Integrates directly with Claude Code & Codex via their native hook systems.
+洗練されたダークテーマのウェブインターフェースを通じて、セッションの追跡、エージェントのリアルタイム監視、ツール使用状況の視覚化、およびサブエージェントのオーケストレーションの観察を行います。ネイティブフックシステムを介して、Claude Code および Codex と直接統合されます。
 
 ```mermaid
 graph LR
-    A["Claude Code<br/>Session"] -->|hooks fire on<br/>tool use / stop| B["Hook Handler<br/>(Node.js script)"]
+    A["Claude Code & Codex<br/>Session"] -->|hooks fire on<br/>tool use / stop| B["Hook Handler<br/>(Node.js script)"]
     B -->|HTTP POST| C["Dashboard Server<br/>(Express + SQLite)"]
     C -->|WebSocket<br/>broadcast| D["Dashboard UI<br/>(React + Tailwind)"]
     style A fill:#6366f1,stroke:#818cf8,color:#fff
@@ -126,11 +135,11 @@ graph LR
     style D fill:#10b981,stroke:#34d399,color:#fff
 ```
 
-In addition to the real-time monitoring dashboard, it also includes a local MCP server implementation in `mcp/` that exposes a catalog of tools for introspecting and managing the dashboard itself, making it easy to integrate dashboard operations directly into your Claude Code & Codex workflows. There is also an agent extension layer, which provides Claude Code & Codex plugins, skills, and subagents for dashboard interaction, analytics, and workflow intelligence.
+リアルタイムの監視ダッシュボードに加えて、ダッシュボード自体を検査および管理するためのツールのカタログを公開するローカル MCP サーバー実装（`mcp/`）も含まれており、ダッシュボードの操作を Claude Code や Codex のワークフローに直接統合することが容易になります。さらに、エージェント拡張レイヤーもあり、ダッシュボードとのインタラクション、分析、およびワークフローインテリジェンスのための Claude Code & Codex プラグイン、スキル、およびサブエージェントを提供します。
 
-### Internationalization (i18n)
+### 国際化 (i18n)
 
-The UI ships with built-in locale switching for English (`en`), Chinese (`zh`), Vietnamese (`vi`), Korean (`ko`), and Spanish (`es`). A custom language dropdown prevents the selector from crowding the sidebar as more locales are added. Language resources are loaded by namespace and persisted through browser storage for stable user preference across refreshes.
+UI には、英語 (`en`)、中国語 (`zh`)、ベトナム語 (`vi`)、韓国語 (`ko`)、およびスペイン語 (`es`) を切り替えるためのロケール切り替え機能が組み込まれています。言語が追加されてもサイドバーが混雑しないように、カスタム言語ドロップダウンが採用されています。言語リソースはネームスペースごとにロードされ、ブラウザのストレージを通じて保存されるため、再読み込み後もユーザーの好みが安定して維持されます。
 
 ```mermaid
 flowchart LR
@@ -141,252 +150,258 @@ flowchart LR
     E --> F["Localized UI + accessibility labels"]
 ```
 
-For full architecture and operational guidance, see [docs/I18N.md](./docs/I18N.md).
+全体的なアーキテクチャや運用ガイドについては、[docs/I18N.md](./docs/I18N.md) を参照してください。
 
-### User Interface
+### ユーザーインターフェース
 
-Comes with a sleek dark theme, responsive design, and intuitive navigation to explore your agent activity:
+エージェントのアクティビティを探索するための、洗練されたダークテーマ、レスポンシブデザイン、および直感的なナビゲーションを備えています。
+
+> [!NOTE]
+> **このフォーク限定: ライトテーマ**。**設定 → 外観(Appearance)** から明るい背景のライトテーマに切り替え可能です(デフォルトはダークテーマのまま)。本家には無い、このフォーク独自の追加機能です。
 
 <p align="center">
   <img src="images/dashboard.png" alt="Dashboard Overview" width="100%">
   <br>
-  <em>📡 <strong>Dashboard · Monitor</strong> — overview stats, active agent cards, and recent activity feed</em>
+  <em>📡 <strong>ダッシュボード · モニター</strong> — 概要統計、アクティブなエージェントカード、および最近のアクティビティフィード</em>
 </p>
 
 <p align="center">
   <img src="images/tasks-overview.png" alt="Task Progress Overview on Dashboard agent cards" width="100%">
   <br>
-  <em>📋 <strong>Task Progress · Overview</strong> — Dashboard agent cards and Sessions rows reuse the same compact completion donut beside status; hover or focus opens an owner-aware preview of current work and task states</em>
+  <em>📋 <strong>タスク進捗 · 概要</strong> — ダッシュボードのエージェントカードとセッションの行では、ステータスの横に同じコンパクトな完了ドーナツが表示されます。ホバーまたはフォーカスすると、現在の作業とタスクのステータスを所有者ごとにプレビュー表示します</em>
 </p>
 
 <p align="center">
   <img src="images/dashboard-health.png" alt="Dashboard — System Health tab" width="100%">
   <br>
-  <em>🩺 <strong>Dashboard · Health</strong> — composite health score ring, storage engine donut chart, cache hit / error / success gauges, tool invocation bars, subagent effectiveness, model token distribution, and compaction stats — all auto-refreshing every 5 s</em>
+  <em>🩺 <strong>ダッシュボード · ヘルス</strong> — 総合ヘルススコアリング、ストレージエンジンのドーナツチャート、キャッシュヒット/エラー/成功ゲージ、ツール呼び出しの棒グラフ、サブエージェントの有効性、モデルごとのトークン分布、コンパクション統計など — すべて 5 秒ごとに自動更新されます</em>
 </p>
 
 <p align="center">
   <img src="images/board.png" alt="Kanban Board — Agents view" width="100%">
   <br>
-  <em>📋 <strong>Kanban Board (agents)</strong> — agents grouped by status across 4 columns: Working / Waiting / Completed / Error. The yellow Waiting column surfaces sessions blocked on user input (permission prompts, end-of-turn, or sitting at a fresh prompt) — hover a Waiting badge to see <em>why</em> (Needs input / Turn done / At prompt / Interrupted). Each card shows model, cost, and current tool at a glance.</em>
+  <em>📋 <strong>カンバンボード (エージェント)</strong> — 作業中 (Working) / 待機中 (Waiting) / 完了 (Completed) / エラー (Error) の 4 つの列に状態ごとにグループ化されたエージェント。黄色の 待機中 (Waiting) 列は、ユーザー入力（権限プロンプト、ターンの終了、または新規プロンプトでの待機）を待ってブロックされているセッションを表示します。待機中バッジにホバーすると、その<em>理由</em> (入力が必要 / ターン完了 / プロンプト待機 / 中断) が表示されます。各カードにはモデル、コスト、現在のツールが一目でわかるように表示されます。</em>
 </p>
 
 <p align="center">
   <img src="images/board-sessions.png" alt="Kanban Board — Sessions view" width="100%">
   <br>
-  <em>🗂️ <strong>Kanban Board (sessions)</strong> — sessions grouped by status across 5 columns: Active / Waiting / Completed / Error / Abandoned, toggleable from the same page. Hover any column header for a tooltip explaining the lifecycle transition.</em>
+  <em>🗂️ <strong>カンバンボード (セッション)</strong> — アクティブ (Active) / 待機中 (Waiting) / 完了 (Completed) / エラー (Error) / 中断 (Abandoned) の 5 つの列に状態ごとにグループ化されたセッション。同じページで切り替え可能です。列のヘッダーにホバーすると、ライフサイクルの移行を説明するツールチップが表示されます。</em>
 </p>
 
 <p align="center">
   <img src="images/sessions.png" alt="Sessions Overview" width="100%">
   <br>
-  <em>📂 <strong>Sessions</strong> — searchable, filterable, server-paginated table of every recorded session with cost, model, agent count, and duration; the project picker supports searchable multi-selection and sorting uses a custom menu</em>
+  <em>📂 <strong>セッション</strong> — コスト、モデル、エージェント数、所要時間を含む、記録されたすべてのセッションの検索・フィルタリング可能なサーバーサイドページネーション対応テーブル。プロジェクトセレクタは検索可能な複数選択をサポートし、ソートにはカスタムメニューを使用します</em>
 </p>
 
 <p align="center">
   <img src="images/session-agents.png" alt="Session Detail — Agents tab" width="100%">
   <br>
-  <em>🤖 <strong>Session Detail · Agents</strong> — real-time overview tiles (events, tool calls, subagents, compactions, errors, duration), top-tool usage bars, subagent type breakdown, token flow, and the agent hierarchy tree</em>
+  <em>🤖 <strong>セッション詳細 · エージェント</strong> — リアルタイムの概要タイル（イベント、ツール呼び出し、サブエージェント、コンパクション、エラー、所要時間）、使用頻度の高いツールの棒グラフ、サブエージェントタイプの分析、トークンフロー、およびエージェントの階層ツリー</em>
 </p>
 
 <p align="center">
   <img src="images/tasks-details.png" alt="Task Progress panel on Session Detail" width="100%">
   <br>
-  <em>✅ <strong>Task Progress · Session Detail</strong> — the full owner-aware tracker combines a segmented completion donut, active task, completion bar, owner breakdown, and a task list paginated at 10 rows per page</em>
+  <em>✅ <strong>タスク進捗 · セッション詳細</strong> — 所有者を認識するフル機能のトラッカーは、分割された完了ドーナツ、アクティブな作業、完了バー、所有者分析、および 1 ページあたり 10 行のページネーションされたタスクリストを組み合わせたものです</em>
 </p>
 
 <p align="center">
   <img src="images/session-conversation.png" alt="Session Detail — Conversation tab" width="100%">
   <br>
-  <em>💬 <strong>Session Detail · Conversation</strong> — live transcript viewer with markdown rendering, syntax-highlighted code blocks (line numbers + copy), per-tool styled tool calls, slash-command pills with their captured TUI output, and inline session-rename markers</em>
+  <em>💬 <strong>セッション詳細 · 会話</strong> — マウンダウンレンダリング、シンタックスハイライト付きコードブロック（行番号 + コピー機能）、ツールごとのスタイル付きツール呼び出し、キャプチャされた TUI 出力を伴うスラッシュコマンドピル、およびインラインのセッション名変更マーカーを備えたライブトランスクリプトビューア</em>
 </p>
 
 <p align="center">
   <img src="images/session-timeline.png" alt="Session Detail — Timeline tab" width="100%">
   <br>
-  <em>🔬 <strong>Session Detail · Timeline</strong> — chronological event timeline with multi-dimension filters, Pre/Post grouping by `tool_use_id`, and tool-aware payload renderers</em>
+  <em>🔬 <strong>セッション詳細 · タイムライン</strong> — 多次元フィルター、`tool_use_id` によるプレ/ポストグループ化、およびツールに対応したペイロードレンダラーを備えた時系列のイベントタイムライン</em>
 </p>
 
 <p align="center">
   <img src="images/feed.png" alt="Activity Feed Overview" width="100%">
   <br>
-  <em>📰 <strong>Activity Feed</strong> — real-time event log with pause / resume, grouping, multi-dimension filters, and a "Session →" jump button per row</em>
+  <em>📰 <strong>アクティビティフィード</strong> — 一時停止/再開機能、グループ化、多次元フィルター、および各行の "Session →" (セッションへジャンプ) ボタンを備えたリアルタイムのイベントログ</em>
 </p>
 
 <p align="center">
   <img src="images/analytics.png" alt="Analytics Overview" width="100%">
   <br>
-  <em>📊 <strong>Analytics</strong> — token usage by model, tool frequency, activity heatmap, and session trends with live / offline indicator; long chart legends paginate while short legends stay unchanged</em>
+  <em>📊 <strong>分析</strong> — モデル別のトークン使用量、ツール頻度、アクティビティヒートマップ、ライブ/オフラインインジケーターを備えたセッショントレンド。長いチャートの凡例はページネーションされ、短い凡例はそのまま表示されます</em>
 </p>
 
 <p align="center">
   <img src="images/workflows.png" alt="Workflows Overview" width="100%">
   <br>
-  <em>🔀 <strong>Workflows</strong> — agent orchestration DAGs, tool execution Sankey diagrams, collaboration networks, bounded data-driven legends, and 11 interactive sections of workflow intelligence</em>
+  <em>🔀 <strong>ワークフロー</strong> — エージェントのオーケストレーション DAG、ツール実行のサンキーダイアグラム、コラボレーションネットワーク、制限付きデータ駆動の凡例、およびワークフローインテリジェンスの 11 のインタラクティブなセクション</em>
 </p>
 
 <p align="center">
   <img src="images/dynamicworkflows-workflows.png" alt="Dynamic Workflow Runs on the Workflows page" width="100%">
   <br>
-  <em>🧬 <strong>Workflow Runs (Workflows page)</strong> — "dynamic workflows" spawned by the <code>Workflow</code> tool, reconstructed from on-disk run journals: status, agent count, tokens, and tool calls, expandable into a per-agent breakdown (phase, state, tokens, tools, duration) with humanized result previews</em>
+  <em>🧬 <strong>ワークフロー実行 (ワークフローページ)</strong> — `Workflow` ツールによって生成された「動的ワークフロー」で、ディスク上の実行ジャーナルから再構成されます。ステータス、エージェント数、トークン、およびツール呼び出しが表示され、人間が読みやすい結果のプレビューとともにエージェントごとの詳細（フェーズ、ステータス、トークン、ツール、所要時間）を展開して表示できます</em>
 </p>
 
 <p align="center">
   <img src="images/dynamicworkflows-workflows2.png" alt="Dynamic Workflow Run expanded with phase filters and per-agent results" width="100%">
   <br>
-  <em>🧬 <strong>Workflow Runs · expanded</strong> — a run opened up: clickable color-coded phase filters, the per-agent metrics table, and a full list of clickable result items that expand to each agent's complete prompt and result</em>
+  <em>🧬 <strong>ワークフロー実行 · 展開時</strong> — 展開された実行内容：クリック可能な色分けされたフェーズフィルター、エージェントごとのメトリクステーブル、およびクリックすると各エージェントの完全なプロンプトと結果が展開される結果アイテムの全リスト</em>
 </p>
 
 <p align="center">
   <img src="images/dynamicworkflows-session.png" alt="Dynamic Workflow Runs on the session detail page" width="100%">
   <br>
-  <em>🧬 <strong>Workflow Runs (Session detail)</strong> — the same fleets linked to their launching session, so a session's dynamic-workflow sub-agents and their folded-in token cost are visible inline</em>
+  <em>🧬 <strong>ワークフロー実行 (セッション詳細)</strong> — 生成元のセッションにリンクされた同等のフリート。これにより、セッションの動的ワークフローサブエージェントと、それらが消費したトークンコストがインラインで表示されます</em>
 </p>
 
 <p align="center">
   <img src="images/config.png" alt="Agent Config — Claude Code and Codex explorers" width="100%">
   <br>
-  <em>🧰 <strong>Agent Config</strong> — switch between the full Claude Code explorer and a live Codex workspace for defaults, models, profiles, MCP, projects, skills, rules, hooks, plugins, and instructions. Codex previews redact secrets; its user-maintained config, hooks, rules, skills, and instructions can be edited safely with backups.</em>
+  <em>🧰 <strong>エージェント設定</strong> — 完全な Claude Code エクスプローラーと、デフォルト設定、モデル、プロファイル、MCP、プロジェクト、スキル、ルール、フック、プラグイン、および指示（Instructions）を確認するためのライブ Codex ワークスペースを切り替えます。Codex のプレビューではシークレットが墨塗りされます。ユーザーが管理する設定、フック、ルール、スキル、および指示は、バックアップを取りながら安全に編集できます。</em>
 </p>
 
 <p align="center">
   <img src="images/config-codex.png" alt="Codex Config Explorer — overview, configuration source, and workspace tabs" width="100%">
   <br>
-  <em>🧰 <strong>Codex Config Explorer</strong> — the Codex workspace brings together <code>config.toml</code>, account models, profiles, MCP servers, projects, skills, hooks, rules, plugins, and instructions. Edit supported user-managed files with timestamped backups; <code>config.toml</code> is edit-only.</em>
+  <em>🧰 <strong>Codex 設定エクスプローラー</strong> — Codex ワークスペースには、`config.toml`、アカウントモデル、プロファイル、MCP サーバー、プロジェクト、スキル、フック、ルール、プラグイン、および指示が集約されています。サポートされているユーザー管理ファイルはタイムスタンプ付きのバックアップを取った上で編集でき、`config.toml` は編集専用です。</em>
 </p>
 
 <p align="center">
   <img src="images/config-skills.png" alt="Claude Config Explorer — Skills tab" width="100%">
   <br>
-  <em>🧩 <strong>Claude Config Explorer · Skills</strong> — the Skills tab lists every discovered skill (user, project, and plugin) with its description and source, is searchable across the whole set, and opens any skill file for a safe, timestamp-backed edit</em>
+  <em>🧩 <strong>Claude 設定エクスプローラー · スキル</strong> — スキルタブには、発見されたすべてのスキル（ユーザー、プロジェクト、プラグイン）が説明やソースとともに一覧表示され、全体から検索することができます。また、タイムスタンプによるバックアップを行いつつ、安全にスキルファイルを編集できます</em>
 </p>
 
 <p align="center">
   <img src="images/run.png" alt="Run Agent — Claude Code and Codex launch selection" width="100%">
   <br>
-  <em>▶️ <strong>Run Agent</strong> — choose Claude Code or Codex every time you open the launcher. Claude keeps Conversation / One-shot controls; Codex starts a native interactive app-server thread with its own approval and sandbox controls. Codex models come from the signed-in CLI catalog, while Claude lists observed models plus its supported aliases.</em>
+  <em>▶️ <strong>エージェントの実行</strong> — ランチャーを開くたびに Claude Code または Codex を選択します。Claude は 会話 / ワンショット コントロールを維持します。Codex は、独自の承認およびサンドボックスコントロールを備えたネイティブのインタラクティブなアプリサーバースレッドを開始します。Codex モデルはサインインされた CLI カタログから動的に取得され、Claude は観測されたモデルとサポートされているエイリアスをリストアップします。</em>
 </p>
 
 <p align="center">
   <img src="images/run-results.png" alt="Run Agent — live streaming output" width="100%">
   <br>
-  <em>💬 <strong>Run Agent · live stream</strong> — Claude stream-json and Codex app-server events both render as a chat, including reasoning, command, file-change, and tool activity. Dashboard Runs lets you leave an agent working in the background and re-attach later.</em>
+  <em>💬 <strong>エージェントの実行 · ライブストリーム</strong> — Claude の stream-json および Codex の app-server イベントは両方とも、推論、コマンド、ファイル変更、ツールのアクティビティを含んだチャットとしてレンダリングされます。ダッシュボードの Runs では、エージェントをバックグラウンドで動作させたままにし、後で再接続することができます。</em>
 </p>
 
 <p align="center">
   <img src="images/settings.png" alt="Settings Overview" width="100%">
   <br>
-  <em>⚙️ <strong>Settings</strong> — model pricing rules, hook installation status, data management, notification preferences, and system info</em>
+  <em>⚙️ <strong>設定</strong> — モデルの価格設定ルール、フックのインストール状態、データ管理、通知の優先設定、およびシステム情報</em>
 </p>
 
 <p align="center">
   <img src="images/alerts.png" alt="Settings — Alerts & Webhooks" width="100%">
   <br>
-  <em>🔔 <strong>Settings · Alerts</strong> — rules-based alerting engine and outbound webhooks in one place: alert rules (event pattern / inactivity / stuck agent / token threshold) with per-rule cooldown, a live fired-alert feed, and 14 first-class webhook providers (Slack, Discord, Teams, Google Chat, Mattermost, Rocket.Chat, Telegram, PagerDuty, Opsgenie, Splunk On-Call, Zapier, Make, n8n, Pipedream) plus a generic JSON endpoint with optional HMAC signing</em>
+  <em>🔔 <strong>設定 · アラート</strong> — ルールベースのアラートエンジンとアウトバウンド Webhook を一箇所で管理：アラート規則（イベントパターン / 非アクティブ / 停止中のエージェント / トークンしきい値）を各ルールごとのクールダウン付きで設定可能。発動したアラートのライブフィード、14 のファーストクラス Webhook プロバイダー（Slack、Discord、Teams、Google Chat、Mattermost、Rocket.Chat、Telegram、PagerDuty、Opsgenie、Splunk On-Call、Zapier、Make、n8n、Pipedream）、およびオプションの HMAC 署名を備えた汎用 JSON エンドポイントをサポート</em>
 </p>
 
 <p align="center">
   <img src="images/remote.png" alt="Settings — Remote Data Sources" width="100%">
   <br>
-  <em>🛰️ <strong>Settings · Remote Data Sources</strong> — pull Claude Code and Codex activity from other machines over SSH: optionally set independent Remote Claude home and Remote Codex home paths, test each provider, sync manually or on a background poller, and switch the global data scope between local, all sources, or a specific machine, with per-session source badges</em>
+  <em>🛰️ <strong>設定 · リモートデータソース</strong> — SSH 経由で他のマシンの Claude Code および Codex のアクティビティを取得します：オプションで独立した Remote Claude ホームパスと Remote Codex ホームパスを設定し、各プロバイダーをテストし、手動またはバックグラウンドのポーラーで同期できます。また、グローバルデータの範囲を「ローカル」、「すべてのソース」、または「特定のマシン」の間で切り替え、セッションごとのソースバッジを表示できます</em>
 </p>
 
-The sidebar provides quick access to the Dashboard, Kanban Board, Sessions list, Activity Feed, Analytics, Workflows, and Settings. Each page is designed to give you deep insights into your Claude Code agent activity with real-time updates and rich visualizations.
+サイドバーを使用すると、ダッシュボード、カンバンボード、セッションリスト、アクティビティフィード、分析、ワークフロー、および設定へ素早くアクセスできます。各ページは、リアルタイムの更新と豊富な視覚化により、Claude Code エージェントのアクティビティについて深いインサイトを提供するように設計されています。
 
 ---
 
-## Features
+## 機能
 
-The dashboard offers a comprehensive set of features to monitor and analyze your Claude Code sessions and agents:
+ダッシュボードは、Claude Code のセッションとエージェントを監視・分析するための包括的な機能セットを提供します：
 
-> **Cursor sessions too (informational):** CCAM ingests whatever agent transcripts land under `~/.claude` — on this machine and on synced remotes. **Cursor** usage counts the same way: Cursor happens to store its agent sessions in those paths alongside Claude Code. CCAM does not distinguish which app wrote a file.
+> **Cursor のセッションについても（参考情報）：** CCAM は `~/.claude` 配下に保存されるすべてのエージェントトランスクリプト（このマシンおよび同期されたリモート上のもの）を取り込みます。**Cursor** の使用状況も同様にカウントされます。これは、Cursor がエージェントセッションを Claude Code と同じパスに保存するためです。CCAM はどのアプリがファイルを書き込んだかを区別しません。
 
 | Feature                            | Description                                                                                                                                                                                                                                                                  |
 |------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Task Progress**                  | Owner-attributed task tracking derived from observable provider state: current Claude `TaskCreate` / `TaskGet` / `TaskUpdate` / `TaskList` and lifecycle events, legacy `TodoWrite`, and direct or unified-exec-wrapped Codex `update_plan`. Sessions with task state show the same compact donut and portal-rendered hover/focus preview beside status in the Sessions table and every Dashboard Agent card; Session Detail shows the full progress panel with status segments, active work, owner breakdown, and task rows paged 10 at a time. Progress is scoped to the latest top-level work: a newer Claude human turn or Codex task with no emitted tracker clears older state, and unfinished state is discarded when that turn/task ends without a final update. Fully completed history remains visible. |
-| **Dashboard**                      | Two tabs persisted in `localStorage`: **Monitor** — overview stats (6 stat cards), active agent cards with collapsible subagent hierarchy, and recent activity feed with dynamic item counts that fill available viewport height via `ResizeObserver`. **Health** — composite system health score ring (weighted: 0.4 × success rate + 0.25 × cache hit rate + 0.25 × (100 − error rate) + 0.1 × (100 − heap %)), storage engine donut chart with record distribution, cache performance / error rate / success rate gauges, tool invocation horizontal bar chart (top 8), subagent effectiveness bars, model token distribution, and compaction impact stats. All health metrics auto-refresh every 5 s from `/api/settings/info` and `/api/workflows`. Cursor-following tooltips with viewport edge detection on every chart |
-| **Kanban Board**                   | Two views with a header toggle (persisted in `localStorage`): **Agents** — 4 columns (Working / Waiting / Completed / Error) — and **Sessions** — 5 columns (Active / Waiting / Completed / Error / Abandoned). The **Waiting** column maps directly to the persisted `waiting` status on agents — set when Claude Code is sitting at a prompt (fresh session, between turns, or blocked on a permission Notification) and transitions to `working` the moment the user resumes (UserPromptSubmit / PreToolUse). Each column header shows a `?` tooltip explaining lifecycle transitions. Cards fetch by persisted status from the server (effectively unlimited per status), then paginate client-side at 10 cards per column with a "Show more" affordance. WS subscription scopes to the active view (`agent_*` vs `session_*` frames) so off-view updates don't trigger refetches. Waiting badges expose the row's `awaiting_reason` as a hover tooltip — **Needs input** (`notification`), **Turn done** (`stop`), **At prompt** (`session_start`), **Interrupted** (`interrupted`) — kept tooltip-only on the compact cards so titles keep their space; wider surfaces (Sessions table, session-detail header) additionally show the reason inline as a nested chip, with urgent reasons (permission prompts, interruptions) in a hotter amber |
-| **Sessions**                       | Searchable, filterable, **server-paginated** table of every recorded session. Each page click hits `/api/sessions?status=&q=&limit=10&offset=…`, so cost computation runs only over the visible page — independent of how many sessions exist in the database. The first page also opts into the same local, in-memory Codex startup row shown on Dashboard and Kanban; it is visible immediately but non-navigable until a durable session ID replaces it, and it does not change durable totals or pagination. The search box (`q=`) does case-insensitive matching across `id` / `name` / `cwd` on the server with a 300 ms debounce, and the response carries a `total` count for the paginator UI. Status filter, search, and pagination compose. Each session's human-readable **name** is read from the transcript and kept in sync in real time — an explicit title from `/rename`, `claude -n`, or the picker's `Ctrl+R` (the JSONL `custom-title` line) always wins, otherwise the auto-generated `ai-title` fills in, otherwise the session's **first user prompt** (truncated, with tool-result / slash-command noise skipped) fills the placeholder name and the main agent's placeholder name/task — so sessions that never get a title (including imported ones) still say what they're doing; the dashboard surfaces that name (falling back to the short ID) on cards, the Dashboard, the Activity Feed, and the Run resume picker. |
-| **Session Detail**                 | Per-session real-time overview panel with active-agent banner (current tool + task), six tile counters (events with events/min rate, tool calls, subagents, compactions, errors, ticking duration), top-tool usage bars, subagent type breakdown, stacked token-flow strip, and event-type pill cloud — all live-refreshed on hook events. Below it: agent hierarchy tree, full event timeline with multi-dimension filters (status, event type, tool, agent, text search, date range), Pre/Post grouping by `tool_use_id`, human-readable summary block, tool-aware input/response renderers (terminal for Bash, unified diff for Edit, line-numbered code for Read/Write, match list for Grep, key/value card for MCP tools), and a Conversation tab that renders transcripts — including messages typed mid-turn (queued while Claude was still working), placed where Claude actually received them, with harness notifications attributed to System — with markdown (headings, lists, blockquotes, tables, task lists), syntax-highlighted code blocks (js/ts, python, json, bash, html, css, sql, yaml, diff) with line numbers and copy-to-clipboard, and per-tool styled tool calls (Bash → terminal, Edit → side-by-side old/new, Write → file label, Read → path chip, Grep → pattern card). When the session is blocked on the human, a yellow **waiting-for-input banner** under the header names the `awaiting_reason`, its explanation, and how long the session has been waiting (pulsing dot + relative time); the header's Waiting badge carries the same reason as a nested chip |
-| **Activity Feed**                  | Real-time streaming event log with pause/resume, multi-dimension filters (same toolbar as Session Detail plus a Session filter), server-driven "Load more" pagination, debounced filter-aware live refresh preserving the loaded page size, grouping toggle, origin prefix showing project › session › subagent, and a "Session →" button per row                                         |
-| **Analytics**                      | Token usage, tool frequency, activity heatmap (centered, day-of-week aligned starting Sunday, day-name tooltips), session trends, live/offline connection indicator. While the analytics payload loads, the chart region (not just the stat tiles) shows **pulsing skeleton placeholders** that mirror the chart layout, so the page never flashes empty/zero charts. Long legends on Analytics and Workflows paginate; legends that fit one page remain unchanged |
-| **Live Updates**                   | WebSocket push -- no polling, instant UI updates                                                                                                                                                                                                                             |
-| **Auto-Discovery**                 | Sessions and agents are created automatically from provider signals. Claude Code creates an immediate **Waiting** card at `SessionStart`. Codex first exposes a local, in-memory **Waiting** card as soon as its interactive TUI process starts, including before Codex assigns a stable session ID. A hook, live-thread row, or rollout then creates the durable session and replaces that temporary card. If the user opens Codex's Resume picker and selects an existing thread, CCAM detects the rollout or writer lock already opened by that exact Codex PID and switches to the durable resumed session before the first new message. The pre-identity card is never written to SQLite, history, analytics, pricing, workflows, alerts, or completion notifications, and it disappears when the process exits. |
-| **History Import**                 | Provider-aware Import History brings in Claude Code transcripts from `~/.claude/` and Codex rollout JSONL from `~/.codex/sessions`. Each tab has its own default path, instructions, folder scan, and upload flow; both reuse their live ingestion logic, preserve token/cost/tool accounting, and are idempotent. External Codex rollouts are snapshotted into dashboard storage so their conversation remains available after the archive or source folder is removed. |
-| **Subagent Hierarchy**             | Collapsible parent-child agent tree on Dashboard and Session Detail. Agents with subagents show expand/collapse chevrons; leaf agents show a dot indicator. Auto-expands when subagents are active                                                                           |
-| **Background Agents**              | Correctly tracks backgrounded subagents without premature completion                                                                                                                                                                                                         |
-| **Subagent Tool Attribution**      | Subagent-internal tool calls (Read, Bash, Edit, Grep, …) live only in per-subagent JSONL files — Claude Code emits no hooks for them. On every `SubagentStop` the dashboard fires a fire-and-forget `scanAndImportSubagents` pass that parses each `subagents/agent-*.jsonl`, pairs `tool_use` blocks with their matching `tool_result` by `tool_use_id`, and emits `PreToolUse` + `PostToolUse` events under the subagent's own `agent_id`. Idempotent (`data LIKE '%"tool_use_id":"X"%'` dedup) and merges into a live hook-created subagent row when one matches by type + start-time within 30 s, so no parallel `<sid>-jsonl-*` rows are created. The same path runs on `npm run setup` startup import for full historical backfill — sessions that pre-date the dashboard get full per-subagent tool timelines. Activity Feed and Session Detail render the parent chain as `main › coder › explorer` for nested subagents. That chain is reconstructed authoritatively by `reconcileSubagentParents`: a subagent row is first inserted flat under the main agent (a single hook event or JSONL file carries no spawner identity), then the spawner is recovered from each subagent transcript's Task tool result (`toolUseResult.agentId`, captured as `spawnedChildren`) so a subagent that spawns its own subagents nests under its **true** spawner instead of collapsing to one level under main. Idempotent and additive — it only repoints `parent_agent_id`, never inserts or deletes rows — and runs on the same `SubagentStop` scan, which returns a `reparented` count so the dashboard refetches even when re-parenting alone changed the tree shape |
-| **Cost Tracking**                  | Per-model cost estimation with configurable pricing rules and per-session breakdowns. Supports **time-limited introductory rates** (`intro_*` + `intro_until` on a pricing rule): usage on/before the cutoff date is priced at the intro rate and usage after it at the standard rate, so a promo like Claude Sonnet 5's launch discount (through 2026-08-31) stays correct for historical **and** future usage — the cost endpoint prices each day's usage at the rate effective on that date. **Introductory rates are fully editable in Settings** — the Model Pricing editor exposes a promo cutoff date plus per-category intro prices (input / output / cache-read / cache-write 5m & 1h), so a future model launch promo needs no code change, just an edit. **Subagent cards show each subagent's OWN cost** (derived from that subagent's transcript token usage and priced at the current rates), not the session total — a main-agent card stands in for the whole session and shows the session total, while a subagent card shows only what that subagent spent, so a subagent card no longer misleadingly reads as if it cost the entire session. Compaction-aware token accounting preserves totals across context compressions. Transcript reads are cached with incremental byte-offset updates for efficient token extraction        |
-| **Transcript Cache**               | Real-time extraction from JSONL transcripts: tokens, compactions, API errors (`isApiErrorMessage` entries stored as `APIError` events), turn durations (stored as `TurnDuration` events), thinking block counts, and usage extras (service_tier, speed, inference_geo). Turn durations carry stable transcript identities; complete parses repair legacy duplicate rows and inflated metadata totals, while capped tail parses stay append-only. Per-entry growable arrays are tail-capped at `TRANSCRIPT_CACHE_MAX_ARRAY_LEN` (default `1000`, configurable) — both during parse and at finalize — so even a session that runs for days cannot grow a single cache entry without bound. Each entry stores only `{mtimeMs, size, bytesRead, result}`, so there's no shadow copy of the same data at both the top level and inside `result`. Session metadata is enriched with these fields in real-time |
-| **Notifications**                  | Full Web Push (VAPID) pipeline for reliable delivery. Arrive even when the tab is backgrounded or the browser is closed. Explicitly configured for macOS audio support. Configurable per-event toggles with subscription management |
-| **Alerts**                         | Rules-based alerting engine — configured entirely in **Settings → Alerts & Notifications**, a tabbed **Rules / Channels / Activity** control center (no separate page). Define alert rules with four condition types — **event pattern** (match event type / tool name / summary text, optionally requiring N matching events inside a time window, e.g. "more than 5 errors in 2 minutes"), **inactivity** (active session with no events for N minutes), **stuck agent** (agent sitting in `working`/`waiting` with no activity for N minutes), and **token threshold** (session total tokens past a limit). Event-driven rules evaluate server-side on every hook ingest (after the ingest transaction — alerting can never slow down or fail hook delivery); time-based rules run on a 60 s sweep. Fired alerts are persisted to `alert_events` with per-rule + per-session **cooldown dedup** (default 300 s), broadcast as `alert_triggered` WebSocket messages, and surface in the **Activity** tab's live feed with acknowledge / acknowledge-all, an unacknowledged-only filter, and per-alert "View session" links. Rules support enable/disable toggling and cascade their history on delete. Fired alerts also fan out to **universal webhook targets** configured in the **Channels** tab — **14 first-class providers** plus a generic endpoint: **Slack**, **Discord**, **Microsoft Teams**, **Google Chat**, **Mattermost**, **Rocket.Chat** (native chat payloads); **Telegram** (Bot API), **PagerDuty** (Events API v2), **Opsgenie** (Alert API + GenieKey auth), **Splunk On-Call** (VictorOps REST); and **Zapier**, **Make**, **n8n**, **Pipedream**, or any **generic** endpoint (clean JSON envelope with optional **HMAC-SHA256** signing and custom headers). Each provider is described by a server-side registry that declares its payload formatter, how its URL is resolved (some derive it from credentials — e.g. Telegram from the bot token, Opsgenie from the region — others default it), and which credential fields the UI renders. Targets support optional per-rule scoping, a synchronous "Send test" probe, and a recorded delivery log. Delivery runs detached from the alert path with a request timeout and bounded retry/backoff, so it can never slow or block monitoring; target URLs, secrets, and credential fields are stored server-side and never returned by the API (masked/redacted in every response) |
-| **Update Notifier**                | Server periodically runs a non-blocking `git fetch` and compares the local checkout to `origin/master`/`origin/main`/`origin/HEAD`. When upstream is ahead, the UI surfaces a modal with the exact `git pull && npm run setup` command and a one-click **Copy** button; the Sidebar gets a persistent "Check for updates" button with live badge. The dashboard never pulls or restarts itself — the user runs the command in a terminal — so the mechanism cannot break dev sessions, pm2/systemd/Docker supervision, or leave orphaned processes |
-| **Settings**                       | System info, hook status, model pricing management, notification preferences, data export **and restore** (the Import History panel's **Restore backup** mode accepts one export `.json` up to 25 MiB and re-imports it idempotently without overwriting existing rows, so you can consolidate several machines' history into one dashboard), session cleanup. The Model Pricing section separates **Anthropic Claude Model Pricing** from **OpenAI GPT Model Pricing** with matching header layouts, provider-scoped **Reset Defaults** and **Add Model** controls, and info popovers explaining first-match rule lookup, SQL-style `%` wildcard syntax, manual price updates, and API-rate caveats. The GPT popover also explains USD-per-million-token units, the 272K Short/Long boundary, Fast-mode rates, and why unpublished tiers remain unpriced rather than estimated. The **Dashboard Data** control immediately re-fetches sessions, agents, events, tokens, workflows, analytics, and costs for Claude Code, Codex, or both. Separate Claude Code and Codex home inputs are fully i18n-driven and save at runtime; a Codex save re-arms live rollout watching and scans its new tree. |
-| **Run Agent + Agent Config**       | `/run` begins with a Claude Code / Codex choice and keeps the provider toggle beside its Live status. Claude runs retain their headless and stream-json conversation modes; Codex runs use the CLI's local `app-server` protocol for a real interactive thread, native approval/sandbox policy, resume, stop, live output, and re-attach. Codex model choices come directly from the signed-in CLI, so model releases need no dashboard update; Claude shows its durable aliases plus locally observed models because its CLI has no model-list command. `/cc-config` pairs the established editable Claude Code explorer with a Codex workspace for config defaults, model cache, profiles, MCP, projects, skills, rules, hooks, installed plugins, and instruction files. Its normal previews redact secrets; the explicit local editor supports `config.toml`, `hooks.json`, user rules, skills, and instructions with atomic saves and mandatory timestamped backups, while warning that it cannot validate syntax. Codex profile commands and managed artifact paths copy in one click, and plugin cards use Codex's installed-plugin registry rather than showing cache folders. Both explorers refresh through their provider-specific filesystem watcher. |
-| **Codex Agent Config**             | The Codex half of Agent Config reads the full local account model catalog without the generic preview limit that could falsely show zero models, and always includes base/profile overrides. Create standard Codex `<name>.config.toml` overlays directly in the app; each card copies its exact `codex --profile <name>` command in one click and opens a guarded editor. Preview paths are canonicalized before containment checks. The editor rejects symlinked path components below the trusted root, verifies canonical parent containment, and refuses `[redacted]` preview content. Profiles, hooks, rules, skills, and instructions share Claude-style **View source / Copy path / Edit / Delete** actions. Every allowed deletion is confirmed and backed up first (a skill keeps its entire directory); `config.toml` is permanently edit-only. |
-| **MCP Server (Local)**             | Comprehensive local MCP server in `mcp/` with three transport modes (stdio, HTTP+SSE, interactive REPL) and 97 typed tools across 16 domain modules. It covers observability, scoped sessions/agents/events, transcripts and images, Claude/GPT pricing, workflows, alerts, webhooks, imports and backup restore, Claude/Codex config, Run Agent, remote sources, hooks/homes/updates, push, and maintenance. Protocol and REPL modes share one validated catalog, with localhost-only targets and tiered mutation/destructive gates. Direct loopback HTTP may carry a bearer token; tokenized container-host aliases require HTTPS. Redirects are rejected, uploads are capped at 50 MiB per file and 100 MiB per call, binary responses at 10 MiB, and backup restore at 25 MiB |
-| **Workflows**                      | D3.js-powered visualization page with 11 interactive sections: agent orchestration DAG, tool execution Sankey diagram, collaboration network, subagent effectiveness (day-of-week sparklines with portal-rendered tooltips that escape the card's `overflow:hidden` and clamp to the viewport so they never get clipped), detected workflow patterns, model delegation flow, error propagation map (horizontal bars with rate badges, agent type breakdown, API/session error cards), concurrency timeline, session complexity scatter, compaction impact analysis (redesigned as a clear "sessions by compaction count" histogram with axis titles, stat tiles — total / sessions affected / avg / peak — an explanatory help line, and per-bar hover tooltips), and per-session drill-in. Each section's right-aligned subtitle clamps to a single line (ellipsis + hover title) so a long translation never wraps the header. **Rich, i18n-aware tooltips throughout:** every chart's section title carries an `i` icon that opens a structured "What this shows / How to read it / Why it matters" popover; hovering nodes, edges, bars, and bubbles surfaces multi-section tooltips with deterministic, value-dependent interpretations (e.g. share-of-source / share-of-target percentages, success-rate health buckets, family descriptions for Opus / Sonnet / Haiku, timing patterns like front-loaded / mid-session / back-loaded). Each of the six headline stat cards has a bottom-right info popover explaining how the metric is calculated and what its current value means in plain language. Tooltips are DOM-mutated through a single ref per chart with container-level `mouseleave` fallbacks, so they never lag behind the cursor or stick after re-render. Clicking a row in **Detected Workflow Patterns** expands an in-place detail panel with the full step sequence, stats grid, a deterministic narrative (loop detection, frequency bucket), and a practical suggestion. Status filter tabs (Active Only / Completed / All) filter all 11 sections. Cross-filtering, JSON export, and real-time WebSocket auto-refresh with 3-second debounce. A **Workflow Runs** panel surfaces "dynamic workflows" — the fleets of sub-agents spawned by the `Workflow` tool (and self-paced `/loop`) — which emit no hooks and are instead reconstructed from on-disk run journals (`workflows/wf_<runId>.json`): each run shows its phases and a per-agent token / tool-call / duration breakdown, with live `running` detection before the journal is written and a linked subsection on each Session Detail page |
-| **Compaction Tracking**            | Detects `/compact` events from JSONL transcripts, creates compaction agents and events. Backfills legacy compactions on startup. A periodic scanner (cadence derived from `DASHBOARD_STALE_MINUTES`) catches compactions even when no hooks fire. Reads each active session's transcript path directly from `sessions.transcript_path` (populated by the hook handler on the first event that carries it, plus a one-time backfill from `events`) instead of doing a `SELECT DISTINCT json_extract(events.data, '$.transcript_path')` over the entire events table — so the sweep is O(active sessions) and stays cheap on a mature database. Shares the transcript cache so no duplicate file reads occur. Synthetic compaction rows are stamped with the transcript timestamp on both `started_at` and `ended_at` so duration is exactly 0 (compaction is instantaneous); a startup repair migration also heals any pre-existing rows where `ended_at < started_at` (issue #156) |
-| **Subsessions/Resumed Sessions**   | Automatically reactivates sessions when new events arrive, correctly handles `/resume` and orphaned sessions. Periodic sweep (every ¼ of `DASHBOARD_STALE_MINUTES`, clamped to 60 s – 5 min) marks abandoned sessions that slip past event-based detection                                                                     |
-| **Pre-Existing Session Detection** | Sessions already running when the server starts are imported as "active" (based on recent JSONL file modification). Stop events also reactivate imported completed/abandoned sessions, so the first hook from an in-progress session always surfaces it on the dashboard     |
-| **Continuous Project Sync**        | The startup auto-import of `~/.claude/projects` is one-time (marker-gated), so a project folder created **after** first launch — whose sessions never flow through hooks (e.g. host-only hooks disabled) — would stay invisible until a manual rescan. A background sync (`startSessionSync`) closes that gap via three triggers sharing one mtime cache + a single coalesced sweep: an **immediate** sweep at startup, a debounced **`fs.watch`** that fires the instant a new session file/project folder appears (recursive on macOS/Windows; root + immediate children on Linux to avoid the userland recursive-watcher hazard), and a **periodic poll** (`DASHBOARD_SESSION_SYNC_MS`, default 30 s). Each sweep re-parses only files whose mtime advanced and broadcasts `session_created`/`session_updated` (plus the main agent) so the UI refreshes live; an unchanged session already in the DB is skipped without re-parsing, so restart cost stays O(new/changed files) |
-| **Remote Data Sources**            | Live remote / multi-machine Claude Code and Codex collection over SSH. One source independently mirrors `~/.claude/projects` and `~/.codex/sessions` (plus Codex's lightweight `session_index.jsonl` for native renamed titles) through **scp**, or `wsl.exe` + `tar` for WSL-hosted CLIs on a Windows SSH host. Each isolated stage goes through its provider's normal importer and tags rows with `sessions.source`; a source is healthy when either provider is available, so Claude-only, Codex-only, and mixed machines all work. The 15 s `DASHBOARD_REMOTE_SYNC_MS` poller and immediate add/re-enable pulls broadcast provider-aware `remote_source.status`, `remote_data.updated`, and per-session updates. Remote lifecycle is reconciled from each mirrored transcript. If a provider is unavailable, errors, or is stuck syncing beyond `DASHBOARD_STALE_MINUTES`, only that provider's old remote sessions fall back to the ordinary stale sweep; a healthy sibling provider remains mirror-owned. Configure optional independent **Remote Claude home** and **Remote Codex home** paths in **Settings → Remote Data Sources** or use `ccam remote-sources`; SSH authentication remains entirely on the host (no passwords/secrets stored). |
-| **Responsive Design**              | Mobile-friendly layouts with stacking grids, scrollable tables, and collapsible sidebar                                                                                                                                                                                      |
-| **UI Localization**                | Built-in custom-dropdown language switching with translated UI copy and accessibility labels for English (`en`), Chinese (`zh`), Vietnamese (`vi`), Korean (`ko`), and Spanish (`es`). Coverage extends end-to-end through the Workflows tooltips: stat-card calculations and value-bucket interpretations, per-chart "What / How to read / Why" popovers, every graph's hover tooltip (orchestration, tool flow, pipeline, model delegation, concurrency), the Workflow Patterns detail-panel narratives and suggestions, the Settings → Model Pricing info popover, the CLAUDE_HOME panel, and the entire Import History flow.                                                                                                                                                                       |
-| **Seed Data**                      | Built-in seed script for demos and development                                                                                                                                                                                                                               |
-| **Statusline**                     | Color-coded CLI statusline showing model, context usage, git branch, per-direction tokens, and session cost (USD)                                                                                                                                                            |
-| **Model Name Formatting**          | Human-friendly model names throughout the UI: raw identifiers like `claude-opus-4-7-20260101` or `claude-opus-4-7[1m]` display as "Claude Opus 4.7" or "Claude Opus 4.7 (1M)". Handles Claude, GPT, and Gemini families with automatic version dot-joining, date/latest suffix stripping, provider prefix removal, and context-window tag formatting. Settings page retains raw names for pricing rule configuration |
-| **Claude + Codex Plugin Marketplace** | One 14-plugin source tree ships canonical Claude manifests, Codex `.codex-plugin/plugin.json` manifests, both marketplace catalogs, 66 bundled plugin skills, 18 Claude subagents, 34 Claude commands, 3 CLI helpers, and OpenAI skill metadata. The skills.sh CLI discovers 75 total repository skills with `npx skills add hoangsonww/Claude-Code-Agent-Monitor --list`. Install with `claude plugin marketplace add`, `codex plugin marketplace add`, or `npx skills add` |
-| **Run Claude**                     | Spawn `claude` subprocesses directly from the dashboard with a chat-style streaming UI. Two modes: **Conversation** (multi-turn — stdin stays open, follow-up turns are piped as stream-json envelopes) and **One-shot** (headless, single prompt → single response). Conversation mode also supports **resuming any existing session** via `claude --resume <id>` — pick from your full sessions history with a searchable picker. The unified active-runs / history modal also offers two zero-config jump buttons: **Resume** on any past conversation row spawns `claude --resume <id>` immediately and seeds the chat with the prior transcript so you land in the live view with full context (no need to retype a prompt — the spawn idles on stdin until you send a follow-up); **View** on any past one-shot row loads the captured transcript inline into the run viewer as read-only (no spawn — same panel, no Stop/follow-up controls). Active runs switcher in the header lets you leave a run in the background, start another, and re-attach later. Re-attach is durable: the client reconciles the spawner's in-memory envelope log (`?envelopes=1`) with the session's on-disk JSONL transcript and prefers whichever has more user/assistant messages, so navigating away from a resumed run and coming back keeps the full prior history visible (the spawner only sees post-spawn turns; the transcript file has prior + current). Model dropdown (Opus 4.7 / 1M / Sonnet 4.6 / Haiku 4.5 / custom), permission-mode picker with explicit `bypassPermissions` warning, **thinking-effort** field (low / medium / high — wired to `--effort`), cwd autocomplete pre-filled with the user's **home directory** — a neutral spawn location that doesn't inherit the dashboard repo's own `.claude` project context (agents, skills, rules, `CLAUDE.md`, `.mcp.json`); falls back to the dashboard cwd if no home suggestion is available, with home listed first in the suggestion groups (home → dashboard → recent). Real character-by-character streaming via `--include-partial-messages`, plus a client-side **typewriter smoothing layer** that drips each `text_delta` / `thinking_delta` through `requestAnimationFrame` so even short replies (where claude bundles the whole answer into one or two chunks) appear to type in. The merge code keeps the `_streaming` flag and the delta-accumulated `content` array intact when claude's canonical `assistant` envelope arrives mid-stream, so thinking blocks aren't dropped at completion. WebSocket dispatch wraps each envelope in `flushSync` so React auto-batching doesn't collapse bursts of deltas into a single render. **TUI parity (Tier 1)**: a collapsible **limitations banner** that minimizes to a slim pill (never disappears) explaining what stream-json mode can and can't do vs. the terminal TUI; a **prompt editor with slash-command autocomplete** with tiered scoring (exact name → starts-with → word-boundary → contains → subsequence → description-contains) that lists user / project / plugin commands (executed client-side via template expansion before send) and surfaces built-in CLI commands like `/clear`, `/model`, `/config` with a "CLI only — won't run from here" badge; **`@`-file references** with debounced fuzzy-search across the run's cwd (skipping `node_modules`, `.git`, `dist`, `build`, etc.); a **live context-window / token meter** showing input + output + cache-read tokens and running cost, computed from `stream_event` and `result.usage` envelopes during live streaming and from finalized assistant `usage` blocks (input / output / cache-read / cache-creation) when seeded from a transcript on resume / view / re-attach, so the meter populates immediately instead of sitting at 0/200k. Progress bar goes indigo → amber → red at 80% / 95% of the model's context cap; a **status header** with the active model, effort, permission mode, cwd, session ID, envelope count, and elapsed time. Autocomplete dropdowns open upward so they don't collide with the cwd picker below. Live / Offline indicator next to the title. Same-origin guard on the route prevents browser drive-by spawning. Concurrency is effectively uncapped by default (sanity ceiling of 10000 to prevent fork-bomb footguns from a buggy client; the terminal TUI has no cap and neither do we). Set `RUN_MAX_CONCURRENT` if you want a real ceiling. Spawned sessions fire the same hooks any `claude` process does, so they show up automatically in Sessions / Analytics / Kanban / Workflows — and Sessions / SessionDetail surface a green **▶ Run** badge / banner that links back to the Run page for any session that's currently being driven from there |
-| **Claude Config Explorer**         | A 12-tab inspector at `/cc-config` for everything Claude Code knows about: skills, subagents, slash commands, output styles, plugins (with per-plugin contributions count + author/license/homepage from `plugin.json`), marketplaces (with plugin counts read from each `marketplace.json`), MCP servers, hooks (with `~/.claude/hooks/` script listing), settings (an at-a-glance **Current configuration** summary of the options `/config` controls — model, verbose, theme, output style, effort, auto-compact, notifications, … — resolved across user/project/project-local scopes with unset options shown as defaults, plus the per-file structured key-value view + raw JSON toggle, secret-key redaction), memory (the user + project `CLAUDE.md` files **plus** the per-project file-based memory store — every `*.md` under `~/.claude/projects/<slug>/memory/`, i.e. a `MEMORY.md` index plus one file per remembered fact, often 100+; grouped by project in collapsible sections that split index files from per-fact files, with a search box and clickable `MEMORY.md` index links that jump to — scroll to + highlight — the matching fact file), keybindings (grouped by context with `<kbd>` chips), and statusline (config + script content). Read paths and their allowed roots are canonicalized with `realpath`, so symlinks cannot escape the trusted Claude roots. For low-risk text-file surfaces (skills / agents / commands / output styles / memory — including the per-project auto-memory files) the page supports **create / edit / delete with mandatory timestamped backups** atomically written outside the directories Claude Code scans, plus a Backups modal with auto-built `mv` restore commands. Plugins, MCP, hooks-in-settings, and `settings.json` files stay read-only with explainer banners + copy-able CLI commands so the user knows the exact command to run themselves. **Live updates**: a `cc-watcher` running on the server uses `fs.watch` on `~/.claude/` (recursive where the platform supports it) plus `~/.claude.json`, debounced at 500 ms, to broadcast a `cc_config_changed` WebSocket message whenever Claude Code config changes — either via dashboard mutations or external tools (CLI installing a plugin, manually editing `settings.json`, dropping a new skill). The page subscribes and refetches automatically; a Live / Offline pill next to the title shows WebSocket status |
-| **Tabby**                          | A floating cat companion pinned to the bottom-right corner of every page. Built entirely on the existing WebSocket `eventBus` — **no new backend, no API key, no new dependencies**. A reactive SVG mascot with cursor-tracking eyes and **eight moods** derived from the live session stream (`idle`, `watching`, `happy`, `worried`, `stuck`, `thinking`, `sleeping`, `disconnected`), each with its own animation (tail flick, ear perk, head bob, shake, sparkle, zzz, alert "!"). **Auto-surface speech bubbles** post short, throttled, coalesced quips on notable events (session started/finished, errors, run completed) and can be muted. Click the cat or press **⌘B / Ctrl+B** (Esc closes) to open a **panel** with a live status line (`N live · M errored · connection state`), quick actions (jump to Run Claude / Activity / Sessions / errored sessions, mute bubbles, clear alerts), and an **Ask** box: simple status questions ("what's running", "any errors", "status") are answered locally from cached data, while any other question hands off to the **Run Claude** page (deep-links to `/run?prompt=…`) to spawn a real Claude Code session. Accessible (keyboard-operable, `aria-live` bubbles, honors `prefers-reduced-motion`), degrades safe to a calm `disconnected` state if the socket is down, toggleable in **Settings** (localized in en/zh/vi/ko/es). Implementation lives in `client/src/components/Tabby/` |
-| **Progressive Web App (PWA)**      | Three independent PWAs — dashboard, landing page, and wiki — each with its own Web App Manifest and Service Worker. Install any of them to your home screen / dock for a standalone, chrome-less experience. The dashboard SW serves Vite's content-hashed bundles under `/assets/` cache-first (URLs are immutable per build, so cache hits are always correct) and treats everything else — navigations, the SW itself, `manifest.json`, icons, root `/` — as network-first with cache fallback. Combined with explicit `Cache-Control` headers on the production Express static middleware (`immutable` for `/assets/*`, `no-cache, must-revalidate` for `index.html`, `sw.js`, `manifest.json`), a rebuild always replaces the in-browser bundle without a hard refresh; a `controllerchange` listener in the client reloads exactly once when a new SW takes over an already-controlled page. The VAPID push-notification pipeline is preserved. The landing-page and wiki SWs precache their respective shells and lazy-cache images on first visit, enabling offline access after a single load. All manifests use SVG icons (`favicon.svg`) with `sizes="any"` for modern browsers, and include `apple-mobile-web-app-capable` + `apple-touch-icon` meta tags for iOS standalone mode |
-| **Desktop App (macOS & Windows)**  | Optional native desktop app built with Electron 35, living in the `desktop/` workspace alongside `client/`, `server/`, `mcp/`, and `vscode-extension/`. Ships as a macOS `.app` (`.dmg`) **and** a Windows `.exe` (NSIS installer + no-install portable). It embeds the existing Express server **in-process** (`require()`s `server/index.js` — no child process, no IPC) and renders the built React client in a `BrowserWindow`. Adds a native title bar, a menu-bar / notification-area (tray) icon whose single-click dropdown shows a **live status snapshot** (sessions, agents, events today) pulled from SQLite at click time, a native application menu, auto-start at login (macOS Login Items via `SMAppService`; Windows per-user `HKCU\…\Run`), a **⌘Q / Ctrl+Q confirmation dialog** (second press bypasses), window-close-hides-but-server-keeps-running, a single-instance lock, and tray actions for **Open in Browser**, **Restart Server**, and **Show Logs**. Prefers port 4820 (falls back to 4821–4829 then a random high port), adopts a healthy dashboard already running on 4820 instead of double-binding, and **coexists with the web dashboard** — both `npm run dev` and the desktop app can run together with hooks fanning out to both. Notifications fire as native OS toasts (Web Push doesn't work reliably inside Electron). On first owned-server boot it auto-installs Claude Code hooks and starts the background services, so an install-only user gets events flowing with zero manual setup. See [`DESKTOP.md`](./DESKTOP.md) and [`desktop/README.md`](./desktop/README.md) |
-| **Self-hosted assets (no CDN)**    | Every font and script is served locally, so the dashboard and docs make **zero third-party CDN requests** — they render fully offline and leak nothing to external hosts. The React app bundles Inter + JetBrains Mono via [`@fontsource`](https://fontsource.org/) (latin subset; Vite emits content-hashed WOFF2 into `dist/assets/` at build time, no `<link>` to Google Fonts). The landing page and wiki load a self-hosted `fonts/fonts.css` `@font-face` sheet from the repo-root `fonts/` directory. The wiki's Mermaid is vendored locally as `wiki/mermaid.min.js` (the genuine minified `mermaid@10.9.6`) instead of jsDelivr, and the VS Code extension's error page falls back to a system font stack. No `fonts.googleapis.com`, `fonts.gstatic.com`, or `cdn.jsdelivr.net` calls remain anywhere |
-| **Session splash screen**          | A brief branding splash on app load (once per browser session): a **time-aware greeting** (Good morning / afternoon / evening / Working late), a bold tagline, two subtexts, and an animated node-graph brand mark over a dark atmospheric backdrop (radial glow + drifting constellation + grain). Fully localized (en/zh/vi/ko/es). The overlay is **opaque from the first paint** so the app never flashes through, holds ~2.5 s, then fades out; click anywhere to skip, and it honors `prefers-reduced-motion`. CSS-only animations, no added dependencies |
+| **Task Progress**                  | プロバイダーの監視可能な状態（現在の Claude `TaskCreate` / `TaskGet` / `TaskUpdate` / `TaskList` およびライフサイクルイベント、レガシーの `TodoWrite`、そして直接または統合実行ラップされた Codex の `update_plan`）から派生した所有者属性付きのタスク追跡。タスク状態を持つセッションは、セッションテーブルおよび各ダッシュボードのエージェントカードのステータスの横に、コンパクトなドーナツグラフとポータルレンダリングされたホバー/フォーカスプレビューを表示します。セッション詳細には、ステータスセグメント、アクティブな作業、所有者の内訳、10 件ずつページングされたタスク行を含むフルプログレスパネルが表示されます。進捗は最新の最上位の作業にスコープされます：トラッカーが発行されない新しい Claude の人間のターンや Codex タスクは古い状態をクリアし、そのターン/タスクが最終更新なしで終了した場合は未完了の状態が破棄されます。完全に完了した履歴は引き続き表示されます。 |
+| **Dashboard**                      | `localStorage` に保持される2つのタブ：**Monitor** — 概要統計（6つの統計カード）、折りたたみ可能なサブエージェント階層を持つアクティブなエージェントカード、および `ResizeObserver` を介して利用可能なビューポートの高さを埋める動的アイテム数を持つ最近のアクティビティフィード。**Health** — 複合システムヘルススコアリング（重み付け：0.4 × 成功率 + 0.25 × キャッシュヒット率 + 0.25 × (100 - エラー率) + 0.1 × (100 - ヒープ % )）、レコード分布を示すストレージエンジンドーナツチャート、キャッシュパフォーマンス / エラー率 / 成功率のゲージ、ツール呼び出しの水平バーチャート（トップ8）、サブエージェントの有効性バー、モデルトークン分布、およびコンパクションの影響統計。すべてのヘルス指標は `/api/settings/info` および `/api/workflows` から 5 秒ごとに自動更新されます。すべてのチャートでビューポートの端を検出するカーソル追従型ツールチップを備えています。 |
+| **Kanban Board**                   | ヘッダのトグルを持つ2つのビュー（`localStorage` に保持）：**Agents** — 4列（Working / Waiting / Completed / Error） — および **Sessions** — 5列（Active / Waiting / Completed / Error / Abandoned）。**Waiting** 列はエージェント上の永続化された `waiting` ステータスに直接マッピングされます。これは Claude Code がプロンプト入力待ち（新しいセッション、ターン間、またはパーミッション通知でブロックされた状態）の時に設定され、ユーザーが再開した瞬間（UserPromptSubmit / PreToolUse）に `working` に遷移します。各列のヘッダには、ライフサイクルの遷移を説明する `?` ツールチップが表示されます。カードはサーバーから永続化されたステータスによってフェッチされ（実質的にステータスごとに無制限）、1列あたり 10 枚のカードで「Show more（さらに表示）」アフォーダンスを使ってクライアントサイドでページネーションされます。WS サブスクリプションはアクティブなビュー（`agent_*` vs `session_*` フレーム）にスコープされるため、ビュー外の更新によって再フェッチがトリガーされることはありません。Waiting バッジはホバーツールチップとして行の `awaiting_reason`（待機理由）を公開します — **Needs input**（`notification`）、**Turn done**（`stop`）、**At prompt**（`session_start`）、**Interrupted**（`interrupted`）。タイトルがスペースを確保できるようにコンパクトカードではツールチップのみに保持され、より広い領域（セッションテーブル、セッション詳細ヘッダ）では理由がネストされたチップとしてインラインでも表示され、緊急の理由（パーミッションプロンプト、中断）はより熱いアンバー色で表示されます。 |
+| **Sessions**                       | 記録されたすべてのセッションの、検索可能、フィルタリング可能で、**サーバーページネーション**されたテーブル。各ページクリックは `/api/sessions?status=&q=&limit=10&offset=…` にヒットするため、コスト計算は可視ページに対してのみ実行され、データベースに存在するセッション数には依存しません。最初のページでは、ダッシュボードやカンバンで表示されるのと同じローカルのインメモリ Codex 起動行も選択されます。これはすぐに表示されますが、永続的なセッション ID に置き換わるまではナビゲートできず、永続的な合計数やページネーションには影響しません。検索ボックス（`q=`）はサーバー上で `id` / `name` / `cwd` にまたがる大文字小文字を区別しない一致を 300 ms のデバウンスで実行し、応答にはページネータ UI 用の `total` カウントが含まれます。ステータスフィルター、検索、ページネーションは構成可能です。各セッションの人間が読める **name**（名前）はトランスクリプトから読み取られ、リアルタイムで同期されます — `/rename`、`claude -n`、またはピッカーの `Ctrl+R` からの明示的なタイトル（JSONL の `custom-title` 行）が常に優先され、それがない場合は自動生成された `ai-title` が埋められ、それもない場合はセッションの**最初の人間のプロンプト**（ツール結果 / スラッシュコマンドのノイズをスキップして切り詰められたもの）がプレースホルダー名とメインエージェントのプレースホルダー名/タスクを埋めます。これにより、タイトルが付けられなかったセッション（インポートされたものを含む）でも、何をしているかがわかります。ダッシュボードでは、カード、ダッシュボード、アクティビティフィード、および実行の再開ピッカーで、その名前（短い ID へのフォールバック付き）が表面化されます。 |
+| **Session Detail**                 | アクティブなエージェントバナー（現在のツール + タスク）、6つのタイルカウンター（イベントと1分あたりのイベント率、ツール呼び出し、サブエージェント、コンパクション、エラー、刻む継続時間）、トップツール使用状況バー、サブエージェントタイプの内訳、スタックされたトークンフローストリップ、およびイベントタイプのピルクラウドを備えた、セッションごとのリアルタイム概要パネル — これらはすべてフックイベントでライブ更新されます。その下には：エージェント階層ツリー、多次元フィルター（ステータス、イベントタイプ、ツール、エージェント、テキスト検索、日付範囲）を備えた完全なイベントタイムライン、`tool_use_id` による Pre/Post グループ化、人間が読めるサマリーブロック、ツール対応の入力/応答レンダラー（Bash 用ターミナル、Edit 用の統合差分、Read/Write 用の行番号付きコード、Grep 用の照合リスト、MCP ツール用のキー/値カード）、およびトランスクリプトをレンダリングする Conversation タブがあります。これには、ターンの中途で入力されたメッセージ（Claude がまだ動作している間にキューに入れられたもの）が Claude が実際にそれらを受け取った場所に配置され、システムに起因するハーネス通知が含まれます。Markdown（見出し、リスト、引用、テーブル、タスクリスト）、行番号とクリップボードへのコピー機能を備えた構文ハイライトされたコードブロック（js/ts, python, json, bash, html, css, sql, yaml, diff）、ツールごとにスタイル設定されたツール呼び出し（Bash → ターミナル、Edit → 並べて表示（旧/新）、Write → ファイルラベル、Read → パスチップ、Grep → パターンカード）を備えています。セッションが人間によってブロックされている場合、ヘッダの下の黄色の **waiting-for-input バナー**には、`awaiting_reason`、その説明、およびセッションがどのくらい待機しているか（点滅するドット + 相対時間）が示されます。ヘッダの Waiting バッジには同じ理由がネストされたチップとして含まれます。 |
+| **Activity Feed**                  | 一時停止/再開、多次元フィルター（Session Detail と同じツールバーに Session フィルターを追加）、サーバードリブンの「Load more（さらに読み込む）」ページネーション、読み込まれたページサイズを維持するデバウンスされたフィルター対応のライブ更新、グループ化トグル、project › session › subagent を示す起点プレフィックス、および行ごとの「Session →」ボタンを備えたリアルタイムストリーミングイベントログ。 |
+| **Analytics**                      | トークン使用量、ツール頻度、アクティビティヒートマップ（中央揃え、日曜日始まりの曜日合わせ、曜日名のツールチップ）、セッショントレンド、ライブ/オフライン接続インジケーター。分析ペイロードが読み込まれる間、チャート領域（統計タイルだけでなく）にはチャートのレイアウトを反映した**点滅するスケルトンプレースホルダー**が表示されるため、ページが空/ゼロのチャートを瞬間的に表示することはありません。Analytics と Workflows の長い凡例はページネーションされます。1ページに収まる凡例は変更されません。 |
+| **Live Updates**                   | WebSocket プッシュ -- ポーリングなしで、即座に UI が更新されます。 |
+| **Auto-Discovery**                 | セッションとエージェントは、プロバイダーのシグナルから自動的に作成されます。Claude Code は `SessionStart` で即座に **Waiting** カードを作成します。Codex は、対話型の TUI プロセスが開始されるとすぐに、Codex が安定したセッション ID を割り当てる前も含めて、ローカルのインメモリ **Waiting** カードを最初に公開します。フック、ライブスレッドの行、またはロールアウトによって永続的なセッションが作成され、その一時的なカードが置き換えられます。ユーザーが Codex の再開ピッカーを開いて既存のスレッドを選択した場合、CCAM はその正確な Codex PID によってすでに開かれているロールアウトまたはライターロックを検出し、最初の新しいメッセージの前に永続的な再開セッションに切り替えます。ID付与前のカードは、SQLite、履歴、分析、価格設定、ワークフロー、アラート、または完了通知に書き込まれることはなく、プロセスが終了すると消滅します。 |
+| **History Import**                 | プロバイダー対応の履歴インポートは、Claude Code トランスクリプトを `~/.claude/` から、Codex のロールアウト JSONL を `~/.codex/sessions` から取り込みます。各タブには独自のデフォルトパス、手順、フォルダスキャン、およびアップロードフローがあります。どちらもライブインジェストロジックを再利用し、トークン/コスト/ツールの計算を保持し、冪等性があります。外部の Codex ロールアウトはダッシュボードのストレージにスナップショットされるため、アーカイブまたはソースフォルダが削除された後もその会話は利用可能です。 |
+| **Subagent Hierarchy**             | Dashboard および Session Detail 上の折りたたみ可能な親子エージェントツリー。サブエージェントを持つエージェントには展開/折りたたみのシェブロンが表示されます。リーフエージェントにはドットインジケーターが表示されます。サブエージェントがアクティブな場合は自動で展開されます。 |
+| **Background Agents**              | バックグラウンド化されたサブエージェントを時期尚早に完了することなく正確に追跡します。 |
+| **Subagent Tool Attribution**      | サブエージェント内部のツール呼び出し (Read, Bash, Edit, Grep, …) は、サブエージェントごとの JSONL ファイル内にのみ存在します — Claude Code はそれらに対するフックを発行しません。各 `SubagentStop` 時にダッシュボードは、各 `subagents/agent-*.jsonl` を解析し、`tool_use` ブロックを `tool_use_id` によって一致する `tool_result` とペアリングし、サブエージェント自身の `agent_id` の下に `PreToolUse` + `PostToolUse` イベントを発行する、投げっぱなしの `scanAndImportSubagents` パスを実行します。冪等性（`data LIKE '%"tool_use_id":"X"%'` による重複排除）があり、タイプ + 開始時間が 30 秒以内のライブフック作成されたサブエージェント行とマージされるため、並列の `<sid>-jsonl-*` 行が作成されることはありません。完全な履歴バックフィルのための `npm run setup` 起動時インポートでも同じパスが実行されます — ダッシュボードよりも前のセッションでも、完全なサブエージェントごとのツールタイムラインが取得されます。Activity Feed と Session Detail は、ネストされたサブエージェントのために親チェーンを `main › coder › explorer` としてレンダリングします。そのチェーンは `reconcileSubagentParents` によって権威的に再構築されます。サブエージェント行は最初メインエージェントの下にフラットに挿入され（単一のフックイベントまたは JSONL ファイルはスポーン者の ID を保持していません）、その後、各サブエージェントトランスクリプトの Task ツール結果（`spawnedChildren` としてキャプチャされた `toolUseResult.agentId`）からスポーン者が復元されるため、自身のサブエージェントをスポーンするサブエージェントはメインの下に1階層に折りたたまれるのではなく、**本当の**スポーン者の下にネストされます。これは冪等的かつ追加的であり — `parent_agent_id` のみを再指定し、行の挿入や削除は行いません — 同じ `SubagentStop` スキャン上で実行され、再親付けのみによってツリー構造が変更された場合でもダッシュボードが再フェッチするように `reparented` カウントを返します。 |
+| **Cost Tracking**                  | 構成可能な価格ルールとセッションごとの内訳を備えたモデルごとのコスト見積もり。**期間限定の導入レート**（価格ルール上の `intro_*` + `intro_until`）をサポート：カットオフ日以前の使用量は導入レートで価格付けされ、それ以降は標準レートで価格付けされます。したがって、Claude Sonnet 5 のローンチ割引（2026-08-31まで）のようなプロモーションは、履歴的**および**将来の使用量に対して正しいまま保たれます — コストエンドポイントは、各日の使用量をその日付に有効なレートで価格付けします。**導入レートは設定で完全に編集可能**です — モデル価格設定エディターには、プロモーションのカットオフ日とカテゴリごとの導入価格（入力 / 出力 / キャッシュ読み取り / キャッシュ書き込み 5m & 1h）が表示されるため、将来のモデルのローンチプロモーションではコードの変更は不要で、編集のみで対応できます。**サブエージェントのカードには、各サブエージェントの自分自身のコストが表示されます**（そのサブエージェントのトランスクリプトのトークン使用量から派生し、現在のレートで価格付けされたもの）。セッションの合計ではありません — メインエージェントのカードがセッション全体を代表してセッションの合計を示し、サブエージェントのカードはそのサブエージェントが費やしたもののみを示すため、サブエージェントのカードがセッション全体のコストであるかのように誤解されることはなくなりました。コンパクション対応のトークン集計により、コンテキスト圧縮全体で合計が維持されます。トランスクリプトの読み取りは、効率的なトークン抽出のために増分バイトオフセットの更新でキャッシュされます。 |
+| **Transcript Cache**               | JSONL トランスクリプトからのリアルタイム抽出：トークン、コンパクション、API エラー（`APIError` イベントとして保存される `isApiErrorMessage` エントリ）、ターンの期間（`TurnDuration` イベントとして保存）、思考ブロックの数、および使用量の追加情報（service_tier、speed、inference_geo）。ターンの期間は安定したトランスクリプトのアイデンティティを保持します。完全な解析はレガシーの重複行と膨れ上がったメタデータの合計を修復し、キャップ付きの末尾解析は追記のみにとどまります。エントリごとに拡張可能な配列は、`TRANSCRIPT_CACHE_MAX_ARRAY_LEN`（デフォルト `1000`、設定可能）で末尾がキャップされるため — 解析時と確定時の両方で — 何日も実行されるセッションであっても、単一のキャッシュエントリが際限なく拡張されることはありません。各エントリは `{mtimeMs, size, bytesRead, result}` のみを格納するため、トップレベルと `result` 内の両方に同じデータのシャドウコピーが存在することはありません。セッションメタデータはリアルタイムでこれらのフィールドによって強化されます。 |
+| **Notifications**                  | 信頼性の高い配信のための完全な Web Push (VAPID) パイプライン。タブがバックグラウンドにある場合やブラウザが閉じられている場合でも到達します。macOS のオーディオサポートのために明示的に設定されています。サブスクリプション管理機能付きの、イベントごとに設定可能なトグル。 |
+| **Alerts**                         | ルールベースのアラートエンジン — 全て **設定 → アラートと通知**（ルール / チャンネル / アクティビティ のタブ付きコントロールセンター、別ページなし）で設定されます。4つの条件タイプでアラートルールを定義します — **イベントパターン**（イベントタイプ / ツール名 / サマリーテキストの一致、オプションでタイムウィンドウ内にN回の一致するイベントが必要、例：「2分間に5回以上のエラー」）、**非アクティブ**（N分間イベントのないアクティブセッション）、**停止中のエージェント**（N分間アクティビティがなく `working`/`waiting` に座っているエージェント）、および **トークンしきい値**（制限を超えたセッショントータルトークン）。イベント駆動のルールは全てのフックインジェスト時にサーバーサイドで評価されます（インジェストトランザクション後 — アラートがフック配信を遅くしたり失敗させたりすることはありません）。時間ベースのルールは 60 秒のスイープで実行されます。発動したアラートはルールごと＋セッションごとの **クールダウン重複排除**（デフォルト 300 秒）付きで `alert_events` に保持され、`alert_triggered` WebSocket メッセージとしてブロードキャストされ、**アクティビティ**タブのライブフィードに、確認（acknowledge） / 全て確認、未確認のみのフィルター、アラートごとの「セッションを表示」リンクとともに表示されます。ルールは有効/無効の切り替えをサポートし、削除時にはその履歴をカスケードします。発動したアラートは、**チャンネル**タブで設定された **ユニバーサル Webhook ターゲット**にもファンアウトされます — **14のファーストクラスプロバイダー**と汎用エンドポイント：**Slack**、**Discord**、**Microsoft Teams**、**Google Chat**、**Mattermost**、**Rocket.Chat**（ネイティブチャットペイロード）；**Telegram**（Bot API）、**PagerDuty**（Events API v2）、**Opsgenie**（Alert API + GenieKey 認証）、**Splunk On-Call**（VictorOps REST）；および **Zapier**、**Make**、**n8n**、**Pipedream**、または任意の**汎用**エンドポイント（オプションの **HMAC-SHA256** 署名とカスタムヘッダーを備えたクリーンな JSON エンベロープ）。各プロバイダーはサーバーサイドのレジストリによって記述され、ペイロードフォーマッター、URL の解決方法（一部のものはクレデンシャルから導出します — 例：ボットトークンからの Telegram、リージョンからの Opsgenie — その他はデフォルト化）、および UI がレンダリングするクレデンシャルフィールドを宣言します。ターゲットはオプションのルールごとのスコープ指定、同期の「テスト送信」プローブ、および記録された配信ログをサポートします。配信はアラートパスから切り離され、リクエストタイムアウトと制限された再試行/バックオフで実行されるため、監視を遅らせたりブロックしたりすることはありません。ターゲット URL、シークレット、クレデンシャルフィールドはサーバーサイドに保存され、API によって返されることはありません（全てのレスポンスでマスク/編集されます）。 |
+| **Update Notifier**                | サーバーは非ブロッキングな `git fetch` を定期的に実行し、ローカルのチェックアウトと `origin/master`/`origin/main`/`origin/HEAD` を比較します。アップストリームが先行している場合、UI は正確な `git pull && npm run setup` コマンドとワンクリックの **Copy（コピー）** ボタンを備えたモーダルを表示します。サイドバーにはライブバッジ付きの永続的な「Check for updates（更新の確認）」ボタンが追加されます。ダッシュボード自体がプルや再起動を行うことはありません — ユーザーがターミナルでコマンドを実行します — そのため、このメカニズムが開発セッション、pm2/systemd/Docker による監視を壊したり、孤児プロセスを残したりすることはありません。 |
+| **Settings**                       | システム情報、フックの状態、モデルの価格設定管理、通知設定、データのエクスポート**と復元**（履歴のインポートパネルの **バックアップの復元** モードは、最大 25 MiB のエクスポート `.json` を1つ受け入れ、既存の行を上書きすることなく冪等に再インポートするため、複数のマシンの履歴を1つのダッシュボードに統合できます）、セッションのクリーンアップ。モデル価格設定セクションは、**Anthropic Claude Model Pricing** と **OpenAI GPT Model Pricing** を一致したヘッダレイアウトで分離し、プロバイダースコープの **デフォルトにリセット** および **モデルを追加** コントロール、そして初回一致ルールの検索、SQL スタイルの `%` ワイルドカード構文、手動での価格更新、API レートの注意点について説明する情報ポップオーバーを備えています。GPT ポップオーバーはまた、100万トークンあたりの USD 単位、272K の短/長の境界、Fast モードのレート、未公開のティアが見積もられずに未設定のままになる理由についても説明しています。**ダッシュボードデータ** コントロールは、Claude Code、Codex、またはその両方のセッション、エージェント、イベント、トークン、ワークフロー、分析、およびコストを直ちに再フェッチします。個別の Claude Code および Codex ホームの入力は完全に i18n 駆動であり、実行時に保存されます。Codex の保存は、ライブロールアウトの監視を再アクティブ化し、その新しいツリーをスキャンします。 |
+| **Run Agent + Agent Config**       | `/run` は Claude Code / Codex の選択から始まり、ライブステータスの横にプロバイダートグルを保持します。Claude の実行では、ヘッドレスおよび stream-json 会話モードが保持されます。Codex の実行では、CLI のローカルな `app-server` プロトコルを使用して、真のインタラクティブスレッド、ネイティブの承認/サンドボックスポリシー、再開、停止、ライブ出力、および再アタッチを実現します。Codex モデルの選択肢はサインインされた CLI から直接取得されるため、モデルリリースはダッシュボードの更新を必要としません。Claude は、耐久性のあるエイリアスに加えてローカルで観察されたモデルを表示します（CLI にはモデルリストのコマンドがないため）。`/cc-config` は、確立された編集可能な Claude Code エクスプローラーと Codex ワークスペースを組み合わせ、設定のデフォルト、モデルキャッシュ、プロファイル、MCP、プロジェクト、スキル、ルール、フック、インストールされたプラグイン、および指示ファイルを管理します。通常のプレビューではシークレットが墨塗りされます。明示的なローカルエディターは、`config.toml`、`hooks.json`、ユーザールール、スキル、および指示のアトミックな保存と必須のタイムスタンプ付きバックアップをサポートしますが、構文を検証できないという警告が表示されます。Codex プロファイルのコマンドと管理対象のアーティファクトパスはワンクリックでコピーでき、プラグインカードはキャッシュフォルダーを表示するのではなく、Codex のインストール済みプラグインレジストリを使用します。どちらのエクスプローラーもプロバイダー固有のファイルシステムウォッチャーを通じて更新されます。 |
+| **Codex Agent Config**             | Agent Config の Codex 側は、モデルがゼロであると誤って表示する可能性のある一般的なプレビュー制限なしでローカルアカウントのフルモデルカタログを読み取り、常にベース/プロファイルのオーバーライドを含みます。アプリ内で直接標準の Codex `<name>.config.toml` オーバーレイを作成できます。各カードは正確な `codex --profile <name>` コマンドをワンクリックでコピーし、保護されたエディターを開きます。プレビューパスは包含チェックの前に正規化されます。エディターは信頼できるルート以下のシンボリックリンクされたパスコンポーネントを拒否し、カノニカルな親の包含を検証し、`[redacted]` プレビューコンテンツを拒否します。プロファイル、フック、ルール、スキル、および指示は Claude スタイルの **ソースの表示 / パスのコピー / 編集 / 削除** アクションを共有します。すべての許可された削除は確認され、最初にバックアップされます（スキルはそのディレクトリ全体を保持します）。`config.toml` は永続的に編集専用です。 |
+| **MCP Server (Local)**             | `mcp/` 内にある包括的なローカル MCP サーバー。3つのトランスポートモード (stdio, HTTP+SSE, 対話型 REPL) と 16 のドメインモジュールにわたる 97 の型付きツールを備えています。これらは可観測性、スコープされたセッション/エージェント/イベント、トランスクリプトと画像、Claude/GPT の価格設定、ワークフロー、アラート、Webhook、インポートとバックアップ復元、Claude/Codex 設定、Run Agent、リモートソース、フック/ホーム/アップデート、プッシュ、およびメンテナンスをカバーします。プロトコルと REPL モードは検証済みの1つのカタログを共有し、localhost 専用ターゲットと段階的なミューテーション/破壊的ゲートを備えています。直接的なループバック HTTP はベアラートークンを運ぶことができます。トークン化されたコンテナホストのエイリアスには HTTPS が必要です。リダイレクトは拒否され、アップロードはファイルあたり 50 MiB、コールあたり 100 MiB に、バイナリ応答は 10 MiB に、バックアップ復元は 25 MiB に制限されます。 |
+| **Workflows**                      | 11のインタラクティブなセクションを持つ D3.js 駆動の視覚化ページ：エージェントオーケストレーション DAG、ツール実行のサンキーダイアグラム、コラボレーションネットワーク、サブエージェントの有効性（カードの `overflow:hidden` から逃れ、クリップされないようにビューポートにクランプされたポータルレンダリングされたツールチップを備えた曜日ごとのスパークライン）、検出されたワークフローパターン、モデルの委任フロー、エラー伝播マップ（レートバッジ付きの水平バー、エージェントタイプの内訳、API/セッションエラーカード）、同時並行性タイムライン、セッションの複雑さの散布図、コンパクションの影響分析（明確な「コンパクション数によるセッション」ヒストグラムとして再設計され、軸タイトル、統計タイル — 合計 / 影響を受けたセッション / 平均 / ピーク — 説明のヘルプライン、およびバーごとのホバーツールチップ付き）、およびセッションごとのドリルイン。各セクションの右揃えのサブタイトルは1行に制限（省略記号＋ホバータイトル）されるため、長い翻訳でもヘッダが折り返されることはありません。**全体にわたるリッチな i18n 対応ツールチップ：** すべてのチャートのセクションタイトルには `i` アイコンが付いており、構造化された「これが示すもの / 読み方 / なぜ重要か」というポップオーバーが開きます。ノード、エッジ、バー、バブルにホバーすると、決定的で値に依存する解釈（例：ソースのシェア / ターゲットのシェアのパーセンテージ、成功率のヘルスバケット、Opus / Sonnet / Haiku のファミリ説明、フロントロード / ミッドセッション / バックロードのようなタイミングパターン）を持つマルチセクションのツールチップが表示されます。6つの主要な統計カードそれぞれには、指標がどのように計算され、その現在の値が何を意味するのかを平易な言葉で説明するインフォポップオーバーが右下にあります。ツールチップは、再レンダリング後にカーソルから遅れたり残ったりしないように、コンテナレベルの `mouseleave` フォールバックを持つチャートごとの単一の参照を通じて DOM 操作されます。**Detected Workflow Patterns** の行をクリックすると、完全なステップシーケンス、統計グリッド、決定論的な説明（ループ検出、頻度バケット）、および実践的な提案を備えたインプレース詳細パネルが展開されます。ステータスフィルタータブ（Active Only / Completed / All）は 11 のセクションすべてをフィルタリングします。クロスフィルタリング、JSON エクスポート、および 3 秒のデバウンスを備えたリアルタイム WebSocket 自動更新機能。**Workflow Runs** パネルは「動的ワークフロー」— `Workflow` ツールとセルフペースの `/loop` によって生成されたサブエージェントのフリート — を表面化します。これらはフックを発行せず、ディスク上の実行ジャーナル (`workflows/wf_<runId>.json`) から再構築されます：各実行はそのフェーズとエージェントごとのトークン / ツール呼び出し / 継続時間の内訳を示し、ジャーナルが書き込まれる前にライブでの `running` 検出と、各セッション詳細ページでのリンクされたサブセクションを備えています。 |
+| **Compaction Tracking**            | JSONL トランスクリプトから `/compact` イベントを検出し、コンパクションのエージェントとイベントを作成します。起動時にレガシーのコンパクションをバックフィルします。定期的なスキャナー（`DASHBOARD_STALE_MINUTES` から導出された頻度）は、フックが発行されない場合でもコンパクションを捕捉します。各アクティブセッションのトランスクリプトパスを `sessions.transcript_path`（最初にあるフックハンドラと `events` からの1回限りのバックフィルによって入力される）から直接読み取るため、イベントテーブル全体に対して `SELECT DISTINCT json_extract(events.data, '$.transcript_path')` を行う必要がなく、スイープは O(アクティブセッション) であり、成熟したデータベース上でも低コストです。トランスクリプトのキャッシュを共有するため、ファイルの重複読み取りは発生しません。合成のコンパクション行は `started_at` と `ended_at` の両方にトランスクリプトのタイムスタンプが刻印されるため、継続時間は正確に 0 になります（コンパクションは瞬時です）。起動時の修復マイグレーションは、`ended_at < started_at` となっている既存の行も修復します (issue #156)。 |
+| **Subsessions/Resumed Sessions**   | 新しいイベントが到着すると自動的にセッションを再アクティブ化し、`/resume` や孤児になったセッションを正しく処理します。定期的なスイープ（`DASHBOARD_STALE_MINUTES` の ¼ ごと、60 秒〜5分にクランプ）は、イベントベースの検出をすり抜けた放棄されたセッションをマークします。 |
+| **Pre-Existing Session Detection** | サーバー起動時にすでに実行中のセッションは（最近の JSONL ファイルの更新に基づいて）「アクティブ」としてインポートされます。停止イベントもインポートされた完了/放棄セッションを再アクティブ化するため、進行中のセッションからの最初のフックは常にダッシュボード上に表示されます。 |
+| **Continuous Project Sync**        | `~/.claude/projects` の起動時自動インポートは1回限り（マーカーでゲートされている）であるため、初回起動**後**に作成されたプロジェクトフォルダー — そのセッションがフック経由で流れない場合（例：ホストのみのフックが無効化されている場合） — は、手動での再スキャンまで不可視のままになります。バックグラウンド同期 (`startSessionSync`) は、1つの mtime キャッシュと単一の統合スイープを共有する3つのトリガーを介してそのギャップを埋めます：起動時の**即時**スイープ、新しいセッションファイル/プロジェクトフォルダーが現れた瞬間に発火するデバウンスされた **`fs.watch`**（macOS/Windows では再帰的、Linux ではユーザーランドの再帰ウォッチャーの危険を回避するためにルート＋直下の子）、および**定期的なポーリング**（`DASHBOARD_SESSION_SYNC_MS`、デフォルト 30 秒）。各スイープは、mtime が進んだファイルのみを再解析し、`session_created`/`session_updated`（およびメインエージェント）をブロードキャストするため、UI がライブで更新されます。DB 内にすでに存在する変更のないセッションは再解析なしでスキップされるため、再起動コストは O(新規/変更されたファイル) に保たれます。 |
+| **Remote Data Sources**            | SSH 経由でのライブ リモート / マルチマシンの Claude Code および Codex 収集。1つのソースは、**scp**、または Windows SSH ホスト上の WSL でホストされた CLI 用に `wsl.exe` + `tar` を介して `~/.claude/projects` および `~/.codex/sessions`（ネイティブな名前のタイトル用の Codex の軽量な `session_index.jsonl` を含む）を独立してミラーリングします。隔離された各ステージはそのプロバイダーの通常のインポーターを通過し、行に `sessions.source` のタグを付けます。いずれかのプロバイダーが利用可能な場合、ソースは正常であるため、Claude のみ、Codex のみ、混合のいずれのマシンでも機能します。15 秒の `DASHBOARD_REMOTE_SYNC_MS` ポーラーと即時の追加/再有効化によるプルは、プロバイダー対応の `remote_source.status`、`remote_data.updated`、およびセッションごとの更新をブロードキャストします。リモートのライフサイクルは、ミラーリングされた各トランスクリプトから調整されます。プロバイダーが利用できない、エラーになる、または `DASHBOARD_STALE_MINUTES` を超えて同期が停止した場合、そのプロバイダーの古いリモートセッションのみが通常のステータススイープのフォールバックの対象となります。健全な兄弟プロバイダーはミラー所有のままです。オプションで独立した **Remote Claude ホーム** と **Remote Codex ホーム** のパスを **設定 → リモートデータソース** で設定するか、`ccam remote-sources` を使用します。SSH 認証は完全にホスト側に保持されます（パスワード/シークレットは保存されません）。 |
+| **Responsive Design**              | スタッキンググリッド、スクロール可能なテーブル、折りたたみ可能なサイドバーを備えたモバイルフレンドリーなレイアウト。 |
+| **UI Localization**                | 英語 (`en`)、中国語 (`zh`)、ベトナム語 (`vi`)、韓国語 (`ko`)、スペイン語 (`es`) に翻訳された UI コピーとアクセシビリティラベルを備えた、組み込みのカスタムドロップダウン言語切り替え。カバレッジは Workflows ツールチップまでエンドツーエンドに及びます：統計カードの計算と値バケットの解釈、チャートごとの「何 / 読み方 / なぜ」ポップオーバー、すべてのグラフのホバーツールチップ（オーケストレーション、ツールフロー、パイプライン、モデル委任、並行性）、ワークフローパターンの詳細パネルの説明と提案、設定 → モデルの価格設定の情報ポップオーバー、CLAUDE_HOME パネル、および履歴インポートフロー全体が含まれます。 |
+| **Seed Data**                      | デモおよび開発用の組み込みシードスクリプト。 |
+| **Statusline**                     | モデル、コンテキスト使用量、git ブランチ、方向ごとのトークン、セッションコスト (USD) を表示する色分けされた CLI ステータスライン。 |
+| **Model Name Formatting**          | UI 全体での人間が読めるモデル名：`claude-opus-4-7-20260101` や `claude-opus-4-7[1m]` のような生の識別子は「Claude Opus 4.7」や「Claude Opus 4.7 (1M)」として表示されます。自動バージョン ドット結合、日付/最新接尾辞の削除、プロバイダープレフィックスの削除、コンテキストウィンドウタグのフォーマットを用いて Claude、GPT、Gemini ファミリを処理します。設定ページは、価格ルール設定のために生の識別子を保持します。 |
+| **Claude + Codex Plugin Marketplace** | 1つの 14 プラグイン ソースツリーから、正準な Claude マニフェスト、Codex `.codex-plugin/plugin.json` マニフェスト、両方のマーケットプレイスカタログ、66 のバンドルされたプラグインスキル、18 の Claude サブエージェント、34 の Claude コマンド、3 つの CLI ヘルパー、および OpenAI スキルメタデータを出荷します。`skills.sh` CLI は `npx skills add hoangsonww/Claude-Code-Agent-Monitor --list` で合計 75 のリポジトリスキルを発見します。`claude plugin marketplace add`、`codex plugin marketplace add`、または `npx skills add` でインストールします。 |
+| **Run Claude**                     | チャットスタイルのストリーミング UI でダッシュボードから直接 `claude` サブプロセスを起動します。2つのモード：**Conversation（会話）**（複数ターン — stdin は開いたままで、フォローアップターンは stream-json エンベロープとしてパイプされます）および **One-shot（ワンショット）**（ヘッドレス、単一プロンプト → 単一応答）。Conversation モードはまた、`claude --resume <id>` 経由で**既存のセッションの再開**をサポートし、検索可能なピッカーで過去のセッション全体から選択できます。統合されたアクティブな実行 / 履歴モーダルには、設定不要の2つのジャンプボタンもあります：過去の会話行で **Resume（再開）** を押すと、直ちに `claude --resume <id>` が起動され、前のトランスクリプトをチャットにシードするため、完全なコンテキストがあるライブビューに着地します（プロンプトを再入力する必要はありません — フォローアップを送信するまで stdin で待機します）。過去の One-shot 行で **View（表示）** を押すと、キャプチャされたトランスクリプトが読み取り専用で実行ビューアにインライン読み込みされます（起動は行われません — 同じパネル、停止/フォローアップコントロールなし）。ヘッダのアクティブな実行スイッチャーを使用すると、実行をバックグラウンドに残したまま、別の実行を開始し、後で再アタッチできます。再アタッチは永続的です：クライアントは、起動元のインメモリーのエンベロープログ (`?envelopes=1`) をディスク上のセッションの JSONL トランスクリプトと照合し、ユーザー/アシスタントのメッセージ数が多い方を優先します。そのため、再開された実行から移動して戻ってきた場合でも、以前の完全な履歴が表示され続けます（起動元は起動後のターンのみを認識しますが、トランスクリプトファイルには以前＋現在の情報があります）。モデルドロップダウン（Opus 4.7 / 1M / Sonnet 4.6 / Haiku 4.5 / カスタム）、明示的な `bypassPermissions` の警告を備えたパーミッションモードピッカー、**思考の労力（thinking-effort）**フィールド（低 / 中 / 高 — `--effort` に連動）、ユーザーの**ホームディレクトリ**が事前入力された cwd オートコンプリート — これは、ダッシュボードリポジトリ自体の `.claude` プロジェクトコンテキスト（エージェント、スキル、ルール、`CLAUDE.md`、`.mcp.json`）を継承しない中立的な起動場所です。ホームの提案が利用できない場合はダッシュボードの cwd にフォールバックし、提案グループ（ホーム → ダッシュボード → 最近）の最初にホームがリストされます。`--include-partial-messages` によるリアルタイムの文字単位のストリーミングに加え、クライアントサイドの**タイプライター スムージング レイヤー**を備えており、各 `text_delta` / `thinking_delta` を `requestAnimationFrame` を通じて滴らせることで、短い返信（claude が全体を 1、2 チャンクにまとめる場合）でもタイプされているように見えます。統合コードは、ストリームの途中で claude の正準な `assistant` エンベロープが到着した場合でも `_streaming` フラグと累積された `content` 配列をそのまま維持するため、完了時に思考ブロックがドロップされることはありません。WebSocket のディスパッチは各エンベロープを `flushSync` でラップし、React の自動バッチ処理によってデルタのバーストが単一のレンダリングに折りたたまれるのを防ぎます。**TUI パリティ (Tier 1)**：stream-json モードとターミナル TUI の違いを説明する、スリムなピルに最小化される（消えることはない）折りたたみ可能な**制限事項バナー**。ユーザー / プロジェクト / プラグインコマンドを一覧表示し（送信前にクライアントサイドでテンプレート展開を介して実行）、`/clear`、`/model`、`/config` などの組み込み CLI コマンドを「CLI専用 — ここからは実行されません」バッジと共に表示する、階層的なスコアリング（完全一致 → 前方一致 → 単語境界 → 含む → サブシーケンス → 説明に含む）を備えた**スラッシュコマンド オートコンプリート付きのプロンプトエディター**。実行の cwd 実行の cwd 全体でデバウンスされたファジー検索（`node_modules`、`.git`、`dist`、`build` などをスキップ）を行う **`@`-ファイル参照**。入力 + 出力 + キャッシュ読み取りのトークンと実行コストを示す**ライブ コンテキストウィンドウ / トークンメーター**。これは、ライブストリーミング中は `stream_event` と `result.usage` のエンベロープから計算され、再開 / 表示 / 再アタッチのトランスクリプトからシードされる場合は最終的なアシスタントの `usage` ブロック（入力 / 出力 / キャッシュ読み取り / キャッシュ作成）から計算されるため、メーターは 0/200k のままになるのではなく、即座に入力されます。プログレスバーは、モデルのコンテキスト制限の 80% / 95% でインディゴ → アンバー → 赤に変わります。アクティブなモデル、労力、パーミッションモード、cwd、セッション ID、エンベロープ数、および経過時間を示す**ステータスヘッダ**。オートコンプリートのドロップダウンは、下の cwd ピッカーと衝突しないように上向きに開きます。タイトルの横にある ライブ / オフライン インジケーター。ルートの Same-origin ガードにより、ブラウザのドライブバイ起動を防止します。同時並行性はデフォルトで事実上無制限です（バグのあるクライアントによるフォークボムの暴発を防ぐための上限 10000。ターミナル TUI には制限がなく、我々にもありません）。実際の上限が必要な場合は `RUN_MAX_CONCURRENT` を設定してください。起動されたセッションは `claude` プロセスが行うのと同じフックを発火させるため、Sessions / Analytics / Kanban / Workflows に自動的に表示されます。そして、Sessions / SessionDetail には、現在そこから駆動されているセッションの Run ページにリンクバックする、緑色の **▶ Run** バッジ / バナーが表示されます。 |
+| **Claude Config Explorer**         | `/cc-config` にある12個のタブを持つインスペクター。Claude Code が認識しているすべてのものについて：スキル、サブエージェント、スラッシュコマンド、出力スタイル、プラグイン（`plugin.json` からのプラグインごとの貢献数 + 作成者/ライセンス/ホームページ付き）、マーケットプレイス（各 `marketplace.json` から読み取られたプラグイン数付き）、MCP サーバー、フック（`~/.claude/hooks/` スクリプト一覧付き）、設定（`/config` が制御するオプション — モデル、冗長、テーマ、出力スタイル、労力、自動コンパクション、通知など — の**現在の構成**を一目で確認できる概要。ユーザー/プロジェクト/プロジェクトローカルスコープ全体で解決され、未設定のオプションはデフォルトとして表示され、さらにシークレットキーの墨塗りを備えたファイルごとの構造化されたキーバリュービュー + 生の JSON トグル）、メモリ（ユーザー + プロジェクトの `CLAUDE.md` ファイル**と**プロジェクトごとのファイルベースのメモリストア — `~/.claude/projects/<slug>/memory/` 下のすべての `*.md`、つまり1つの `MEMORY.md` インデックス＋記憶された事実ごとの1ファイル、しばしば100以上。インデックスファイルと事実ごとのファイルを分割する折りたたみ可能なセクションにプロジェクトごとにグループ化され、検索ボックスと、一致する事実ファイルへジャンプする（スクロールしてハイライトする）クリック可能な `MEMORY.md` インデックスリンクを備えています）、キーバインディング（`<kbd>` チップ付きでコンテキストごとにグループ化）、およびステータスライン（構成 + スクリプトコンテンツ）。読み取りパスと許可されたルートは `realpath` で正規化されるため、シンボリックリンクが信頼できる Claude のルートから逃れることはありません。リスクの低いテキストファイルのサーフェス（スキル / エージェント / コマンド / 出力スタイル / メモリ — プロジェクトごとの自動メモリファイルを含む）については、ページは、Claude Code がスキャンするディレクトリの外部にアトミックに書き込まれる、**必須のタイムスタンプ付きバックアップによる作成 / 編集 / 削除**、さらに自動ビルドされた `mv` 復元コマンドを備えた Backups モーダルをサポートしています。プラグイン、MCP、設定内のフック、および `settings.json` ファイルは、説明用バナー＋コピー可能な CLI コマンドを備えた読み取り専用の状態を保つため、ユーザーは自分で実行すべき正確なコマンドを知ることができます。**ライブ更新**：サーバー上で実行されている `cc-watcher` は、プラットフォームがサポートしている場所では再帰的に `~/.claude/` に加え、`~/.claude.json` で `fs.watch` を使用し、500 ms でデバウンスして、ダッシュボードの変更や外部ツール（CLI によるプラグインのインストール、手動での `settings.json` 編集、新しいスキルのドロップ）によって Claude Code の設定が変更されるたびに `cc_config_changed` WebSocket メッセージをブロードキャストします。ページは自動的にサブスクライブして再フェッチします。タイトルの横にある ライブ / オフライン のピルは WebSocket のステータスを示します。 |
+| **Tabby**                          | すべてのページの右下隅に固定された、浮かぶ猫のコンパニオン。完全に既存の WebSocket `eventBus` 上に構築されています — **新しいバックエンドなし、API キーなし、新しい依存関係なし**。カーソルを追従する目とライブセッションストリームから派生した **8つの気分** (`idle`, `watching`, `happy`, `worried`, `stuck`, `thinking`, `sleeping`, `disconnected`) を持つ反応性の高い SVG マスコットで、それぞれ独自のグラフィックスアニメーション（しっぽを振る、耳を立てる、頭を揺らす、体を震わせる、キラキラ光る、zzz、アラート「!」）を備えています。注目すべきイベント（セッションの開始/終了、エラー、実行完了）に対して短くスロットル処理され統合された気の利いた言葉を投稿する**自動表面化の吹き出し（speech bubbles）**があり、ミュートすることも可能です。猫をクリックするか、**⌘B / Ctrl+B**（Esc で閉じる）を押すと、ライブステータスライン（`N live · M errored · connection state`）、クイックアクション（Run Claude / Activity / Sessions / errored sessions へのジャンプ、吹き出しのミュート、アラートのクリア）、および **Ask** ボックスを備えた**パネル**が開きます：単純なステータスの質問（「何が実行されているか」、「エラーはあるか」、「ステータス」）はキャッシュされたデータからローカルで応答され、その他の質問は **Run Claude** ページ（`/run?prompt=…` へのディープリンク）にハンドオフして実際の Claude Code セッションを生成します。アクセシビリティ対応（キーボード操作可能、`aria-live` 吹き出し、`prefers-reduced-motion` の尊重）、ソケットがダウンしている場合は穏やかな `disconnected` 状態への安全なダウングレードを行い、**設定**で切り替え可能です（en/zh/vi/ko/es でローカライズ済み）。実装は `client/src/components/Tabby/` にあります。 |
+| **Progressive Web App (PWA)**      | ダッシュボード、ランディングページ、Wikiの3つの独立したPWAがあり、それぞれ独自のWeb App ManifestとService Workerを持っています。これらをホーム画面やDockにインストールすることで、スタンドアロンでChromeレスな体験を提供します。ダッシュボードのSWは、Viteのコンテンツハッシュされたバンドルを `/assets/` 配下でキャッシュファーストで提供し（ビルドごとにURLが不変であるため、キャッシュヒットは常に正しいです）、それ以外（ナビゲーション、SW自体、`manifest.json`、アイコン、ルートの `/`）はネットワークファーストでキャッシュにフォールバックします。本番環境のExpress静的ミドルウェアでの明示的な `Cache-Control` ヘッダ（`/assets/*` では `immutable`、`index.html`, `sw.js`, `manifest.json` では `no-cache, must-revalidate`）と組み合わせることで、ハードリフレッシュなしでビルド時にブラウザ内のバンドルが常に置き換えられます。クライアント側の `controllerchange` リスナーは、新しいSWがすでにコントロールされているページを引き継いだ時に正確に1回リロードします。VAPIDのプッシュ通知パイプラインは保持されます。ランディングページとWikiのSWは、初回アクセス時にそれぞれのシェルをプレキャッシュし画像を遅延キャッシュするため、1回の読み込みでオフラインアクセスが可能になります。すべてのマニフェストは、モダンブラウザ向けに `sizes="any"` を指定したSVGアイコン (`favicon.svg`) を使用し、iOSのスタンドアロンモード向けに `apple-mobile-web-app-capable` と `apple-touch-icon` メタタグを含みます。 |
+| **Desktop App (macOS & Windows)**  | Electron 35 で構築されたオプションのネイティブデスクトップアプリで、`client/`、`server/`、`mcp/`、`vscode-extension/` と並んで `desktop/` ワークスペース内にあります。macOS の `.app` (`.dmg`) **と** Windows の `.exe` (NSIS インストーラー + インストール不要のポータブル) として出荷されます。既存の Express サーバーを**プロセス内**に組み込み（子プロセスや IPC ではなく `server/index.js` を `require()` します）、ビルドされた React クライアントを `BrowserWindow` でレンダリングします。ネイティブなタイトルバー、クリック時のドロップダウンがクリック時に SQLite から取得した**ライブステータススナップショット** (今日のセッション、エージェント、イベント) を表示するメニューバー/通知領域 (トレイ) アイコン、ネイティブのアプリケーションメニュー、ログイン時の自動起動（macOS は `SMAppService` による Login Items、Windows はユーザーごとの `HKCU\…\Run`）、**⌘Q / Ctrl+Q の確認ダイアログ** (2回目の押下でバイパス)、ウィンドウを閉じてもサーバーは実行を継続する機能、単一インスタンスロック、そして**ブラウザで開く**、**サーバーを再起動**、**ログを表示** のトレイアクションが追加されています。ポート 4820 を優先し (その後 4821〜4829、次にランダムな高ポートにフォールバック)、二重バインドするのではなく 4820 で既に実行されている正常なダッシュボードを採用し、**Web ダッシュボードと共存します** — `npm run dev` とデスクトップアプリの両方を一緒に実行でき、フックは両方にファンアウトします。最初の所有サーバーの起動時に、Claude Code フックを自動インストールし、バックグラウンドサービスを開始するため、インストールのみのユーザーでも手動での設定なしでイベントが流れるようになります。詳細は [`DESKTOP.md`](./DESKTOP.md) および [`desktop/README.md`](./desktop/README.md) を参照してください。 |
+| **Self-hosted assets (no CDN)**    | すべてのフォントとスクリプトはローカルで提供されるため、ダッシュボードとドキュメントは**サードパーティの CDN リクエストをゼロ**にしています — これらは完全にオフラインでレンダリングされ、外部ホストに情報を漏らしません。React アプリは、[`@fontsource`](https://fontsource.org/) 経由で Inter と JetBrains Mono をバンドルしています（latin サブセット。Vite はビルド時にコンテンツハッシュされた WOFF2 を `dist/assets/` に出力し、Google Fonts への `<link>` はありません）。ランディングページと wiki は、リポジトリルートの `fonts/` ディレクトリからセルフホストされた `fonts/fonts.css` の `@font-face` シートを読み込みます。wiki の Mermaid は、jsDelivr ではなくローカルの `wiki/mermaid.min.js` (純正の最小化された `mermaid@10.9.6`) としてベンダリングされており、VS Code 拡張機能のエラーページはシステムのフォントスタックにフォールバックします。`fonts.googleapis.com`、`fonts.gstatic.com`、または `cdn.jsdelivr.net` の呼び出しはどこにも残っていません。 |
+| **Session splash screen**          | アプリの読み込み時に表示される短いブランディングのスプラッシュ（ブラウザセッションごとに1回）：**時間に応じた挨拶**（おはよう / こんにちは / こんばんは / 遅くまでお疲れ様です）、太字のタグライン、2つのサブテキスト、および暗く雰囲気のある背景（放射状の光＋漂う星座＋グレイン）の上に描かれたアニメーション付きのノードグラフブランドマーク。完全にローカライズ済み（en/zh/vi/ko/es）。オーバーレイは**最初の描画から不透明**であるため、アプリが一瞬透けて見えることはなく、約 2.5 秒保持された後にフェードアウトします。任意の場所をクリックしてスキップでき、`prefers-reduced-motion` に準拠しています。CSS のみのアニメーションで、依存関係は追加されていません。 |
 
-> **Provider scope and homes:** Settings keeps the Claude Code / Codex / Both choice globally consistent, and lets you change either session-data home without restarting the dashboard.
+> **プロバイダーのスコープとホーム：** 設定により Claude Code / Codex / Both の選択はグローバルで一貫性を保ち、ダッシュボードを再起動することなくセッションデータのホームを変更できます。
 >
-> **Local safety boundaries:** Run Agent accepts any existing absolute working directory and canonicalizes it before use, so home and recent-project launches remain supported. Hosted webhook providers require HTTPS; generic and n8n targets may use HTTP for local/self-hosted receivers, and delivery never follows redirects.
+> **ローカルの安全境界：** Run Agent は既存の絶対作業ディレクトリを受け入れ、使用前にそれを正規化するため、ホームと最近のプロジェクトの起動は引き続きサポートされます。ホストされた Webhook プロバイダーは HTTPS を要求します。汎用および n8n ターゲットは、ローカル/セルフホストされたレシーバーに HTTP を使用でき、配信はリダイレクトに従いません。
 
 ---
 
-## Quick Start
+## クイックスタート
 
-### Prerequisites
+### 前提条件
 
-- **Node.js** >= 22.22.0 (24 LTS recommended)
+- **Node.js** >= 22.22.0 (24 LTS 推奨)
 - **npm** >= 9.0.0
 
-### 1. Install
+### 1. インストール
+
+> [!TIP]
+> **Windows環境の方はこちら推奨**: 以下の手動セットアップの代わりに、クローン後に `pwsh scripts/start-ja.ps1` を実行するだけで「インストール・ビルド・サーバー起動・ブラウザオープン」までワンコマンドで完了します。開発中は `pwsh scripts/start-ja.ps1 -Dev` を使うとソース変更が即座に反映されます。詳細は [JA-SETUP.md](./JA-SETUP.md) を参照してください。手動セットアップは、Windows以外の環境か、内部の動きを確認したい場合向けです。
 
 ```bash
-git clone https://github.com/hoangsonww/Claude-Code-Agent-Monitor.git
+git clone https://github.com/ikup-mizuki/Claude-Code-Agent-Monitor.git
 cd Claude-Code-Agent-Monitor
 npm run setup
 ```
 
-### 2. Configure Claude Code Hooks
+### 2. Claude Code フックの設定
 
 ```bash
 npm run install-hooks
 ```
 
-The installer opens an interactive multi-select: use arrow keys, <kbd>Space</kbd>, and <kbd>Enter</kbd> to choose **Claude Code**, **Codex (beta)**, or both (Claude Code is preselected). Claude Code entries live in `~/.claude/settings.json`; Codex entries live in `~/.codex/hooks.json`. If a selected dashboard hook set already exists, it warns before replacing only this dashboard's entries — unrelated hooks are preserved. You can make the same selection later in **Settings → Hook Configuration → Install hooks**.
+インストーラーはインタラクティブな複数選択画面を開きます：矢印キー、<kbd>Space</kbd>、および <kbd>Enter</kbd> を使用して、**Claude Code**、**Codex (beta)**、またはその両方を選択します (Claude Code はデフォルトで選択されています)。Claude Code のエントリは `~/.claude/settings.json` に保存され、Codex のエントリは `~/.codex/hooks.json` に保存されます。選択したダッシュボードのフックセットがすでに存在する場合、このダッシュボードのエントリのみを置き換える前に警告が表示されます（関連のないフックは保持されます）。同じ選択は後から **設定 (Settings) → フックの設定 (Hook Configuration) → フックのインストール (Install hooks)** で行うこともできます。
 
-On first dashboard entry, choose the data source and the app checks hook readiness only for that selection. Claude Code requires Claude hooks, Codex requires Codex hooks, and Both requires both hook sets. When every required hook set is already installed, the dashboard opens immediately. Otherwise the setup gate lists and installs only the missing selected providers, while preserving unrelated hooks and letting a failed status check fall back safely to manual setup.
+最初のダッシュボード表示時にデータソースを選択すると、アプリはその選択に対してのみフックの準備状況を確認します。Claude Code には Claude フックが必要であり、Codex には Codex フックが必要です。両方を選択した場合は両方のフックセットが必要です。必要なすべてのフックセットがすでにインストールされている場合、ダッシュボードは即座に開きます。そうでない場合、セットアップゲートは不足している選択されたプロバイダーのみをリストしてインストールし、関連のないフックを保持しつつ、ステータスチェックが失敗した場合は手動セットアップに安全にフォールバックします。
 
-Codex rollouts in `~/.codex/sessions` are also discovered continuously. The dashboard reads their append-only JSONL incrementally, prioritizes the newest rollouts, and isolates a bad historical file for retry, so sessions, tokens, costs, conversation rows, and WebSocket updates stay current even if a hook notification is missed.
+`~/.codex/sessions` にある Codex ロールアウトも継続的に検出されます。ダッシュボードは追記型の JSONL をインクリメンタルに読み取り、最新のロールアウトを優先し、不正な履歴ファイルを再試行用に分離します。これにより、フックの通知が欠落した場合でも、セッション、トークン、コスト、会話の行、および WebSocket の更新が最新の状態に保たれます。
 
-Codex rollout lifecycle records drive the same live card states as Claude Code: `user_message` and `task_started` mark the main agent **Working**; `task_complete` leaves the session active but shows **Waiting**; and `turn_aborted` shows **Waiting** with an interrupted reason. A new rollout record self-heals an erroneously completed session. On supported local hosts, liveness is matched to the exact `rollout-*.jsonl` held open by each Codex process, so old rollouts that share a project directory are imported as completed instead of appearing as phantom active agents. The Node launcher and its native Codex child are collapsed into one logical process, so one TUI produces one card.
+Codex ロールアウトのライフサイクルレコードは、Claude Code と同じライブカードの状態を駆動します：`user_message` および `task_started` はメインエージェントを **作業中 (Working)** にマークし、`task_complete` はセッションをアクティブなまま **待機中 (Waiting)** と表示し、`turn_aborted` は中断理由とともに **待機中 (Waiting)** と表示します。新しいロールアウトレコードは、誤って完了状態になったセッションを自己修復します。サポートされているローカルホストでは、生存確認は各 Codex プロセスによって開かれたままになっている正確な `rollout-*.jsonl` と一致させられます。これにより、プロジェクトディレクトリを共有する古いロールアウトは、実体のないアクティブなエージェントとして表示されるのではなく、完了済みとしてインポートされます。Node ランチャーとそのネイティブな Codex 子プロセスは 1 つの論理プロセスにまとめられるため、1 つの TUI が 1 つのカードを生成します。
 
-Codex `/rename` titles are read from its native session index and update session and agent cards in real time. Its conversation replay includes human turns plus `exec` custom-tool calls and outputs, with cursor pagination that loads older messages at the top of the transcript.
+Codex `/rename` タイトルはネイティブなセッションインデックスから読み取られ、セッションとエージェントのカードをリアルタイムで更新します。その会話リプレイには、人間のターンと `exec` カスタムツールの呼び出しおよび出力が含まれ、トランスクリプトの先頭で古いメッセージを読み込むカーソルページネーションが備わっています。
 
-Claude Code and Codex cards show a compact, two-row history of their latest distinct human prompts beneath the provider-native title, so a short friendly name or terse follow-up never hides the active task. Claude refreshes this context from its local transcript cache during live hooks, imports, and watchdog sweeps; Codex refreshes it from rollout records and falls back to persisted `user_message` events for older imports. The transcript renders persisted PNG/JPEG/GIF/WebP attachments for Claude Code and Codex when available, while duplicate Codex response/event copies collapse into one human turn.
+Claude Code および Codex のカードには、プロバイダーネイティブなタイトルの下に、最新の明確な人間のプロンプトの履歴が 2 行のコンパクトな形式で表示されます。そのため、短い親しみやすい名前や簡潔なフォローアップによってアクティブなタスクが隠れることはありません。Claude は、ライブフック、インポート、およびウォッチドッグのスイープ中にローカルのトランスクリプトキャッシュからこのコンテキストを更新します。Codex はロールアウトレコードから更新し、古いインポートの場合は永続化された `user_message` イベントにフォールバックします。トランスクリプトは、Claude Code および Codex の永続化された PNG/JPEG/GIF/WebP 添付ファイルが存在する場合はそれをレンダリングしますが、重複する Codex 応答/イベントのコピーは人間の 1 ターンにまとめられます。
 
-Codex `response_item` tool invocations are indexed once through a dedicated rollout cursor, so its Workflows tool flow, session drill-in, model/token totals, and `context_compacted` counts reflect the recorded Codex data without replaying lifecycle or token counters. In a Codex-only dashboard scope, the Claude Code-only Dynamic Workflows journal panel is hidden rather than presented as empty Codex data.
+Codex `response_item` ツールの呼び出しは、専用のロールアウトカーソルを通じて一度だけインデックス化されます。そのため、そのワークフローツールフロー、セッションのドリルイン、モデル/トークンの合計、および `context_compacted` のカウントは、ライフサイクルやトークンカウンターを再実行することなく、記録された Codex データを反映します。Codex のみのダッシュボードスコープでは、Claude Code 専用の動的ワークフロージャーナルパネルは、空の Codex データとして表示されるのではなく、非表示になります。
 
-### 3. Start
+### 3. 開始
 
 ```bash
 # Development (hot reload on both server and client)
@@ -397,16 +412,16 @@ npm run build && npm start
 ```
 
 > [!TIP]
-> **Makefile alternative** — all commands are also available via `make` if you have it installed on your system. Run `make help` to see every target, or use shortcuts like `make dev`, `make build`, `make test`, etc.
+> **Makefile の代替手段** — システムに `make` がインストールされている場合は、すべてのコマンドを `make` 経由で利用することもできます。すべてのターゲットを確認するには `make help` を実行するか、`make dev`、`make build`、`make test` などのショートカットを使用してください。
 
-### 4. Open
+### 4. 開く
 
-| Mode        | URL                     |
+| モード (Mode) | URL |
 | ----------- | ----------------------- |
 | Development | `http://localhost:5173` |
 | Production  | `http://localhost:4820` |
 
-### 5. Optional: Run the local MCP server
+### 5. オプション: ローカル MCP サーバーの実行
 
 ```bash
 npm run mcp:start              # stdio (default — for MCP host integration)
@@ -415,30 +430,30 @@ npm run mcp:start:repl         # interactive CLI with tab completion
 ccam mcp stdio                 # stable launcher used by bundled plugins
 ```
 
-`npm run setup` installs and builds the MCP package before linking `ccam`. For stdio mode, configure your host with command `ccam` and args `["mcp", "stdio"]`.
+`npm run setup` は、`ccam` をリンクする前に MCP パッケージをインストールしてビルドします。stdio モードの場合は、ホストでコマンド `ccam` と引数 `["mcp", "stdio"]` を構成してください。
 
-For HTTP mode, point remote MCP clients at `http://127.0.0.1:8819/mcp` (Streamable HTTP) or `http://127.0.0.1:8819/sse` (legacy SSE).
+HTTP モードの場合、リモート MCP クライアントを `http://127.0.0.1:8819/mcp` (Streamable HTTP) または `http://127.0.0.1:8819/sse` (レガシー SSE) に向けてください。
 
-See [mcp/README.md](./mcp/README.md) for full host configuration, transport details, safety flags, and tool catalog.
+ホストの構成、トランスポートの詳細、安全フラグ、およびツールカタログの全容については、[mcp/README.md](./mcp/README.md) を参照してください。
 
-### Optional: Seed Demo Data
+### オプション: デモデータのシード
 
 ```bash
 npm run seed
 ```
 
-Creates 8 sample sessions, 23 agents, and 106 events so you can explore the UI immediately.
+すぐに UI を探索できるように、8 つのサンプルセッション、23 のエージェント、および 106 のイベントを作成します。
 
-### Alternative: Desktop App (macOS & Windows)
+### 代替手段: デスクトップアプリ (macOS & Windows)
 
-If you'd rather not keep a terminal open, install the optional **native desktop app**. It embeds the server in-process, adds a menu-bar / notification-area (tray) icon, and supports auto-start at login (macOS Login Items / Windows startup).
+ターミナルを開いたままにしたくない場合は、オプションの**ネイティブデスクトップアプリ**をインストールしてください。サーバーをプロセス内に埋め込み、メニューバー / 通知領域（トレイ）アイコンを追加し、ログイン時の自動起動（macOS のログイン項目 / Windows のスタートアップ）をサポートします。
 
-The fastest path is to **download a pre-built installer** from the [latest GitHub Release](https://github.com/hoangsonww/Claude-Code-Agent-Monitor/releases/latest) (CI auto-publishes a `vX.Y.Z` whenever `package.json` is bumped on `master`):
+最も早い方法は、[最新の GitHub リリース](https://github.com/hoangsonww/Claude-Code-Agent-Monitor/releases/latest) から**ビルド済みインストーラーをダウンロード**することです (CI は、`master` 上の `package.json` が更新されるたびに `vX.Y.Z` を自動公開します):
 
-- **macOS** — grab `ClaudeCodeMonitor-<version>-arm64.dmg` (Apple Silicon) or `-x64.dmg` (Intel) and drag **Claude Code Monitor.app** into `/Applications`.
-- **Windows** — grab `ClaudeCodeMonitor-Setup-<version>-x64.exe` (installer) or `ClaudeCodeMonitor-<version>-x64-portable.exe` (no-install) and run it.
+- **macOS** — `ClaudeCodeMonitor-<version>-arm64.dmg` (Apple Silicon) または `-x64.dmg` (Intel) を取得し、**Claude Code Monitor.app** を `/Applications` にドラッグします。
+- **Windows** — `ClaudeCodeMonitor-Setup-<version>-x64.exe` (インストーラー) または `ClaudeCodeMonitor-<version>-x64-portable.exe` (インストール不要) を取得して実行します。
 
-To build it yourself instead:
+自分でビルドする場合:
 
 ```bash
 npm run desktop:install        # install Electron + electron-builder into desktop/ (preflights native deps; prints setup help on failure)
@@ -446,11 +461,11 @@ npm run desktop:dmg:arm64      # macOS: fast single-arch DMG (Apple Silicon)
 npm run desktop:win            # Windows: NSIS installer .exe (run on Windows)
 ```
 
-Full coverage of the desktop app — download, install, tray/menu features, build commands, and signing — is in the [Desktop App (macOS & Windows)](#desktop-app-macos--windows) section below. See also [`DESKTOP.md`](./DESKTOP.md) (user guide) and [`desktop/README.md`](./desktop/README.md) (architecture).
+ダウンロード、インストール、トレイ/メニューの機能、ビルドコマンド、署名など、デスクトップアプリの全容については、以下の [デスクトップアプリ (macOS & Windows)](#デスクトップアプリ-macos--windows) セクションに記載されています。ユーザーガイドである [`DESKTOP.md`](./DESKTOP.md) とアーキテクチャの [`desktop/README.md`](./desktop/README.md) も参照してください。
 
-### Alternative: Docker / Podman
+### 代替手段: Docker / Podman
 
-The OCI image and Compose files support Docker and Podman. The runtime is non-root, drops all capabilities, uses Tini as PID 1, includes Git/OpenSSH/SQLite, and becomes read-only except for `/app/data`, `/app/config`, and `/tmp`.
+OCI イメージと Compose ファイルは、Docker と Podman をサポートします。ランタイムは root ではなく、すべてのケーパビリティを削除し、PID 1 として Tini を使用し、Git/OpenSSH/SQLite を含み、`/app/data`、`/app/config`、および `/tmp` を除いて読み取り専用になります。
 
 ```bash
 # Dashboard only
@@ -467,16 +482,15 @@ openssl rand -base64 32 > deployments/secrets/grafana-admin-password
 npm run docker:full:up
 ```
 
-All host ports bind to loopback by default: dashboard `4820`, MCP `8819`, Nginx `8080`, Prometheus `9090`, and Grafana `3000`. Claude and Codex homes are mounted read-only; named volumes persist SQLite and dashboard-owned configuration. Nginx proxies the UI, authenticated REST API, and WebSocket, while hooks, metrics, and MCP stay blocked at the edge unless explicitly enabled. The optional `agent-runtime` Docker target adds pinned Claude Code and Codex CLIs for container-native Run Agent workflows.
+デフォルトでは、すべてのホストポートはループバックにバインドされます：ダッシュボード `4820`、MCP `8819`、Nginx `8080`、Prometheus `9090`、および Grafana `3000`。Claude と Codex のホームは読み取り専用でマウントされます。名前付きボリュームは、SQLite とダッシュボード所有の構成を永続化します。Nginx は UI、認証された REST API、および WebSocket をプロキシしますが、フック、メトリクス、および MCP は明示的に有効にしない限りエッジでブロックされたままになります。オプションの `agent-runtime` Docker ターゲットは、コンテナネイティブなエージェント実行ワークフローのために固定された Claude Code および Codex CLI を追加します。
 
 > [!IMPORTANT]
-> Install Claude Code/Codex hooks on the host after the container starts. For remote cloud hooks, set `CCAM_DASHBOARD_URL=https://...` and a separate `CCAM_HOOK_TOKEN`; non-loopback hook URLs require HTTPS. See [DEPLOYMENT.md](DEPLOYMENT.md).
+> コンテナの起動後に、ホストに Claude Code/Codex フックをインストールしてください。リモートクラウドフックの場合、`CCAM_DASHBOARD_URL=https://...` と個別の `CCAM_HOOK_TOKEN` を設定します；非ループバックのフック URL には HTTPS が必要です。[DEPLOYMENT.md](DEPLOYMENT.md) を参照してください。
 
 ---
+## 動作の仕組み
 
-## How It Works
-
-The dashboard integrates with Claude Code via its native hook system to provide real-time monitoring of agent activity. Here's an overview of the architecture and data flow:
+ダッシュボードはネイティブフックシステムを介して Claude Code と統合され、エージェント活動のリアルタイム監視を提供します。アーキテクチャとデータフローの概要は以下の通りです：
 
 ```mermaid
 sequenceDiagram
@@ -500,42 +514,40 @@ sequenceDiagram
 ```
 
 > [!IMPORTANT]
-> See [ARCHITECTURE.md](./ARCHITECTURE.md) for a deep dive into the server architecture, database schema, API routes, WebSocket design, client routing, hook handler flow, deployment modes, and detailed lifecycle diagrams for sessions and agents.
+> サーバーアーキテクチャ、データベーススキーマ、API ルート、WebSocket デザイン、クライアントルーティング、フックハンドラのフロー、デプロイモード、およびセッションとエージェントの詳細なライフサイクル図については [ARCHITECTURE.md](./ARCHITECTURE.md) を参照してください。
 
-### Hook Lifecycle
+### フックライフサイクル
 
-1. **Claude Code** fires a hook on session start, tool use, turn end, subagent completion, and session exit
-2. **Hook Handler** (`scripts/hook-handler.js`) reads the JSON event from stdin, resolves live dashboards via `~/.claude/.agent-dashboard.json` (or `CLAUDE_DASHBOARD_PORT` if set), and POSTs the same payload to **one ingest target per unique SQLite data directory** (lowest port wins when Docker and `npm run dev` share `~/.claude/agent-dashboard`, so events are never double-ingested). Servers with **different** databases (e.g. the desktop app using its own Application Support dir alongside `npm run dev`) still each receive hooks. Fails silently with a 5 s safety-net timeout so it never blocks Claude Code, and per-target promises never reject so a single dead listener can't starve the others.
-3. **Server** processes the event inside a SQLite transaction:
-   - Auto-creates sessions and main agents on first contact
-   - Detects `Agent` tool calls to track subagent creation
-   - On `SessionStart`, stamps the session and main agent's `awaiting_input_since` so a fresh CLI sitting at the prompt lands in **Waiting** immediately
-   - On `UserPromptSubmit` (user hits enter), clears the waiting flag and promotes the main agent to `working` — the only reliable signal that text-only assistant turns have started, since they emit no `PreToolUse`
-   - Sets agent to "working" on `PreToolUse` (also clears the waiting flag), keeps it working through `PostToolUse`
-   - On `Stop` (Claude finishes responding), main agent goes to "waiting" — Claude finished its turn, ball is in the user's court. Background subagents continue running. Session stays `active`. Stop with `stop_reason=error` marks the agent `error` and the session `error`
-   - On a permission `Notification` (matched by message pattern: `permission`, `waiting for input`, `needs your approval`, …), sets the agent to `waiting` and stamps `awaiting_input_since`
-   - `SubagentStop` deliberately does NOT clear the waiting flag (a backgrounded subagent finishing tells us nothing about the human)
-   - Marks subagents completed individually via `SubagentStop`. After `res.json()` returns, fires a fire-and-forget `scanAndImportSubagents` pass that walks the session's `subagents/agent-*.jsonl` files, pairs `tool_use` ↔ `tool_result` blocks by `tool_use_id`, and emits `PreToolUse` + `PostToolUse` events under each subagent's own `agent_id` — closing the gap where subagent-internal tool calls would otherwise be invisible to the dashboard
-   - On `SessionEnd` (CLI process exits), drops the waiting flag. If the session is in `error`, the error state is preserved; otherwise marks all agents + the session as `completed`
-   - On `SessionStart`, any other active session with no activity for `DASHBOARD_STALE_MINUTES` (default 180 = 3 h, env-overridable) is automatically marked "abandoned" with its agents completed. This handles `/resume` inside a session, Ctrl+C, and other scenarios where a session is orphaned without a clean `SessionEnd`
-   - Reactivates completed/error/abandoned sessions when new work events arrive (session resumed). Stop and SubagentStop events also reactivate completed/abandoned sessions — this handles pre-existing sessions imported before the server started, where the first hook event may be a Stop
-   - **Error recovery**: only `UserPromptSubmit` and `PreToolUse` can recover a session from `error` back to `active` — indicating the user actively retried
-   - Detects conversation compaction (`isCompactSummary` entries in the JSONL transcript) and creates `Compaction` agents + events. Token baselines are preserved across compactions so no usage is lost. Transcript reads use a shared stat-based cache with incremental byte-offset reads — only new bytes appended since the last read are parsed, giving ~50x speedup for long sessions
-   - Extracts API errors (`isApiErrorMessage` entries: quota limits, rate limits, invalid_request) and raw `type: "error"` responses from JSONL transcripts, stored as `APIError` events. Turn durations (`system` subtype `turn_duration`) are stored as `TurnDuration` events. Tool result errors (`toolUseResult.is_error`) are tracked as `ToolError` events
-   - **Error detection watchdog** — a background timer runs every 15 seconds, scanning active sessions with no recent hook events (>10 s stale). It re-reads their transcript files looking for API errors (auth failures, rate limits, quota exhaustion), derives transcript paths from session `cwd` for imported sessions without `transcript_path` in event data, and marks sessions/agents as `error` when API errors are found. This catches cases where the Claude CLI does not fire a hook after an API error (e.g., 401 auth failures where the CLI shows the error and waits)
-   - **User-interrupt (Esc) recovery** — cancelling a turn with `Esc` fires **no hook** (a documented Claude Code limitation), so without intervention the main agent would stay stuck in `working` forever. The same 15 s watchdog recovers these two ways: (1) when the cancel leaves a `[Request interrupted by user]` marker in the transcript (Esc *after* some output), the transcript cache flags it via `pendingInterrupt` — derived purely from transcript ordering (latest interrupt vs latest real turn activity, same clock, so it works even for a sub-second cancel) — and the session moves to **Waiting** within ~15 s; (2) when Esc is pressed *before any output*, Claude Code writes no marker at all, so an idle-timeout fallback applies — if the main agent has been `working` with **no tool in flight** and **neither a hook event nor the transcript has advanced** for `DASHBOARD_WORKING_IDLE_SECONDS` (default `120`), the turn is treated as dead and the session moves to **Waiting**. Both paths log an `Interrupted` event and land the session in the same Waiting state a normal `Stop` produces. Streaming output (transcript still growing) and in-flight tool calls (`current_tool` set) are exempt; a rare false flip self-heals on the next real hook
-   - **Dead-session liveness reap** — quitting Claude Code (Ctrl+C, closing the terminal) fires a `SessionEnd` hook, but if the dashboard isn't running at that moment the event is lost forever and the session would sit in **Waiting** until the stale sweep (3 h by default). The same 15 s watchdog closes the gap with a **process-liveness probe**: it lists running `claude` CLI processes (`ps` + `lsof` on macOS, `/proc` on Linux) and completes any `active` session whose `cwd` has no live claude process — landing it in the same `completed` state a real `SessionEnd` produces, with a synthetic `SessionEnd` event on the timeline. Guards: on watchdog ticks the session's transcript must not have been written for at least `DASHBOARD_LIVENESS_IDLE_SECONDS` (default `60`; the last hook write is the fallback clock when no transcript exists on disk) — the **boot passes skip this gate entirely**, so a session quit even one second before launch clears immediately — and the probe reports "no answer" (changing nothing) on Windows, inside containers (host processes are invisible there), when `ps`/`lsof` fail, or when explicitly disabled via `DASHBOARD_LIVENESS_PROBE=0`. In a **mixed** deployment the reap also auto-skips any session whose `cwd` is not POSIX-absolute — a session forwarded from another machine via household hooks reports the origin's own path (e.g. a Windows `D:\Git\ai-deck`) that a local `ps`/`lsof`/`/proc` scan can never match, so remote sessions are protected without disabling the probe for genuinely-local ones. **Remote Data Source sessions** (`sessions.source` ≠ `local`) are always skipped too — their `cwd` is legitimately POSIX-absolute on another machine, so the local process probe says nothing about them; their lifecycle is owned entirely by the remote-sync reconciliation described above. A false completion self-heals: the next hook event reactivates the session. Besides the 15 s watchdog cadence, the reap runs **immediately at startup** (clearing dead sessions already in the DB from a previous run before they ever render) and **again ~5 s later** (covering sessions the startup sync just imported), so a session that died while the dashboard was down never shows as Waiting
-   - A periodic server sweep catches abandoned sessions and new compactions that slipped past event-based detection (e.g., `/compact` fires no hook, `/resume` within seconds of session creation). Cadence is derived from `DASHBOARD_STALE_MINUTES` (¼ of the threshold, clamped to 60 s – 5 min). The sweep reads `transcript_path` directly off each active session row (a small index lookup) instead of scanning the events table for it; the column is populated by the hook handler the first time it sees a transcript path and is one-time-backfilled from existing events by the `db.js` migration, with a partial index `idx_sessions_active_tp` covering exactly the rows the sweep reads. The sweep shares the transcript cache with the hook handler, avoiding duplicate I/O. Abandoned session cleanup also evicts the transcript cache entry to bound memory. **Remote Data Source** sessions (`source` ≠ `local`) remain mirror-owned only while their matching Claude Code or Codex provider is healthy; if that provider is unavailable, errors, or is stranded in `syncing`, the periodic and startup cleanup use the normal stale rule so an old Waiting card cannot persist forever
-   - **Continuous project sync** (`startSessionSync`) keeps `~/.claude/projects` discoverable beyond the one-time, marker-gated startup backfill: a project added later whose sessions never flow through hooks would otherwise stay invisible until a manual rescan. An immediate startup sweep, a debounced `fs.watch` (recursive on macOS/Windows; root + immediate children on Linux), and a `DASHBOARD_SESSION_SYNC_MS` poll (default 30 s; `0` disables the poll, watcher stays) share one mtime cache and a coalesced sweep that re-parses only files whose mtime advanced — and skips an already-imported, unchanged session without re-parsing, so restart cost stays O(new/changed files). Each newly discovered/grown session broadcasts `session_created`/`session_updated` plus its main agent, the same frames hooks emit
-4. **WebSocket** broadcasts the change to all connected clients
-5. **UI** receives the update and re-renders the affected components in real-time with no polling.
+1. **Claude Code** は、セッション開始、ツール使用、ターン終了、サブエージェント完了、およびセッション終了時にフックを発火します。
+2. **Hook Handler** (`scripts/hook-handler.js`) は、標準入力から JSON イベントを読み取り、`~/.claude/.agent-dashboard.json`（または設定されている場合は `CLAUDE_DASHBOARD_PORT`）を介してアクティブなダッシュボードを解決し、同じペイロードを**一意の SQLite データディレクトリごとに 1 つのインジェストターゲット**に POST します（Docker と `npm run dev` が `~/.claude/agent-dashboard` を共有している場合は、最も低いポートが優先されるため、イベントが重複して取り込まれることはありません）。**異なる**データベースを持つサーバー（たとえば、`npm run dev` と並行して独自の Application Support ディレクトリを使用するデスクトップアプリなど）は、それぞれフックを受け取ります。Claude Code をブロックしないように、5秒のセーフティネットタイムアウトで静かに失敗し、ターゲットごとの Promise は拒否されないため、1つのデッドリスナーが他を停止させることはありません。
+3. **サーバー (Server)** は、SQLite トランザクション内でイベントを処理します：
+   - 初回接触時にセッションとメインエージェントを自動作成します。
+   - `Agent` ツールの呼び出しを検出して、サブエージェントの作成を追跡します。
+   - `SessionStart` 時にセッションとメインエージェントの `awaiting_input_since` をスタンプするため、プロンプトにいる新しい CLI は即座に **待機中 (Waiting)** 状態になります。
+   - `UserPromptSubmit`（ユーザーが Enter を押したとき）で待機フラグをクリアし、メインエージェントを `working` に昇格させます — テキストのみのアシスタントターンは `PreToolUse` を発行しないため、これがターン開始の唯一の信頼できるシグナルとなります。
+   - `PreToolUse` でエージェントを "working" に設定し（同時に待機フラグをクリア）、`PostToolUse` の間も動作状態を維持します。
+   - `Stop`（Claude が応答を完了したとき）でメインエージェントは "waiting" になります — Claude がターンを終了し、ボールはユーザーに渡されました。バックグラウンドのサブエージェントは実行を続けます。セッションは `active` のままです。`stop_reason=error` を伴う Stop は、エージェントを `error`、セッションを `error` とマークします。
+   - 権限の `Notification`（`permission`、`waiting for input`、`needs your approval` などのメッセージパターンに一致）では、エージェントを `waiting` に設定し、`awaiting_input_since` をスタンプします。
+   - `SubagentStop` は、意図的に待機フラグをクリア**しません**（バックグラウンドのサブエージェントが完了しても、人間についての状態は何もわからないためです）。
+   - `SubagentStop` によって個々のサブエージェントを完了としてマークします。`res.json()` が返された後、セッションの `subagents/agent-*.jsonl` ファイルを走査し、`tool_use_id` によって `tool_use` と `tool_result` ブロックをペアにし、各サブエージェント自身の `agent_id` の下で `PreToolUse` + `PostToolUse` イベントを発行する fire-and-forget 形式の `scanAndImportSubagents` パスを実行します — これにより、サブエージェント内部のツール呼び出しがダッシュボードから見えなくなるギャップを解消します。
+   - `SessionEnd`（CLI プロセスの終了）で待機フラグを削除します。セッションが `error` の場合、エラー状態は保持されます。それ以外の場合は、すべてのエージェントとセッションを `completed` とマークします。
+   - `SessionStart` 時に、`DASHBOARD_STALE_MINUTES`（デフォルト 180 = 3時間、環境変数でオーバーライド可能）の間アクティビティがない他のすべてのアクティブなセッションは自動的に "abandoned"（中断）とマークされ、そのエージェントも完了されます。これにより、セッション内での `/resume` や Ctrl+C、その他クリーンな `SessionEnd` なしに孤立したセッションが処理されます。
+   - 新しい作業イベントが到着したときに（セッションが再開されたとき）、完了/エラー/中断されたセッションを再びアクティブにします。Stop および SubagentStop イベントも、完了/中断されたセッションを再度アクティブにします — これにより、サーバー起動前にインポートされた既存のセッション（最初のフックイベントが Stop である場合など）を適切に処理します。
+   - **エラーリカバリ**: `UserPromptSubmit` と `PreToolUse` のみが、セッションを `error` から `active` に回復させることができます — これはユーザーがアクティブに再試行したことを示しています。
+   - 会話のコンパクション（JSONL トランスクリプトの `isCompactSummary` エントリ）を検出し、`Compaction` エージェントとイベントを作成します。トークンの基準値はコンパクションをまたいで保持されるため、使用量が失われることはありません。トランスクリプトの読み取りは、増分バイトオフセット読み取りを備えた共有の統計ベースのキャッシュを使用します — 前回の読み取り以降に追加された新しいバイトのみがパースされるため、長いセッションでは約 50 倍の高速化が図られます。
+   - JSONL トランスクリプトから API エラー（クォータ制限、レート制限、無効なリクエストなどの `isApiErrorMessage` エントリ）および生の `type: "error"` 応答を抽出し、`APIError` イベントとして保存します。ターン継続時間（`system` サブタイプの `turn_duration`）は `TurnDuration` イベントとして保存されます。ツールの結果エラー（`toolUseResult.is_error`）は `ToolError` イベントとして追跡されます。
+   - **エラー検出ウォッチドッグ** — バックグラウンドタイマーが 15 秒ごとに実行され、最近のフックイベントがない（10秒以上経過した）アクティブなセッションをスキャンします。API エラー（認証の失敗、レート制限、クォータの枯渇）を探すためにトランスクリプトファイルを再読み込みし、イベントデータに `transcript_path` がないインポートされたセッションの場合はセッションの `cwd` からトランスクリプトパスを導出し、API エラーが見つかった場合はセッション/エージェントを `error` とマークします。これにより、API エラーが発生した後に Claude CLI がフックを発火しないケース（例えば、CLI がエラーを表示して待機する 401 認証の失敗など）をキャッチします。
+   - **ユーザー割り込み (Esc) リカバリ** — `Esc` でターンをキャンセルしても**フックは発火しません**（Claude Code の仕様上の制限）。そのため、介入がないとメインエージェントは永遠に `working` でスタックしたままになります。同じ 15 秒のウォッチドッグが次の 2 つの方法でこれを回復します：(1) キャンセルによってトランスクリプトに `[Request interrupted by user]` マーカーが残された場合（出力が*あった後*の Esc）、トランスクリプトキャッシュは `pendingInterrupt` を介してそれをフラグ付けします — これはトランスクリプトの順序付け（最新の割り込み vs 最新の実際のターンアクティビティ、同じ時計）から純粋に導き出されるため、サブ秒のキャンセルでも機能します — そしてセッションは約 15 秒以内に **待機中 (Waiting)** に移行します。(2) *出力がされる前に* Esc が押された場合、Claude Code はマーカーを一切書き込まないため、アイドルタイムアウトのフォールバックが適用されます — メインエージェントが **実行中のツールを持たず**、かつ **フックイベントもトランスクリプトも** `DASHBOARD_WORKING_IDLE_SECONDS` (デフォルト `120`) **進行していない** 場合、ターンは死んだものとして扱われ、セッションは **待機中 (Waiting)** に移動します。どちらのパスも `Interrupted` イベントをログに記録し、通常の `Stop` が生成するのと同じ Waiting 状態にセッションを着地させます。ストリーミング出力（トランスクリプトがまだ成長中）や実行中のツール呼び出し（`current_tool` が設定されている）は除外されます。まれに誤って切り替わった場合も、次の実際のフックで自己修復します。
+   - **死んだセッションの生存確認刈り取り** — Claude Code を終了する（Ctrl+C、ターミナルを閉じる）と `SessionEnd` フックが発火しますが、その瞬間にダッシュボードが実行されていないと、イベントは永遠に失われ、セッションは古いスイープ（デフォルトで3時間）まで **待機中 (Waiting)** に留まります。同じ 15 秒のウォッチドッグが **プロセス生存確認プローブ** でこのギャップを埋めます：実行中の `claude` CLI プロセスをリストアップし（macOS では `ps` + `lsof`、Linux では `/proc`）、`cwd` に生きている claude プロセスがない `active` なセッションを完了させます — 実際の `SessionEnd` が生成するのと同じ `completed` 状態に着地させ、タイムライン上に合成の `SessionEnd` イベントを記録します。ガード条件：ウォッチドッグのティック時に、セッションのトランスクリプトが少なくとも `DASHBOARD_LIVENESS_IDLE_SECONDS` (デフォルト `60`) 書き込まれていない必要があります（ディスク上にトランスクリプトが存在しない場合、最後のフック書き込みがフォールバック時計になります） — **起動時のパスはこのゲートを完全にスキップする**ため、起動の 1 秒前に終了したセッションでも直ちにクリアされます — そして、Windows、コンテナ内（ホストプロセスが見えない場合）、`ps`/`lsof` が失敗した場合、または `DASHBOARD_LIVENESS_PROBE=0` で明示的に無効にされている場合、プローブは「応答なし」を報告し（何も変更しません）。**混在** デプロイメントでは、`cwd` が POSIX の絶対パスでないセッションも自動的にスキップされます — 家庭内フック経由で他のマシンから転送されたセッションは、ローカルの `ps`/`lsof`/`/proc` スキャンが決して一致しないオリジン自身のパス（例：Windows の `D:\Git\ai-deck`）を報告するため、純粋なローカルセッションのためにプローブを無効にすることなく、リモートセッションは保護されます。**リモートデータソース (Remote Data Source)** セッション（`source` ≠ `local`）も常にスキップされます — それらの `cwd` は他のマシン上の正規の POSIX 絶対パスであるため、ローカルのプロセスプローブはそれらについて何も示しません。それらのライフサイクルは、上記のリモート同期の照合によって完全に所有されます。誤った完了は自己修復します：次のフックイベントがセッションを再びアクティブにします。15 秒のウォッチドッグのリズムに加えて、刈り取りは **起動時に即座に実行され**（前回の実行から DB に既にある死んだセッションを、レンダリングされる前にクリアします）、**約 5 秒後に再び実行されます**（起動同期がインポートしたばかりのセッションをカバーします）。これにより、ダッシュボードがダウンしている間に死んだセッションが Waiting として表示されることは決してありません。
+   - 定期的なサーバースイープは、イベントベースの検出（例えば、フックを発火しない `/compact`、セッション作成の数秒以内の `/resume`）をすり抜けた中断されたセッションと新しいコンパクションをキャッチします。リズムは `DASHBOARD_STALE_MINUTES`（閾値の ¼、60 秒〜5 分にクランプ）から導出されます。スイープは、イベントテーブルをスキャンするのではなく、アクティブなセッション行から直接 `transcript_path` を読み取ります（小さなインデックスルックアップ）。この列は、フックハンドラが初めてトランスクリプトパスを見たときに設定され、`db.js` のマイグレーションによって既存のイベントから一回限りバックフィルされます。スイープが読み取る正確な行をカバーする部分インデックス `idx_sessions_active_tp` を備えています。スイープはフックハンドラとトランスクリプトキャッシュを共有し、重複した I/O を回避します。中断されたセッションのクリーンアップは、メモリを制限するためにトランスクリプトキャッシュエントリも追放します。**リモートデータソース (Remote Data Source)** セッション（`source` ≠ `local`）は、一致する Claude Code または Codex プロバイダーが正常である間のみミラー所有のままになります。そのプロバイダーが利用できない場合、エラーが発生した場合、または `syncing` 状態に取り残された場合、定期的および起動時のクリーンアップは通常の古い（stale）ルールを使用するため、古い Waiting カードが永遠に存続することはありません。
+   - **継続的なプロジェクト同期** (`startSessionSync`) は、1 回限りのマーカー付き起動バックフィルを超えて `~/.claude/projects` を発見可能に保ちます：後から追加されたプロジェクトで、セッションが一度もフックを通過しないものは、手動での再スキャンが行われるまで非表示のままになります。即時の起動スイープ、デバウンスされた `fs.watch`（macOS/Windows では再帰的、Linux ではルートと直下の子）、および `DASHBOARD_SESSION_SYNC_MS` のポーリング（デフォルト 30秒；`0` でポーリング無効、ウォッチャーは継続）は 1 つの mtime キャッシュと、mtime が進んだファイルのみを再パースする統合スイープを共有します — そして、変更のないすでにインポートされたセッションは再パースせずにスキップされるため、再開コストは O(新規/変更ファイル) に保たれます。新しく発見された/成長した各セッションは、フックが発行するのと同じフレームである `session_created`/`session_updated` とそのメインエージェントをブロードキャストします。
+4. **WebSocket** は変更をすべての接続されたクライアントにブロードキャストします。
+5. **UI** は更新を受け取り、影響を受けるコンポーネントをポーリングなしでリアルタイムに再レンダリングします。
 
-### Agent State Machine
+### エージェント状態遷移
 
-Persisted statuses: `working | waiting | completed | error`. The
-`awaiting_input_since` column is supplementary — it tracks when the agent
-started waiting and is used for duration display, but `waiting` is now a
-real persisted status.
+永続化されるステータス: `working | waiting | completed | error`。
+`awaiting_input_since` 列は補助的なものです — エージェントが待機を開始した日時を記録し、継続時間の表示に使用されますが、現在 `waiting` は実際の永続化ステータスになっています。
 
 ```mermaid
 stateDiagram-v2
@@ -560,11 +572,10 @@ stateDiagram-v2
     end note
 ```
 
-### Session State Machine
+### セッション状態遷移
 
-Persisted statuses: `active | completed | error | abandoned`. The
-**Waiting** session state is a UI overlay (status=`active` with
-`awaiting_input_since` set).
+永続化されるステータス: `active | completed | error | abandoned`。
+**待機中 (Waiting)** セッション状態は、UI のオーバーレイです（`status=active` に加えて `awaiting_input_since` が設定されている状態）。
 
 ```mermaid
 stateDiagram-v2
@@ -592,196 +603,182 @@ stateDiagram-v2
     abandoned --> [*]
 ```
 
-### Cost Calculation Flow
+### コスト計算フロー
 
 ```mermaid
 flowchart LR
     TU["token_usage rows<br/>(per session × model)"] --> GROUP["Group by model"]
     PR["model_pricing rules<br/>(pattern-based)"] --> SORT["Sort by specificity<br/>(longest pattern first)"]
-    GROUP --> MATCH{"Match model<br/>to pricing rule"}
-    SORT --> MATCH
-    MATCH --> CALC["cost = Σ (tokens / 1M) × rate<br/>for input, output, cache_read, cache_write"]
-    CALC --> RESULT["{ total_cost, breakdown[] }"]
-    style TU fill:#003B57,stroke:#005f8a,color:#fff
-    style PR fill:#6366f1,stroke:#818cf8,color:#fff
-    style RESULT fill:#10b981,stroke:#34d399,color:#fff
 ```
+## 構成 (Configuration)
 
-> [!IMPORTANT]
-> The cost calculation flow is based on token usage and model pricing rules. Ensure your pricing rules are up-to-date to reflect accurate costs. Update the model pricing table via the Settings page to maintain accurate cost tracking - the dashboard does not automatically fetch pricing updates from external sources. Once you set the pricing rules, the dashboard applies them retroactively to all sessions for consistent cost reporting.
-
----
-
-## Configuration
-
-| Environment Variable    | Default       | Description                                   |
+| 環境変数 (Environment Variable) | デフォルト (Default) | 説明 (Description) |
 | ----------------------- | ------------- | --------------------------------------------- |
-| `DASHBOARD_PORT`        | `4820`        | Port for the Express server                   |
-| `CLAUDE_DASHBOARD_PORT` | `4820`        | Port used by hook handler to reach the server |
-| `NODE_ENV`              | `development` | Set to `production` to serve the built client |
-| `DASHBOARD_UPDATE_CHECK` | _(enabled)_ | Set to `0` / `false` / `off` to disable periodic git upstream checks |
-| `DASHBOARD_UPDATE_CHECK_INTERVAL_MS` | `300000` (5 min) | Interval between automatic checks; floor 60 000 ms. Users can also click **Check now** in the update modal or in the sidebar to run one on demand. |
-| `DASHBOARD_STALE_MINUTES` | `180` (3 h) | Minutes of inactivity before a still-`active` session (including one sitting in **Waiting** on user input — "Waiting" is a UI overlay on an `active` row, not a stored status) is auto-marked **abandoned** and drops off the active list. Enforced by the 15 s watchdog and the periodic maintenance sweep (which runs every ¼ of this value, clamped to 60 s – 5 min). Lower it (e.g. `60`) for a shorter idle timeout |
-| `DASHBOARD_WORKING_IDLE_SECONDS` | `120` | Idle-working timeout for recovering a turn cancelled with `Esc` **before any output** (which leaves no transcript marker). When the main agent has been `working` with no tool in flight and neither a hook event nor the transcript has advanced for this long, the watchdog moves the session to **Waiting**. Lower it for snappier recovery at the cost of occasional false flips on long silent-thinking turns (which self-heal) |
-| `DASHBOARD_LIVENESS_PROBE` | `1` (on) | Set to `0` to disable the watchdog's **dead-session liveness reap** (the `ps`/`lsof`-based probe that completes `active` local Claude Code or Codex sessions whose matching CLI process no longer exists — recovering a `SessionEnd` lost while the dashboard was down). Sessions forwarded from **another machine** (household hooks) report a non-POSIX `cwd` and are auto-skipped by the reap, so a mixed local + forwarded deployment no longer needs this off; disable it only for a purely-remote setup where local processes prove nothing. Auto-disabled on Windows and inside containers |
-| `DASHBOARD_LIVENESS_IDLE_SECONDS` | `60` | Idle gate for the **watchdog-tick** liveness reap: a session is only completed when its transcript hasn't been written for at least this long (the last hook write is the fallback clock when no transcript exists on disk), so a mid-turn or just-resumed session never flickers out on a transient probe miss. The startup passes ignore this gate — at boot the probe alone decides, so sessions quit moments before launch clear immediately |
-| `DASHBOARD_SESSION_SYNC_MS` | `30000` | Poll interval (ms) for the continuous `~/.claude/projects` background sync that surfaces projects added after startup whose sessions never flow through hooks. The `fs.watch` watcher fires near-instantly regardless; this poll is the safety net (watchers can miss events / not fire on network filesystems). Set to `0` to disable the poll while leaving the watcher running |
-| `DASHBOARD_CODEX_HOME` | `CODEX_HOME` or `~/.codex` | Optional local Codex state directory. Rollouts are read only from its `sessions/` tree; saving a new location in Settings persists this dashboard-only override, re-arms live watching, and immediately scans the new tree. |
-| `DASHBOARD_CODEX_SYNC_MS` | `4000` | Safety-net poll interval (ms) for append-only Codex rollouts. Codex hooks trigger the same incremental ingest immediately; set to `0` to disable only the poll while retaining the filesystem watcher when available. |
-| `DASHBOARD_REMOTE_SYNC_MS` | `15000` (15 s) | Poll interval (ms) for the **Remote Data Sources** background sync that independently pulls each enabled remote's `~/.claude/projects` and `~/.codex/sessions` (plus Codex's lightweight `session_index.jsonl` title index) over SSH, then re-imports each through its local importer. New/enabled sources also sync immediately. Set to `0` to disable the poller (manual / on-demand syncs still work) |
-| `DASHBOARD_REMOTE_ACTIVE_WINDOW_MS` | `600000` (10 min) | Freshness window for a **Remote Data Source** session's live status. On each sync, a remote Claude Code or Codex session whose matching mirrored transcript has a **last JSONL event** within this window is treated as still running (`active`); once the mirror stops advancing for longer than this, the session is reconciled to `completed`. Remote sessions receive no live hooks, so provider-aware mirror reconciliation replaces local liveness; failed, unavailable, or stuck provider mirrors fall back to the normal stale sweep. Raise it for slow links or very long idle turns |
-| `DASHBOARD_REMOTE_SYNC_TIMEOUT_MS` | `600000` (10 min) | Per-source timeout (ms) for a single remote sync (`scp` pull + import) before it is aborted |
-| `DASHBOARD_REMOTE_TEST_TIMEOUT_MS` | `15000` (15 s) | Timeout (ms) for the **Test** SSH probe (`POST /api/remote-sources/:id/test`) that verifies a remote source is reachable |
-| `DASHBOARD_HOST`        | `127.0.0.1`   | Interface the server binds to. Loopback by default (not network-reachable). Set to `0.0.0.0` to expose on a LAN (logs a startup warning) |
-| `DASHBOARD_TOKEN`       | _(unset)_     | When set, every `/api/*` request and the WebSocket must present the token (`Authorization: Bearer <token>`, `x-dashboard-token` header, or `?token=`). Off by default — loopback bind is the trust boundary |
-| `DASHBOARD_TOKEN_FILE` | _(unset)_ | File-backed dashboard token for Docker/Kubernetes secrets; direct `DASHBOARD_TOKEN` wins |
-| `DASHBOARD_HOOK_TOKEN` / `DASHBOARD_HOOK_TOKEN_FILE` | _(unset)_ | Independent token for `/api/hooks/*`; required for authenticated remote hook ingestion |
-| `DASHBOARD_ALLOWED_HOSTS` | _(loopback)_ | Comma-separated extra `Host` values allowed on HTTP + WebSocket upgrades (DNS-rebinding guard). Add your LAN hostnames here when binding beyond loopback |
-| `DASHBOARD_ENV_PATH` | repo `.env` | Writable dotenv path used when Settings persists Claude/Codex home overrides; container default `/app/config/.env` |
-| `CCAM_DASHBOARD_URL` | _(localhost discovery)_ | Optional remote hook destination. Non-loopback URLs must use HTTPS and a hook token |
-| `CCAM_HOOK_TOKEN` / `CCAM_HOOK_TOKEN_FILE` | _(unset)_ | Hook-client credential sent as `x-ccam-hook-token` |
+| `DASHBOARD_PORT`        | `4820`        | Express サーバーのポート |
+| `CLAUDE_DASHBOARD_PORT` | `4820`        | フックハンドラがサーバーに到達するために使用するポート |
+| `NODE_ENV`              | `development` | ビルドされたクライアントを提供するには `production` に設定します |
+| `DASHBOARD_UPDATE_CHECK` | _(有効)_ | 定期的な git upstream チェックを無効にするには `0` / `false` / `off` に設定します |
+| `DASHBOARD_UPDATE_CHECK_INTERVAL_MS` | `300000` (5 分) | 自動チェックの間隔；最小値 60,000 ミリ秒。ユーザーは更新モーダルやサイドバーの **Check now** (今すぐチェック) をクリックしてオンデマンドで実行することもできます |
+| `DASHBOARD_STALE_MINUTES` | `180` (3 時間) | まだ `active` なセッション（ユーザー入力を待機中の **Waiting** も含む — "Waiting" は `active` な行に対する UI オーバーレイであり、保存された状態ではありません）が自動的に **abandoned (中断)** とマークされ、アクティブリストから除外されるまでの非アクティブな時間(分)。15 秒のウォッチドッグと定期的なメンテナンススイープ（この値の ¼ ごと、60秒〜5分の間にクランプされて実行される）によって強制されます。アイドルタイムアウトを短くしたい場合は値を下げてください（例: `60`） |
+| `DASHBOARD_WORKING_IDLE_SECONDS` | `120` | トランスクリプトマーカーを残さない **出力前の** `Esc` でキャンセルされたターンを回復するための、動作中のアイドルタイムアウト。メインエージェントが `working` であり、実行中のツールがなく、フックイベントもトランスクリプトもこの期間進行していない場合、ウォッチドッグはセッションを **待機中 (Waiting)** に移行させます。静かに考える長いターンの際に時折誤って切り替わる（自己修復します）犠牲を払ってでも、素早い回復を望む場合はこの値を下げてください |
+| `DASHBOARD_LIVENESS_PROBE` | `1` (オン) | ウォッチドッグの **死んだセッションの生存確認刈り取り**（CLI プロセスがすでに存在しない `active` なローカル Claude Code または Codex セッションを完了させる、`ps`/`lsof` ベースのプローブ — ダッシュボードがダウンしている間に失われた `SessionEnd` を回復します）を無効にするには `0` に設定します。**別のマシン**（家庭内フック）から転送されたセッションは、POSIX 以外の `cwd` を報告するため刈り取りによって自動的にスキップされます。そのため、ローカルと転送が混在するデプロイメントでこれをオフにする必要はもうありません；ローカルプロセスが何も証明しない完全なリモートセットアップの場合にのみ無効にしてください。Windows およびコンテナ内では自動的に無効になります |
+| `DASHBOARD_LIVENESS_IDLE_SECONDS` | `60` | **ウォッチドッグティック** 生存確認刈り取りのためのアイドルゲート：セッションは、そのトランスクリプトが少なくともこの期間書き込まれていない場合にのみ完了とみなされます（ディスク上にトランスクリプトが存在しない場合、最後のフック書き込みがフォールバック時計となります）。これにより、ターン中や再開直後のセッションが一時的なプローブのミスによって誤って終了されることはありません。起動時のパスはこのゲートを無視します — 起動時はプローブ単独で決定するため、起動の数分前に終了したセッションは即座にクリアされます |
+| `DASHBOARD_SESSION_SYNC_MS` | `30000` | 起動後に追加され、セッションがフックを通過しないプロジェクトを表面化させる、継続的な `~/.claude/projects` バックグラウンド同期のポーリング間隔 (ミリ秒)。`fs.watch` ウォッチャーはこれに関係なくほぼ即座に発火します；このポーリングはセーフティネットです（ウォッチャーはイベントを取りこぼしたり、ネットワークファイルシステムで発火しない場合があります）。ウォッチャーは実行したままポーリングを無効にするには `0` に設定します |
+| `DASHBOARD_CODEX_HOME` | `CODEX_HOME` または `~/.codex` | オプションのローカル Codex 状態ディレクトリ。ロールアウトはその `sessions/` ツリーからのみ読み取られます。設定 (Settings) で新しい場所を保存すると、このダッシュボード専用のオーバーライドが永続化され、ライブ監視が再準備され、新しいツリーが即座にスキャンされます。 |
+| `DASHBOARD_CODEX_SYNC_MS` | `4000` | 追記型の Codex ロールアウト用のセーフティネットポーリング間隔 (ミリ秒)。Codex フックはこれに関係なく同じインクリメンタルなインジェストを即座にトリガーします；ポーリングのみを無効にしつつ、可能であればファイルシステムウォッチャーを保持するには `0` に設定します。 |
+| `DASHBOARD_REMOTE_SYNC_MS` | `15000` (15 秒) | **リモートデータソース (Remote Data Sources)** のバックグラウンド同期のポーリング間隔 (ミリ秒)。有効な各リモートの `~/.claude/projects` と `~/.codex/sessions`（および Codex の軽量な `session_index.jsonl` タイトルインデックス）を独立して SSH 経由で取得し、それぞれのローカルインポーターを通じて再インポートします。新規または有効化されたソースも即座に同期されます。ポーラーを無効にするには `0` に設定します（手動/オンデマンドの同期は機能し続けます） |
+| `DASHBOARD_REMOTE_ACTIVE_WINDOW_MS` | `600000` (10 分) | **リモートデータソース** セッションのライブステータスの鮮度ウィンドウ。各同期で、対応するミラーリングされたトランスクリプトの **最新の JSONL イベント** がこのウィンドウ内にあるリモートの Claude Code または Codex セッションは、まだ実行中 (`active`) として扱われます；ミラーがこれよりも長く進まなくなると、セッションは `completed` に照合されます。リモートセッションはライブフックを受信しないため、プロバイダーを認識するミラー照合がローカルの生存確認に代わって機能します；失敗した、利用できない、または `syncing` にスタックしたプロバイダーのミラーは、通常の古い（stale）スイープにフォールバックします。リンクが遅い場合や、アイドル状態の長いターンの場合は、この値を上げてください |
+| `DASHBOARD_REMOTE_SYNC_TIMEOUT_MS` | `600000` (10 分) | 中断されるまでの、単一のリモート同期（`scp` の取得 + インポート）のソースごとのタイムアウト (ミリ秒) |
+| `DASHBOARD_REMOTE_TEST_TIMEOUT_MS` | `15000` (15 秒) | リモートソースが到達可能であることを検証する **テスト (Test)** SSH プローブ (`POST /api/remote-sources/:id/test`) のタイムアウト (ミリ秒) |
+| `DASHBOARD_HOST`        | `127.0.0.1`   | サーバーがバインドするインターフェース。デフォルトはループバックです（ネットワークからは到達不可）。LAN 上に公開するには `0.0.0.0` に設定します（起動時に警告がログに記録されます） |
+| `DASHBOARD_TOKEN`       | _(未設定)_     | 設定すると、すべての `/api/*` リクエストと WebSocket はこのトークンを提示する必要があります（`Authorization: Bearer <token>`、`x-dashboard-token` ヘッダー、または `?token=`）。デフォルトではオフです — ループバックへのバインドが信頼の境界となります |
+| `DASHBOARD_TOKEN_FILE` | _(未設定)_ | Docker/Kubernetes シークレット用の、ファイルでバックアップされたダッシュボードトークン；直接の `DASHBOARD_TOKEN` の方が優先されます |
+| `DASHBOARD_HOOK_TOKEN` / `DASHBOARD_HOOK_TOKEN_FILE` | _(未設定)_ | `/api/hooks/*` 用の独立したトークン；認証されたリモートフックインジェストに必要です |
+| `DASHBOARD_ALLOWED_HOSTS` | _(ループバック)_ | HTTP + WebSocket のアップグレード時に許可される追加の `Host` 値のコンマ区切りリスト（DNS リバインディング対策）。ループバックを超えてバインドする場合は、ここに LAN のホスト名を追加してください |
+| `DASHBOARD_ENV_PATH` | リポジトリの `.env` | 設定 (Settings) で Claude/Codex ホームのオーバーライドが永続化される際に使用される書き込み可能な dotenv パス；コンテナのデフォルトは `/app/config/.env` |
+| `CCAM_DASHBOARD_URL` | _(localhost 自動検出)_ | オプションのリモートフック宛先。非ループバックの URL には HTTPS とフックトークンを使用する必要があります |
+| `CCAM_HOOK_TOKEN` / `CCAM_HOOK_TOKEN_FILE` | _(未設定)_ | `x-ccam-hook-token` として送信されるフッククライアント認証情報 |
 
 > [!IMPORTANT]
-> **Secure by default.** The server binds `127.0.0.1` and is **not** reachable from the network out of the box ([GHSA-gr74-4xfh-6jw9](./.github/SECURITY.md)). To expose it on a LAN, set **both** `DASHBOARD_HOST` (e.g. `0.0.0.0`) **and** `DASHBOARD_TOKEN` (which then gates `/api/*` and the WebSocket), and list your LAN hostnames in `DASHBOARD_ALLOWED_HOSTS`. See [`.env.example`](./.env.example) and [`.github/SECURITY.md`](./.github/SECURITY.md) for details.
+> **デフォルトで安全です。** サーバーは `127.0.0.1` にバインドされており、そのままではネットワークから到達することは**できません** ([GHSA-gr74-4xfh-6jw9](./.github/SECURITY.md))。LAN 上に公開するには、`DASHBOARD_HOST` (例: `0.0.0.0`) **と** `DASHBOARD_TOKEN`（これにより `/api/*` と WebSocket が保護されます）の**両方**を設定し、`DASHBOARD_ALLOWED_HOSTS` に LAN のホスト名をリストアップしてください。詳細については [`.env.example`](./.env.example) および [`.github/SECURITY.md`](./.github/SECURITY.md) を参照してください。
 
-For git clones, the server periodically `git fetch`es `origin` and compares your checkout to `origin/master`, `origin/main`, or `origin/HEAD`. When you are behind, a message appears in the server terminal and a modal appears in the UI with the exact command to run. The dashboard never pulls or restarts itself — you copy the command, run it in a terminal, then restart the server the same way you started it.
+Git クローンの場合、サーバーは定期的に `origin` から `git fetch` を実行し、あなたのチェックアウトと `origin/master`、`origin/main`、または `origin/HEAD` を比較します。upstream より遅れている場合、サーバーのターミナルにメッセージが表示され、UI には実行すべき正確なコマンドが記載されたモーダルが表示されます。ダッシュボード自体が自動で pull したり再起動したりすることはありません — コマンドをコピーし、ターミナルで実行した後、起動した時と同じ方法でサーバーを再起動してください。
 
 ---
 
 ## `ccam` CLI
 
-The dashboard's full feature surface is also available from any terminal via the dependency-free **`ccam`** CLI (`bin/ccam.js`). It is linked automatically by `npm run setup` (via `npm link`), after which `ccam <command>` works from any directory. It discovers the running dashboard through `~/.claude/.agent-dashboard.json` (the same live-server registry the hook handler uses), with `CLAUDE_DASHBOARD_PORT` / `DASHBOARD_PORT` env overrides, falling back to `http://127.0.0.1:4820`.
+ダッシュボードの全機能は、依存関係のない **`ccam`** CLI (`bin/ccam.js`) を通じて、あらゆるターミナルから利用することもできます。これは `npm run setup`（`npm link` 経由）によって自動的にリンクされ、その後はどのディレクトリからでも `ccam <command>` が機能します。実行中のダッシュボードは `~/.claude/.agent-dashboard.json`（フックハンドラが使用するのと同じライブサーバーレジストリ）を通じて検出され、`CLAUDE_DASHBOARD_PORT` / `DASHBOARD_PORT` の環境変数のオーバーライドが可能で、フォールバックとして `http://127.0.0.1:4820` に接続します。
 
 ```bash
-# Server
-ccam status                       # ● running / ○ not running indicator
-ccam start [--port N]             # start the server in the background (detached)
-ccam stop                         # stop the background server gracefully
-ccam repl                         # interactive shell (also: shell, i)
+# サーバー (Server)
+ccam status                       # ● running / ○ not running (実行中 / 非実行中) インジケーター
+ccam start [--port N]             # サーバーをバックグラウンド (デタッチ) で開始
+ccam stop                         # バックグラウンドのサーバーを安全に停止
+ccam repl                         # インタラクティブシェル (別名: shell, i)
 
-# Monitoring
-ccam health                       # is the dashboard up?
-ccam stats                        # totals, today's events, status distributions
-ccam kanban                       # sessions + agents grouped by status columns
-ccam tail [--session <id>]        # live event feed in the terminal (Ctrl+C stops)
+# 監視 (Monitoring)
+ccam health                       # ダッシュボードは稼働しているか？
+ccam stats                        # 合計、今日のイベント、ステータス分布
+ccam kanban                       # ステータス列でグループ化されたセッションとエージェント
+ccam tail [--session <id>]        # ターミナルでのライブイベントフィード (Ctrl+C で停止)
 
-# Data
+# データ (Data)
 ccam sessions [--status s] [--q text] [--limit n]
-ccam session <id>                 # detail: agent tree, cost, recent events
+ccam session <id>                 # 詳細: エージェントツリー、コスト、最近のイベント
 ccam agents   [--status s] [--session id]
 ccam events   [--session id] [--limit n]
 
-# Insights
-ccam analytics                    # token totals, top tools, agent types
-ccam workflows [--session id]     # workflow intelligence stats and patterns
-ccam runs [--session id]          # dynamic Workflow-tool runs
-ccam cost [--session <id>]        # total estimated cost with per-model breakdown
-                                  # (--session scopes to one; shows tool surcharges;
-                                  #  warns about models with usage but no pricing rule)
+# インサイト (Insights)
+ccam analytics                    # トークンの合計、頻出ツール、エージェントタイプ
+ccam workflows [--session id]     # ワークフローインテリジェンスの統計とパターン
+ccam runs [--session id]          # 動的な Workflow-tool の実行
+ccam cost [--session <id>]        # モデルごとの内訳を伴う推定総コスト
+                                  # (--session で 1 つに絞り込み; ツールサーチャージを表示;
+                                  #  使用量があるのに価格設定ルールがないモデルについて警告)
 
-# Alerts & webhooks
-ccam alerts [--unacked]           # fired-alert feed
-ccam alerts ack <id> | ack-all    # acknowledge alerts
-ccam rules                        # list alert rules
-ccam webhooks                     # list webhook targets
-ccam webhooks test <id>           # send a synthetic test alert
+# アラートと Webhook (Alerts & webhooks)
+ccam alerts [--unacked]           # 発動したアラートフィード
+ccam alerts ack <id> | ack-all    # アラートを承認 (acknowledge) する
+ccam rules                        # アラートルールの一覧
+ccam webhooks                     # Webhook ターゲットの一覧
+ccam webhooks test <id>           # 合成的なテストアラートを送信
 
-# Pricing
-ccam pricing                      # list model pricing rules (incl. fast-mode & intro columns)
+# 価格設定 (Pricing)
+ccam pricing                      # モデルの価格設定ルールの一覧 (fast-mode と intro 列を含む)
 ccam pricing set <pattern> --input N --output N [--cache-read N --cache-write N]
                  [--cache-write-1h N] [--fast-input N --fast-output N]
                  [--intro-input N --intro-output N … --intro-until YYYY-MM-DD]
 ccam pricing delete <pattern>
 ccam pricing reset
 
-# Import
-ccam import rescan                # re-scan ~/.claude/projects
-ccam import path <dir>            # import every .jsonl under a directory
+# インポート (Import)
+ccam import rescan                # ~/.claude/projects を再スキャン
+ccam import path <dir>            # ディレクトリ内のすべての .jsonl をインポート
 
-# Administration
-ccam doctor                       # connectivity, hooks, and database diagnosis
-ccam info                         # raw system info JSON
-ccam export [file.json]           # full JSON data export
-ccam import-data <file.json>      # restore an export (idempotent, non-destructive)
-ccam cleanup --hours N --days M   # abandon stale / purge old sessions
-ccam reinstall-hooks              # reinstall Claude Code hooks
-ccam update-check                 # is the checkout behind upstream? (prints the update command)
-ccam clear-data --yes             # delete ALL data (requires --yes)
-ccam open                         # open the dashboard in your browser
-ccam version                      # print the CLI version (also --version / -v)
+# 管理 (Administration)
+ccam doctor                       # 接続性、フック、データベースの診断
+ccam info                         # 生のシステム情報 JSON
+ccam export [file.json]           # 完全な JSON データのエクスポート
+ccam import-data <file.json>      # エクスポートの復元 (冪等、非破壊的)
+ccam cleanup --hours N --days M   # 古いセッションの中断 / 過去のセッションのパージ
+ccam reinstall-hooks              # Claude Code フックを再インストール
+ccam update-check                 # チェックアウトは upstream より遅れているか？ (更新コマンドを表示)
+ccam clear-data --yes             # すべてのデータを削除 (ALL) (--yes が必要)
+ccam open                         # ブラウザでダッシュボードを開く
+ccam version                      # CLI のバージョンを表示 (または --version / -v)
 ```
 
-API-backed commands need the server running — when it isn't, **read-only commands fall back to reading `data/dashboard.db` directly** (with an explicit `⚠ Offline mode` banner, and stored-but-dead `active` sessions corrected display-side by the same process-liveness probe the server's watchdog uses), while commands that can't run correctly without the server (live `tail`, analytics/cost math, mutations) print the `○ Dashboard server is NOT running` indicator with the specific reason and the start commands; `ccam start` brings a production server up in the background. Read commands are always safe; the one destructive command (`clear-data`) refuses to run without an explicit `--yes`. Output is a full terminal UI — box-drawn tables with right-aligned numeric columns, status icons (`● active`, `○ waiting`, `✔ completed`, `✖ error`), inline bar charts for stats/analytics/cost, and real `├─`/`└─` agent trees — with ANSI colors auto-enabled on a TTY, off when piped, and controllable via `--no-color` / `NO_COLOR` / `FORCE_COLOR`. For a live monitoring session, **`ccam repl`** (aliases `shell` / `i`) opens an interactive shell where you type commands without the `ccam` prefix — with a CCAM welcome banner, tab-completion, persisted arrow-key history, a live server-status prompt (`● host` up / `○ offline` down), a grouped `help` / `help <cmd>` menu, and a `watch [secs] <cmd>` built-in that auto-refreshes any command (e.g. `watch 5 kanban`); each line runs as an isolated child process, so an offline refusal or a blocking `tail` never takes the shell down. If `ccam` is not on your PATH (e.g. `npm link` needed elevated permissions), run `npm link` once from the repo root. Full reference — flags, discovery order, the REPL, safety model, scripting/exit codes, troubleshooting — in [docs/CLI.md](./docs/CLI.md).
+API ベースのコマンドにはサーバーの実行が必要です — サーバーが実行されていない場合、**読み取り専用のコマンドはフォールバックして `data/dashboard.db` を直接読み取ります**（明示的な `⚠ Offline mode` バナーが表示され、保存されているが死んでいる `active` なセッションは、サーバーのウォッチドッグが使用するのと同じプロセス生存確認プローブによって表示側で修正されます）。一方、サーバーなしでは正しく実行できないコマンド（ライブ `tail`、分析/コストの計算、データの変更）は、具体的な理由と開始コマンドを添えて `○ Dashboard server is NOT running` インジケーターを表示します；`ccam start` を実行すると本番サーバーがバックグラウンドで起動します。読み取りコマンドは常に安全です；唯一の破壊的なコマンド (`clear-data`) は、明示的な `--yes` がない限り実行を拒否します。出力はフルターミナル UI です — 右揃えの数値列、ステータスアイコン (`● active`, `○ waiting`, `✔ completed`, `✖ error`)、統計/分析/コスト用のインライン棒グラフ、および実際の `├─`/`└─` エージェントツリーを備えた罫線テーブル — であり、TTY では自動的に ANSI カラーが有効になり、パイプ処理時はオフになり、`--no-color` / `NO_COLOR` / `FORCE_COLOR` で制御可能です。ライブ監視セッションの場合、**`ccam repl`**（エイリアス `shell` / `i`）を使用すると、`ccam` プレフィックスなしでコマンドを入力できるインタラクティブなシェルが開きます — CCAM ウェルカムバナー、タブ補完、保存される矢印キー履歴、ライブサーバー状態プロンプト (`● host` (稼働中) / `○ offline` (オフライン))、グループ化された `help` / `help <cmd>` メニュー、そして任意のコマンドを自動更新する組み込みの `watch [secs] <cmd>` (例：`watch 5 kanban`) などを備えています；各行は独立した子プロセスとして実行されるため、オフラインによる拒否やブロック状態の `tail` によってもシェルがダウンすることはありません。`ccam` が PATH にない場合（例：`npm link` に昇格された権限が必要だった場合）、リポジトリのルートから一度 `npm link` を実行してください。フラグ、検出順序、REPL、安全モデル、スクリプティング/終了コード、トラブルシューティングに関する完全なリファレンスは、[docs/CLI.md](./docs/CLI.md) にあります。
 
-## npm Scripts
+## npm スクリプト
 
-| Command                 | Description                                                |
+| コマンド | 説明 |
 | ----------------------- | ---------------------------------------------------------- |
-| `npm run setup`         | Install root/client/extension/MCP dependencies, build MCP, and link `ccam` |
-| `npm run update:pull-setup` | `git pull --ff-only` then `npm run setup` (manual upgrade) |
-| `npm run dev`           | Start server (watch mode) + client (Vite HMR) concurrently |
-| `npm run dev:server`    | Start only the Express server with `--watch`               |
-| `npm run dev:client`    | Start only the Vite dev server                             |
-| `npm run build`         | Build the React client to `client/dist/`                   |
-| `npm start`             | Start production server (serves built client)              |
-| `npm test`              | Run the full suite (server `node --test` + client Vitest)  |
-| `npm run test:server`   | Run backend tests (`node --test server/__tests__/`)        |
-| `npm run test:client`   | Run frontend Vitest tests, including **render snapshots for every screen** (`client/src/pages/__tests__/screens.snapshot.test.tsx`); regenerate baselines after intentional UI changes with `cd client && npx vitest run -u` |
-| `npm run install-hooks` | Configure Claude Code hooks in `~/.claude/settings.json`   |
-| `npm run seed`          | Populate database with sample data                         |
-| `npm run import-history`| Import legacy sessions from `~/.claude/` (also runs on startup) |
-| `npm run clear-data`    | Delete all sessions, agents, events, and token usage            |
-| `npm run mcp:install`   | Install dependencies for local MCP package (`mcp/`)       |
-| `npm run mcp:build`     | Build MCP server TypeScript into `mcp/build/`             |
-| `npm run mcp:start`     | Start MCP server (stdio transport — for MCP hosts)        |
-| `npm run mcp:start:http`| Start MCP server (HTTP + SSE transport on port 8819)      |
-| `npm run mcp:start:repl`| Start MCP server (interactive REPL with tab completion)   |
-| `npm run mcp:dev`       | Run MCP server in dev mode (`tsx`, stdio)                 |
-| `npm run mcp:dev:http`  | Run MCP server in dev mode (`tsx`, HTTP + SSE)            |
-| `npm run mcp:dev:repl`  | Run MCP server in dev mode (`tsx`, interactive REPL)      |
-| `npm run mcp:typecheck` | Type-check MCP source without emitting build output        |
-| `npm run extensions:sync` | Regenerate skill names/OpenAI metadata, Codex manifests, and both marketplaces |
-| `npm run extensions:validate` | Validate all 14 dual-format plugins and 66 bundled skills |
-| `npm run mcp:docker:build` | Build MCP container image with Docker (`agent-dashboard-mcp:local`) |
-| `npm run mcp:podman:build` | Build MCP container image with Podman (`localhost/agent-dashboard-mcp:local`) |
-| `npm run desktop:install` | Install Electron + electron-builder into the `desktop/` workspace (rebuilds `better-sqlite3` for Electron's ABI); preflights the native `better-sqlite3` build and prints actionable setup help (incl. a no-toolchain alternative) on failure |
-| `npm run desktop:dev`   | Build and launch the Electron desktop app for local iteration  |
-| `npm run desktop:build` | Compile the desktop TypeScript sources into `desktop/out/`      |
-| `npm run desktop:test`  | Run the desktop smoke test (spawn Electron, probe `/api/health`) |
-| `npm run desktop:dmg`   | Build **both** macOS DMGs (arm64 + x64) — correct for release, **slower** (packages each arch) |
-| `npm run desktop:dmg:arm64` | Build an Apple-Silicon-only DMG — **fast**, recommended for your own Mac |
-| `npm run desktop:dmg:x64` | Build an Intel-only DMG — **fast**                           |
-| `npm run desktop:dmg:universal` | Build one merged **universal** DMG (arm64 + x86_64) — optional, **slowest**, not what the release ships |
-| `npm run desktop:win`   | Build a Windows **NSIS installer** `.exe` (x64) — run on Windows |
-| `npm run desktop:win:portable` | Build a Windows **portable** (no-install) `.exe` (x64) — run on Windows |
-| `npm run monitoring:install` | Run `npm install` in `monitoring/` — downloads Prometheus + Grafana via `postinstall` |
-| `npm run monitoring:setup` | Alias for `monitoring:install` |
-| `npm run monitoring:up` | Start Prometheus (:9090) + Grafana (:3000) in the background (no Docker) |
-| `npm run monitoring:down` | Stop the npm-managed monitoring stack |
-| `npm run monitoring:start` | Foreground monitoring stack (Ctrl+C stops both) |
-| `npm run monitoring:docker:up` | Start Prometheus + Grafana via Docker Compose |
-| `npm run monitoring:docker:down` | Tear down the Docker monitoring stack |
-| `npm run monitoring:verify` | Health-check dashboard, Prometheus, Grafana, and scrape target |
-| `npm run docker:up` | Start the dashboard in Docker (`docker compose up -d --build`) |
-| `npm run docker:down` | Stop the dashboard container |
-| `npm run docker:full:up` | Dashboard + authenticated MCP + rootless Nginx + Prometheus + Grafana |
-| `npm run docker:full:down` | Tear down the full Docker stack |
-| `npm run deploy:validate` | Validate Docker, Compose, Nginx, Helm, Kustomize, Terraform, dependency audits, and the one-writer invariant |
+| `npm run setup`         | root/client/extension/MCP の依存関係をインストールし、MCP をビルドし、`ccam` をリンクします |
+| `npm run update:pull-setup` | `git pull --ff-only` を実行後 `npm run setup` を実行します（手動アップグレード） |
+| `npm run dev`           | サーバー (ウォッチモード) とクライアント (Vite HMR) を同時に起動します |
+| `npm run dev:server`    | Express サーバーのみを `--watch` で起動します |
+| `npm run dev:client`    | Vite 開発サーバーのみを起動します |
+| `npm run build`         | React クライアントを `client/dist/` にビルドします |
+| `npm start`             | 本番サーバーを起動します (ビルドされたクライアントを提供) |
+| `npm test`              | フルスイートを実行します (サーバー `node --test` + クライアント Vitest) |
+| `npm run test:server`   | バックエンドのテストを実行します (`node --test server/__tests__/`) |
+| `npm run test:client`   | フロントエンドの Vitest テストを実行します。**すべての画面のレンダースナップショット** (`client/src/pages/__tests__/screens.snapshot.test.tsx`) を含みます。意図的な UI 変更の後は `cd client && npx vitest run -u` でベースラインを再生成してください |
+| `npm run install-hooks` | `~/.claude/settings.json` に Claude Code フックを設定します |
+| `npm run seed`          | データベースにサンプルデータを投入します |
+| `npm run import-history`| `~/.claude/` からレガシーセッションをインポートします（起動時にも実行されます） |
+| `npm run clear-data`    | すべてのセッション、エージェント、イベント、およびトークン使用量を削除します |
+| `npm run mcp:install`   | ローカル MCP パッケージ (`mcp/`) の依存関係をインストールします |
+| `npm run mcp:build`     | MCP サーバーの TypeScript を `mcp/build/` にビルドします |
+| `npm run mcp:start`     | MCP サーバーを起動します (stdio トランスポート — MCP ホスト用) |
+| `npm run mcp:start:http`| MCP サーバーを起動します (ポート 8819 の HTTP + SSE トランスポート) |
+| `npm run mcp:start:repl`| MCP サーバーを起動します (タブ補完付きのインタラクティブ REPL) |
+| `npm run mcp:dev`       | 開発モードで MCP サーバーを実行します (`tsx`, stdio) |
+| `npm run mcp:dev:http`  | 開発モードで MCP サーバーを実行します (`tsx`, HTTP + SSE) |
+| `npm run mcp:dev:repl`  | 開発モードで MCP サーバーを実行します (`tsx`, インタラクティブ REPL) |
+| `npm run mcp:typecheck` | ビルド出力を生成せずに MCP ソースを型チェックします |
+| `npm run extensions:sync` | スキル名/OpenAI メタデータ、Codex マニフェスト、および両方のマーケットプレイスを再生成します |
+| `npm run extensions:validate` | 14 のデュアルフォーマットプラグインと 66 のバンドルされたスキルすべてを検証します |
+| `npm run mcp:docker:build` | Docker で MCP コンテナイメージをビルドします (`agent-dashboard-mcp:local`) |
+| `npm run mcp:podman:build` | Podman で MCP コンテナイメージをビルドします (`localhost/agent-dashboard-mcp:local`) |
+| `npm run desktop:install` | Electron + electron-builder を `desktop/` ワークスペースにインストールします (Electron の ABI 用に `better-sqlite3` を再ビルドします)；ネイティブの `better-sqlite3` ビルドを事前確認し、失敗時には実行可能なセットアップのヘルプ（ツールチェーン不要の代替手段を含む）を表示します |
+| `npm run desktop:dev`   | ローカルでのイテレーションのために Electron デスクトップアプリをビルドして起動します |
+| `npm run desktop:build` | デスクトップの TypeScript ソースを `desktop/out/` にコンパイルします |
+| `npm run desktop:test`  | デスクトップのスモークテストを実行します (Electron をスポーンし、`/api/health` をプローブします) |
+| `npm run desktop:dmg`   | **両方**の macOS DMG (arm64 + x64) をビルドします — リリース向けですが、**遅い**です (各アーキテクチャをパッケージ化します) |
+| `npm run desktop:dmg:arm64` | Apple-Silicon 専用の DMG をビルドします — **高速**、あなた自身の Mac 用に推奨 |
+| `npm run desktop:dmg:x64` | Intel 専用の DMG をビルドします — **高速** |
+| `npm run desktop:dmg:universal` | 1 つにマージされた**ユニバーサル** DMG (arm64 + x86_64) をビルドします — オプション、**最も遅い**、リリースで配布されるものではありません |
+| `npm run desktop:win`   | Windows の **NSIS インストーラー** `.exe` (x64) をビルドします — Windows 上で実行します |
+| `npm run desktop:win:portable` | Windows の **ポータブル** (インストール不要) `.exe` (x64) をビルドします — Windows 上で実行します |
+| `npm run monitoring:install` | `monitoring/` 内で `npm install` を実行します — `postinstall` 経由で Prometheus + Grafana をダウンロードします |
+| `npm run monitoring:setup` | `monitoring:install` のエイリアスです |
+| `npm run monitoring:up` | Prometheus (:9090) と Grafana (:3000) をバックグラウンドで開始します (Docker なし) |
+| `npm run monitoring:down` | npm で管理された監視スタックを停止します |
+| `npm run monitoring:start` | 監視スタックをフォアグラウンドで開始します (Ctrl+C で両方を停止します) |
+| `npm run monitoring:docker:up` | Docker Compose 経由で Prometheus + Grafana を開始します |
+| `npm run monitoring:docker:down` | Docker の監視スタックを破棄します |
+| `npm run monitoring:verify` | ダッシュボード、Prometheus、Grafana、およびスクレイプターゲットのヘルスチェックを行います |
+| `npm run docker:up` | Docker 内でダッシュボードを起動します (`docker compose up -d --build`) |
+| `npm run docker:down` | ダッシュボードコンテナを停止します |
+| `npm run docker:full:up` | ダッシュボード + 認証付き MCP + rootless Nginx + Prometheus + Grafana |
+| `npm run docker:full:down` | 完全な Docker スタックを破棄します |
+| `npm run deploy:validate` | Docker、Compose、Nginx、Helm、Kustomize、Terraform、依存関係の監査、および「単一ライター」の不変条件を検証します |
 
 ---
+## エージェント拡張 (Agent Extensions)
 
-## Agent Extensions
-
-This repository includes a comprehensive extension layer for both Claude Code and Codex:
+このリポジトリには、Claude Code と Codex の両方に対する包括的な拡張レイヤーが含まれています：
 
 - Claude Code: `CLAUDE.md`, `.claude/rules/`, `.claude/skills/`
-- Claude subagents: `.claude/agents/`
+- Claude サブエージェント: `.claude/agents/`
 - Codex: `AGENTS.md`, `.codex/rules/`, `.codex/agents/`, `.codex/skills/`
-- Shared distributable plugins: `plugins/`, with both `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json`
-- Marketplaces: `.claude-plugin/marketplace.json` for Claude Code and `.agents/plugins/marketplace.json` for Codex
-- Open Agent Skills: all plugin skills carry canonical frontmatter plus `agents/openai.yaml`; `npx skills add hoangsonww/Claude-Code-Agent-Monitor --list` discovers 75 repository skills
+- 共有配布可能プラグイン: `plugins/`, `.claude-plugin/plugin.json` と `.codex-plugin/plugin.json` の両方を備える
+- マーケットプレイス: Claude Code 用の `.claude-plugin/marketplace.json` および Codex 用の `.agents/plugins/marketplace.json`
+- オープンエージェントスキル: すべてのプラグインスキルには正規のフロントマターと `agents/openai.yaml` が含まれます；`npx skills add hoangsonww/Claude-Code-Agent-Monitor --list` を実行すると 75 のリポジトリスキルが検出されます
 
-### Extension Architecture
+### 拡張アーキテクチャ
 
 ```mermaid
 graph TD
@@ -805,46 +802,46 @@ graph TD
     CODEX --> X_SKILLS
 ```
 
-### Claude Code Layer
+### Claude Code レイヤー
 
-- Persistent context:
+- 永続的コンテキスト:
   - [`CLAUDE.md`](./CLAUDE.md)
-- Path-scoped rules:
+- パススコープ付きルール:
   - [`.claude/rules/backend-node.md`](./.claude/rules/backend-node.md)
   - [`.claude/rules/frontend-react.md`](./.claude/rules/frontend-react.md)
   - [`.claude/rules/mcp-typescript.md`](./.claude/rules/mcp-typescript.md)
   - [`.claude/rules/docs-markdown.md`](./.claude/rules/docs-markdown.md)
-- Skills:
+- スキル:
   - `repo-onboarding`
   - `ship-feature`
   - `version-release`
   - `mcp-operations`
   - `debug-live-issue`
-- Subagents:
+- サブエージェント:
   - `backend-reviewer`
   - `frontend-reviewer`
   - `mcp-reviewer`
 
-### Codex Layer
+### Codex レイヤー
 
-- Persistent context:
+- 永続的コンテキスト:
   - [`AGENTS.md`](./AGENTS.md)
-- Execution policy:
+- 実行ポリシー:
   - [`.codex/rules/default.rules`](./.codex/rules/default.rules)
-- Custom subagent templates:
+- カスタムサブエージェントテンプレート:
   - [`.codex/agents/`](./.codex/agents)
-- Skills:
+- スキル:
   - [`.codex/skills/`](./.codex/skills)
-- Setup:
+- セットアップ:
   - [`.codex/README.md`](./.codex/README.md)
 
 ---
 
-## MCP Integration
+## MCP 統合 (MCP Integration)
 
-This project includes a local MCP server at `mcp/` with 97 tools across 16 domain modules. It exposes every supported app action, including scoped data reads, transcripts/images, Claude and GPT pricing, workflows, alerts/webhooks, imports and backup restore, Claude/Codex config, Run Agent, remote sources, settings, push, and guarded maintenance. It supports three transport modes.
+このプロジェクトには、16 のドメインモジュールにまたがる 97 のツールを備えた `mcp/` のローカル MCP サーバーが含まれています。スコープ付きデータ読み取り、トランスクリプト/画像、Claude と GPT の価格設定、ワークフロー、アラート/Webhook、インポートとバックアップの復元、Claude/Codex 設定、エージェントの実行、リモートソース、設定、プッシュ、保護されたメンテナンスなど、サポートされるすべてのアプリケーションアクションを公開します。3 つのトランスポートモードをサポートします。
 
-### MCP Transport Modes
+### MCP トランスポートモード
 
 ```mermaid
 flowchart LR
@@ -869,17 +866,17 @@ flowchart LR
     style REPL fill:#a855f7,stroke:#c084fc,color:#fff
 ```
 
-| Mode | Command | Use Case |
+| モード (Mode) | コマンド (Command) | ユースケース (Use Case) |
 | --- | --- | --- |
-| **stdio** | `npm run mcp:start` | Claude Code, Claude Desktop, IDE MCP hosts |
-| **HTTP** | `npm run mcp:start:http` | Remote MCP clients, web integrations, multi-session |
-| **REPL** | `npm run mcp:start:repl` | Ops debugging, manual tool invocation, local admin |
+| **stdio** | `npm run mcp:start` | Claude Code、Claude Desktop、IDE の MCP ホスト |
+| **HTTP** | `npm run mcp:start:http` | リモート MCP クライアント、Web 統合、マルチセッション |
+| **REPL** | `npm run mcp:start:repl` | Ops デバッグ、手動ツール呼び出し、ローカル管理 |
 
 <p align="center">
   <img src="images/mcp.png" alt="MCP REPL" width="100%">
 </p>
 
-### MCP Architecture
+### MCP アーキテクチャ
 
 ```mermaid
 graph LR
@@ -913,7 +910,7 @@ graph LR
     style DB fill:#003B57,stroke:#005f8a,color:#fff
 ```
 
-### MCP Tool Surface
+### MCP ツールサーフェス
 
 ```mermaid
 graph TD
@@ -929,7 +926,7 @@ graph TD
     ROOT --> RUN
 ```
 
-### MCP Safety Model
+### MCP セキュリティモデル
 
 ```mermaid
 flowchart TD
@@ -953,71 +950,70 @@ flowchart TD
     style DENY3 fill:#dc2626,stroke:#f87171,color:#fff
 ```
 
-### MCP Operational Modes
+### MCP 運用モード
 
-- Read-only mode (default): `MCP_DASHBOARD_ALLOW_MUTATIONS=false`
-- Admin mode: `MCP_DASHBOARD_ALLOW_MUTATIONS=true`
-- Authenticated dashboard: set `MCP_DASHBOARD_API_TOKEN` / `_FILE` to the dashboard token
-- Authenticated HTTP/SSE transport: set `MCP_HTTP_AUTH_TOKEN` / `_FILE`; clients send bearer auth or `x-mcp-token`
-- Transport guardrails: direct loopback HTTP may carry the token; container-host aliases require HTTPS; redirects are rejected
-- Payload guardrails: 50 MiB per uploaded history file, 100 MiB total per call, 10 MiB binary responses, and 25 MiB backup restore
-- Destructive mode: requires both:
+- 読み取り専用モード (デフォルト): `MCP_DASHBOARD_ALLOW_MUTATIONS=false`
+- 管理者モード: `MCP_DASHBOARD_ALLOW_MUTATIONS=true`
+- 認証されたダッシュボード: `MCP_DASHBOARD_API_TOKEN` / `_FILE` にダッシュボードトークンを設定
+- 認証された HTTP/SSE トランスポート: `MCP_HTTP_AUTH_TOKEN` / `_FILE` を設定；クライアントは bearer 認証または `x-mcp-token` を送信します
+- トランスポートガードレール: 直接のループバック HTTP はトークンを運ぶことができます；コンテナホストエイリアスは HTTPS を必要とします；リダイレクトは拒否されます
+- ペイロードガードレール: アップロード履歴ファイルごとに 50 MiB、呼び出しごとに合計 100 MiB、バイナリ応答は 10 MiB、バックアップ復元は 25 MiB
+- 破壊的モード: 以下がすべて必要です:
   - `MCP_DASHBOARD_ALLOW_MUTATIONS=true`
   - `MCP_DASHBOARD_ALLOW_DESTRUCTIVE=true`
-  - tool input `confirmation_token: "CLEAR_ALL_DATA"`
+  - ツール入力 `confirmation_token: "CLEAR_ALL_DATA"`
 
-Full details: [mcp/README.md](./mcp/README.md)
+全容: [mcp/README.md](./mcp/README.md)
 
 ---
 
-## API Reference
+## API リファレンス (API Reference)
 
-All endpoints return JSON. Error responses follow the shape `{ error: { code, message } }`.
+すべてのエンドポイントは JSON を返します。エラー応答は `{ error: { code, message } }` の形式に従います。
 
 ### OpenAPI / Swagger / ReDoc
 
-There are three ways to explore the HTTP API, all driven by a single OpenAPI 3.0.3 spec (default server port `4820`):
+HTTP API を探索するには 3 つの方法があり、すべて単一の OpenAPI 3.0.3 仕様によって駆動されます (デフォルトサーバーポート `4820`):
 
-| Method | Path                            | Description                                                                                       |
+| メソッド | パス | 説明 |
 | ------ | ------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `GET`  | `/api/openapi.json`             | Raw OpenAPI 3.0.3 JSON spec                                                                        |
-| `GET`  | `/api/docs`                     | Interactive **Swagger UI** — try-it-out request execution                                         |
-| `GET`  | `/api/redoc`                    | **ReDoc** reference — a clean, read-optimized three-panel rendering of the same spec              |
-| `GET`  | `/api/redoc/redoc.standalone.js`| Self-hosted ReDoc bundle (served locally via the `redoc` dependency, never a CDN — works offline) |
+| `GET`  | `/api/openapi.json`             | 生の OpenAPI 3.0.3 JSON 仕様 |
+| `GET`  | `/api/docs`                     | インタラクティブな **Swagger UI** — リクエスト実行を試すことができます |
+| `GET`  | `/api/redoc`                    | **ReDoc** リファレンス — 同じ仕様のクリーンで読み取りに最適化された 3 ペインレンダリング |
+| `GET`  | `/api/redoc/redoc.standalone.js`| セルフホスト型 ReDoc バンドル (CDN ではなく `redoc` 依存関係経由でローカルに提供されます — オフラインで動作します) |
 
-The OpenAPI document is generated from `server/openapi.js` (`createOpenApiSpec()`), merged with supplementary fragments under `server/openapi-extra/`. Swagger UI and ReDoc are both served directly by the backend; the ReDoc bundle is served locally (`GET /api/redoc/redoc.standalone.js`) so the reference works fully offline / air-gapped, consistent with the project's no-external-assets policy.
+OpenAPI ドキュメントは `server/openapi.js` (`createOpenApiSpec()`) から生成され、`server/openapi-extra/` 下の補足フラグメントと結合されます。Swagger UI と ReDoc はどちらもバックエンドから直接提供されます。ReDoc バンドルはローカルに提供されるため (`GET /api/redoc/redoc.standalone.js`)、プロジェクトの「外部アセットなし」ポリシーに従い、リファレンスは完全にオフライン / エアギャップ環境で機能します。
 
-Coverage is comprehensive: every backend route is documented (82 path entries) across these tags — Health, Sessions, Agents, Events, Stats, Metrics, Analytics, Hooks, Pricing, Workflows, Settings, Updates, Alerts, Webhooks, Push, CcConfig (Claude Code config explorer), Run (dashboard-spawned runs), and Documentation — each with parameters, request/response schemas, field-level descriptions, and realistic examples.
+カバレッジは包括的です：すべてのバックエンドルート（82のパスエントリ）が以下のタグにわたって文書化されています — Health, Sessions, Agents, Events, Stats, Metrics, Analytics, Hooks, Pricing, Workflows, Settings, Updates, Alerts, Webhooks, Push, CcConfig (Claude Code 設定エクスプローラー), Run (ダッシュボードで生成された実行), そして Documentation — それぞれにパラメータ、リクエスト/レスポンススキーマ、フィールドレベルの説明、および現実的な例が含まれています。
 
-A committed **`openapi.yaml`** at the repo root mirrors the live spec. It is generated from `server/openapi.js` (never hand-edited) — regenerate it after API changes with:
+リポジトリルートにコミットされた **`openapi.yaml`** は、ライブ仕様をミラーリングしています。これは `server/openapi.js` から生成され（手動で編集されることはありません）— API の変更後は以下を実行して再生成してください：
 
 ```bash
 npm run openapi:yaml
 ```
 
-### Prometheus metrics & Grafana
+### Prometheus メトリクス & Grafana
 
-`GET /api/metrics` exposes the dashboard's live counters — sessions/agents by status, event and token totals, connected realtime clients, configured remote sources, process uptime/memory, and build version — in the Prometheus text-exposition format, so CCAM can be scraped into your own observability stack. A turnkey Prometheus + Grafana stack with **four auto-provisioned dashboards** (default home: **CCAM — Overview**) lives in [`monitoring/`](./monitoring/README.md).
-
-**npm (no Docker — macOS, Linux, or Windows):**
+`GET /api/metrics` はダッシュボードのライブカウンターを公開します — ステータスごとのセッション/エージェント、イベントとトークンの合計、接続されたリアルタイムクライアント、構成されたリモートソース、プロセスの稼働時間/メモリ、およびビルドバージョン — これらは Prometheus テキストエクスポジション形式で出力されるため、CCAM を独自の監視スタックにスクレイピングできます。**4 つの自動プロビジョニングされたダッシュボード** (デフォルトホーム: **CCAM — Overview**) を備えたターンキーの Prometheus + Grafana スタックが [`monitoring/`](./monitoring/README.md) にあります。
+**npm (Docker なし — macOS, Linux, または Windows):**
 
 ```bash
-npm start                          # dashboard on :4820
-npm run monitoring:install         # one-time: npm postinstall pulls binaries
-npm run monitoring:up              # Grafana on :3000, auto-provisioned; see monitoring/README.md for credentials
+npm start                          # ポート 4820 でダッシュボード
+npm run monitoring:install         # 1 回のみ: npm postinstall がバイナリを取得します
+npm run monitoring:up              # ポート 3000 で Grafana、自動プロビジョニング済み；認証情報は monitoring/README.md を参照
 ```
 
-**Docker / Podman** (when the dashboard runs in a container or you prefer Compose):
+**Docker / Podman** (ダッシュボードをコンテナで実行する場合、または Compose を好む場合):
 
 ```bash
-# Dashboard only
+# ダッシュボードのみ
 npm run docker:up
 
-# Dashboard + Prometheus + Grafana (one command)
+# ダッシュボード + Prometheus + Grafana (1 つのコマンド)
 npm run docker:full:up
 
-# Or mix: native/docker dashboard + docker monitoring
-DASHBOARD_ALLOWED_HOSTS=host.docker.internal npm start   # or docker:up with same env
+# または混在: ネイティブ/Docker ダッシュボード + Docker 監視
+DASHBOARD_ALLOWED_HOSTS=host.docker.internal npm start   # または同じ環境変数で docker:up
 npm run monitoring:docker:up
 npm run monitoring:verify
 ```
@@ -1025,22 +1021,22 @@ npm run monitoring:verify
 <p align="center">
   <img src="images/grafana.png" alt="Grafana CCAM — Overview dashboard with live session, event, and token metrics" width="100%">
   <br>
-  <em>📊 <strong>Grafana · CCAM — Overview</strong> — default home dashboard (four boards auto-provisioned): fleet snapshot, database totals, breakdown charts, and rates — all from live <code>/api/metrics</code> scrapes</em>
+  <em>📊 <strong>Grafana · CCAM — 概要 (Overview)</strong> — デフォルトのホームダッシュボード（4 つのボードが自動プロビジョニングされます）：フリートのスナップショット、データベースの合計、内訳チャート、およびレート — すべてライブの <code>/api/metrics</code> スクレイプからのものです</em>
 </p>
 
 <p align="center">
   <img src="images/prometheus-console.png" alt="Prometheus CCAM console with metric cards and session tables" width="100%">
   <br>
-  <em>🔥 <strong>Prometheus · CCAM console</strong> — pre-built landing page at <code>/consoles/index.html</code> that queries Prometheus directly for scrape health, session totals, events, tokens, and drill-down Graph links</em>
+  <em>🔥 <strong>Prometheus · CCAM コンソール</strong> — <code>/consoles/index.html</code> にある事前構築済みのランディングページで、スクレイプの正常性、セッションの合計、イベント、トークン、およびドリルダウンできる Graph リンクについて Prometheus に直接クエリを実行します</em>
 </p>
 
 <p align="center">
   <img src="images/prometheus-query.png" alt="Prometheus Graph UI with CCAM PromQL query" width="100%">
   <br>
-  <em>📈 <strong>Prometheus · Graph</strong> — run PromQL against scraped CCAM metrics (e.g. <code>sum(ccam_sessions)</code>, <code>ccam_events_total</code>, <code>rate(ccam_tokens_total[5m])</code>) with starter links from the CCAM console and <a href="./monitoring/README.md">monitoring/README.md</a></em>
+  <em>📈 <strong>Prometheus · グラフ (Graph)</strong> — CCAM コンソールおよび <a href="./monitoring/README.md">monitoring/README.md</a> からのスターターリンクを使用して、スクレイプされた CCAM メトリクスに対して PromQL を実行します（例：<code>sum(ccam_sessions)</code>、<code>ccam_events_total</code>、<code>rate(ccam_tokens_total[5m])</code>）</em>
 </p>
 
-See [docs/API.md → Metrics](./docs/API.md#metrics) for the full metric list and scrape/auth details.
+完全なメトリクスリストおよびスクレイプ/認証の詳細については、[docs/API.md → Metrics](./docs/API.md#metrics) を参照してください。
 
 <p align="center">
   <img src="images/swagger.png" alt="Swagger UI" width="100%">
@@ -1050,71 +1046,71 @@ See [docs/API.md → Metrics](./docs/API.md#metrics) for the full metric list an
   <img src="images/redoc.png" alt="ReDoc UI" width="100%">
 </p>
 
-### Health
+### ヘルス (Health)
 
-| Method | Path          | Description                           |
+| メソッド (Method) | パス (Path)          | 説明 (Description)                           |
 | ------ | ------------- | ------------------------------------- |
-| `GET`  | `/api/health` | Returns `{ status: "ok", timestamp }` |
+| `GET`  | `/api/health` | `{ status: "ok", timestamp }` を返します |
 
-### Sessions
+### セッション (Sessions)
 
-| Method  | Path                            | Query Params                                                     | Description                                                                                  |
+| メソッド  | パス                            | クエリパラメータ                                                     | 説明                                                                                  |
 | ------- | ------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `GET`   | `/api/sessions`                 | `status`, `q`, `limit`, `offset`                                 | List sessions with agent counts and per-session cost. `q` does case-insensitive search across `id` / `name` / `cwd`. `limit` defaults to 50, max 10000. Response includes `total` for paginators. |
-| `GET`   | `/api/sessions/:id`             | --                                                               | Session detail with agents and events                                                        |
-| `GET`   | `/api/sessions/:id/stats`       | --                                                               | Aggregated counts powering the Session Detail overview panel: events, events-by-type, top tool usage, error count, agent type/status counts, subagent type breakdown, token totals, time range |
-| `GET`   | `/api/sessions/:id/transcripts` | --                                                               | List available JSONL transcripts for the session (main + subagents + compactions)            |
-| `GET`   | `/api/sessions/:id/transcript`  | `agent_id`, `limit`, `offset`, `after`, `before`                 | Stream messages from a specific transcript with cursor-based pagination. Assistant `usage` includes `input_tokens`, `output_tokens`, `cache_read_input_tokens`, `cache_creation_input_tokens` so the Run page meter can hydrate fully on resume / re-attach |
-| `POST`  | `/api/sessions`                 | --                                                               | Create session (idempotent on `id`)                                                          |
-| `PATCH` | `/api/sessions/:id`             | --                                                               | Update session status/metadata                                                               |
+| `GET`   | `/api/sessions`                 | `status`, `q`, `limit`, `offset`                                 | エージェント数とセッションごとのコストを含むセッションのリスト。`q` は `id` / `name` / `cwd` にわたって大文字小文字を区別しない検索を行います。`limit` のデフォルトは 50、最大 10000。応答にはページネーター用の `total` が含まれます。 |
+| `GET`   | `/api/sessions/:id`             | --                                                               | エージェントとイベントを含むセッションの詳細                                                        |
+| `GET`   | `/api/sessions/:id/stats`       | --                                                               | セッション詳細の概要パネルを駆動する集計カウント：イベント、タイプ別イベント、上位ツールの使用状況、エラー数、エージェントのタイプ/ステータス数、サブエージェントタイプの内訳、トークンの合計、時間範囲 |
+| `GET`   | `/api/sessions/:id/transcripts` | --                                                               | セッションで利用可能な JSONL トランスクリプトのリスト（メイン + サブエージェント + コンパクション） |
+| `GET`   | `/api/sessions/:id/transcript`  | `agent_id`, `limit`, `offset`, `after`, `before`                 | カーソルベースのページネーションを使用して、特定のトランスクリプトからメッセージをストリーミングします。アシスタントの `usage` には `input_tokens`、`output_tokens`、`cache_read_input_tokens`、`cache_creation_input_tokens` が含まれるため、再開 / 再接続時に実行ページのメーターを完全に復元できます |
+| `POST`  | `/api/sessions`                 | --                                                               | セッションを作成します (`id` に対して冪等) |
+| `PATCH` | `/api/sessions/:id`             | --                                                               | セッションのステータス/メタデータを更新します |
 
-### Agents
+### エージェント (Agents)
 
-| Method  | Path              | Query Params                              | Description                   |
+| メソッド  | パス              | クエリパラメータ                              | 説明                   |
 | ------- | ----------------- | ----------------------------------------- | ----------------------------- |
-| `GET`   | `/api/agents`     | `status`, `session_id`, `limit`, `offset` | List agents with filters      |
-| `GET`   | `/api/agents/:id` | --                                        | Single agent detail           |
-| `POST`  | `/api/agents`     | --                                        | Create agent                  |
-| `PATCH` | `/api/agents/:id` | --                                        | Update agent status/task/tool |
+| `GET`   | `/api/agents`     | `status`, `session_id`, `limit`, `offset` | フィルター付きのエージェントリスト      |
+| `GET`   | `/api/agents/:id` | --                                        | 単一エージェントの詳細           |
+| `POST`  | `/api/agents`     | --                                        | エージェントを作成                  |
+| `PATCH` | `/api/agents/:id` | --                                        | エージェントのステータス/タスク/ツールを更新 |
 
-### Events
+### イベント (Events)
 
-| Method | Path          | Query Params                    | Description                |
+| メソッド | パス          | クエリパラメータ                    | 説明                |
 | ------ | ------------- | ------------------------------- | -------------------------- |
-| `GET`  | `/api/events` | `session_id`, `limit`, `offset` | List events (newest first) |
+| `GET`  | `/api/events` | `session_id`, `limit`, `offset` | イベントリスト (最新のものから順に) |
 
-### Stats
+### 統計 (Stats)
 
-| Method | Path         | Description                                            |
+| メソッド | パス         | 説明                                            |
 | ------ | ------------ | ------------------------------------------------------ |
-| `GET`  | `/api/stats` | Aggregate counts, status distributions, WS connections |
+| `GET`  | `/api/stats` | 集計カウント、ステータス分布、WS 接続数 |
 
-### Analytics
+### 分析 (Analytics)
 
-| Method | Path             | Description                                                |
+| メソッド | パス             | 説明                                                |
 | ------ | ---------------- | ---------------------------------------------------------- |
-| `GET`  | `/api/analytics` | Token/tool/session aggregates for charts and trend views   |
+| `GET`  | `/api/analytics` | チャートとトレンドビューのためのトークン/ツール/セッションの集計   |
 
-### Remote Data Sources
+### リモートデータソース (Remote Data Sources)
 
-| Method   | Path                            | Query Params | Description                                                                                 |
+| メソッド   | パス                            | クエリパラメータ | 説明                                                                                 |
 | -------- | ------------------------------- | ------------ | ------------------------------------------------------------------------------------------- |
-| `GET`    | `/api/remote-sources`           | --           | List configured remote sources with status, last error, and last-sync counts               |
-| `POST`   | `/api/remote-sources`           | --           | Create a source. Body: `{ label, host, ssh_port?, identity_file?, remote_home?, remote_codex_home?, enabled? }` |
-| `PATCH`  | `/api/remote-sources/:id`       | --           | Update a source (label, connection fields, enabled)                                         |
-| `DELETE` | `/api/remote-sources/:id`       | `purge`      | Delete a source; `?purge=true` also deletes that source's imported sessions                 |
-| `POST`   | `/api/remote-sources/:id/test`  | --           | Probe SSH connectivity to the source                                                        |
-| `POST`   | `/api/remote-sources/:id/sync`  | --           | Pull and re-import from the source now                                                      |
+| `GET`    | `/api/remote-sources`           | --           | 構成されたリモートソースを、ステータス、最後のエラー、および最終同期のカウントとともに一覧表示します |
+| `POST`   | `/api/remote-sources`           | --           | ソースを作成します。ボディ: `{ label, host, ssh_port?, identity_file?, remote_home?, remote_codex_home?, enabled? }` |
+| `PATCH`  | `/api/remote-sources/:id`       | --           | ソースを更新します（ラベル、接続フィールド、有効/無効）                                       |
+| `DELETE` | `/api/remote-sources/:id`       | `purge`      | ソースを削除します；`?purge=true` の場合は、そのソースのインポートされたセッションも削除されます                 |
+| `POST`   | `/api/remote-sources/:id/test`  | --           | ソースへの SSH 接続性をプローブします                                                        |
+| `POST`   | `/api/remote-sources/:id/sync`  | --           | 今すぐソースから取得し、再インポートします                                                      |
 
-`GET /api/sessions`, `/api/events`, `/api/agents`, `/api/stats`, and `/api/analytics` also accept an optional `sources` query param (comma-separated source ids; omit for all) to scope results by origin, and `GET /api/sessions/facets` returns a `sources` array for the data-scope selector.
+`GET /api/sessions`、`/api/events`、`/api/agents`、`/api/stats`、および `/api/analytics` は、結果を元の場所 (origin) でスコープするためのオプションの `sources` クエリパラメータ（コンマ区切りのソース ID；すべての場合は省略）を受け入れます。また、`GET /api/sessions/facets` はデータスコープセレクタ用の `sources` 配列を返します。
 
-### Hooks
+### フック (Hooks)
 
-| Method | Path               | Description                                  |
+| メソッド | パス               | 説明                                  |
 | ------ | ------------------ | -------------------------------------------- |
-| `POST` | `/api/hooks/event` | Receive and process a Claude Code hook event |
+| `POST` | `/api/hooks/event` | Claude Code のフックイベントを受信して処理します |
 
-**Hook event payload:**
+**フックイベントのペイロード:**
 
 ```json
 {
@@ -1127,128 +1123,110 @@ See [docs/API.md → Metrics](./docs/API.md#metrics) for the full metric list an
 }
 ```
 
-### Pricing
+### 価格設定 (Pricing)
 
-| Method   | Path                     | Description                              |
+| メソッド   | パス                     | 説明                              |
 | -------- | ------------------------ | ---------------------------------------- |
-| `GET`    | `/api/pricing`           | List all pricing rules                   |
-| `PUT`    | `/api/pricing`           | Create or update a pricing rule          |
-| `DELETE` | `/api/pricing/:pattern`  | Delete a pricing rule                    |
-| `GET`    | `/api/pricing/cost`      | Total cost across all sessions           |
-| `GET`    | `/api/pricing/cost/:id`  | Cost breakdown for a specific session    |
+| `GET`    | `/api/pricing`           | すべての価格設定ルールを一覧表示します |
+| `PUT`    | `/api/pricing`           | 価格設定ルールを作成または更新します |
+| `DELETE` | `/api/pricing/:pattern`  | 価格設定ルールを削除します |
+| `GET`    | `/api/pricing/cost`      | すべてのセッションの総コスト |
+| `GET`    | `/api/pricing/cost/:id`  | 特定セッションのコストの内訳 |
 
-### Workflows
+### ワークフロー (Workflows)
 
-| Method | Path                          | Description                                             |
+| メソッド | パス                          | 説明                                             |
 | ------ | ----------------------------- | ------------------------------------------------------- |
-| `GET`  | `/api/workflows`              | Provider/source-scoped workflow data (orchestration, recorded tools, patterns, Codex compactions). Optional `?status=active\|completed`, `?sources=...`, and `?providers=claude\|codex` filters apply to all 11 data sections |
-| `GET`  | `/api/workflows/session/:id`  | Provider/source-scoped per-session drill-in (agent tree, recorded tool timeline, events) |
+| `GET`  | `/api/workflows`              | プロバイダー/ソースでスコープされたワークフローデータ（オーケストレーション、記録されたツール、パターン、Codex コンパクション）。オプションの `?status=active\|completed`、`?sources=...`、および `?providers=claude\|codex` フィルターはすべての 11 のデータセクションに適用されます |
+| `GET`  | `/api/workflows/session/:id`  | プロバイダー/ソースでスコープされたセッションごとのドリルイン（エージェントツリー、記録されたツールのタイムライン、イベント） |
 
-### Alerts
+### アラート (Alerts)
 
-| Method   | Path                     | Description                                                            |
+| メソッド   | パス                     | 説明                                                            |
 | -------- | ------------------------ | ---------------------------------------------------------------------- |
-| `GET`    | `/api/alerts`            | Fired-alert feed, newest first (`?unacked=true`, `limit`, `offset`)    |
-| `POST`   | `/api/alerts/:id/ack`    | Acknowledge one alert                                                  |
-| `POST`   | `/api/alerts/ack-all`    | Acknowledge every unacked alert                                        |
-| `GET`    | `/api/alerts/rules`      | List alert rules                                                       |
-| `POST`   | `/api/alerts/rules`      | Create a rule (`event_pattern` \| `inactivity` \| `status_duration` \| `token_threshold`) |
-| `PATCH`  | `/api/alerts/rules/:id`  | Update name / config / enabled / cooldown (rule type is immutable)     |
-| `DELETE` | `/api/alerts/rules/:id`  | Delete a rule and its fired-alert history                              |
+| `GET`    | `/api/alerts`            | 発動したアラートフィード、最新順 (`?unacked=true`, `limit`, `offset`)    |
+| `POST`   | `/api/alerts/:id/ack`    | 1 つのアラートを承認 (acknowledge) します |
+| `POST`   | `/api/alerts/ack-all`    | 未承認のすべてのアラートを承認します |
+| `GET`    | `/api/alerts/rules`      | アラートルールを一覧表示します |
+| `POST`   | `/api/alerts/rules`      | ルールを作成します (`event_pattern` \| `inactivity` \| `status_duration` \| `token_threshold`) |
+| `PATCH`  | `/api/alerts/rules/:id`  | 名前 / 設定 / 有効状態 / クールダウンを更新します (ルールの種類は不変です) |
+| `DELETE` | `/api/alerts/rules/:id`  | ルールとその発動履歴を削除します |
 
-### Webhooks
+### Webhook (Webhooks)
 
-| Method   | Path                              | Description                                                                          |
+| メソッド   | パス                              | 説明                                                                          |
 | -------- | --------------------------------- | ------------------------------------------------------------------------------------ |
-| `GET`    | `/api/webhooks/providers`         | Supported providers + their config fields (drives the UI form)                       |
-| `GET`    | `/api/webhooks`                   | List webhook targets (URLs masked, secrets redacted)                                 |
-| `POST`   | `/api/webhooks`                   | Create a target (14 first-class providers + `generic`)                               |
-| `PATCH`  | `/api/webhooks/:id`               | Update name / url / enabled / secret / headers / rule scope (type is immutable)      |
-| `DELETE` | `/api/webhooks/:id`               | Delete a target and its delivery log                                                 |
-| `POST`   | `/api/webhooks/:id/test`          | Send a synthetic test alert and report the delivery result                           |
-| `GET`    | `/api/webhooks/:id/deliveries`    | Recent delivery log for a target (`limit`, `offset`)                                  |
+| `GET`    | `/api/webhooks/providers`         | サポートされているプロバイダーとその設定フィールド (UI フォームを駆動します) |
+| `GET`    | `/api/webhooks`                   | Webhook ターゲットの一覧表示 (URL はマスクされ、シークレットは墨塗りされます) |
+| `POST`   | `/api/webhooks`                   | ターゲットを作成します (14 のファーストクラスプロバイダー + `generic`) |
+| `PATCH`  | `/api/webhooks/:id`               | 名前 / URL / 有効状態 / シークレット / ヘッダー / ルールスコープを更新します (種類は不変です) |
+| `DELETE` | `/api/webhooks/:id`               | ターゲットとその配信ログを削除します |
+| `POST`   | `/api/webhooks/:id/test`          | 合成的なテストアラートを送信し、配信結果を報告します |
+| `GET`    | `/api/webhooks/:id/deliveries`    | ターゲットの最近の配信ログ (`limit`, `offset`) |
 
-Hosted providers require HTTPS. `generic` and `n8n` may use HTTP for local or self-hosted receivers. Delivery rejects redirects, so credentials, custom headers, and HMAC signatures are never forwarded to a second URL.
+ホストされたプロバイダーには HTTPS が必要です。`generic` と `n8n` はローカルまたはセルフホストされた受信者向けに HTTP を使用できます。配信はリダイレクトを拒否するため、認証情報、カスタムヘッダー、および HMAC 署名が 2 番目の URL に転送されることはありません。
 
-### Settings
+### 設定 (Settings)
 
-| Method | Path                           | Description                                      |
+| メソッド | パス                           | 説明                                      |
 | ------ | ------------------------------ | ------------------------------------------------ |
-| `GET`  | `/api/settings/info`           | System info, DB stats, hook status               |
-| `POST` | `/api/settings/clear-data`     | Delete all sessions, agents, events, token usage |
-| `POST` | `/api/settings/reimport`       | Re-import legacy sessions from `~/.claude/`      |
-| `POST` | `/api/settings/reinstall-hooks`| Reinstall Claude Code hooks                      |
-| `POST` | `/api/settings/reset-pricing`  | Reset Claude, Codex, or both pricing tables to defaults |
-| `GET`  | `/api/settings/export`         | Export all data (sessions, agents, events, token_usage, workflows, dashboard_runs, alert_rules, model_pricing, gpt_model_pricing) as one versioned JSON download |
-| `POST` | `/api/settings/import`         | Restore one bundle up to 25 MiB from `/export` (multipart `file` or JSON `{ path }`). Idempotent + non-destructive — existing sessions are skipped whole |
-| `POST` | `/api/settings/cleanup`        | Abandon stale sessions, purge old data           |
+| `GET`  | `/api/settings/info`           | システム情報、DB 統計、フックのステータス |
+| `POST` | `/api/settings/clear-data`     | すべてのセッション、エージェント、イベント、トークン使用量を削除します |
+| `POST` | `/api/settings/reimport`       | `~/.claude/` からレガシーセッションを再インポートします |
+| `POST` | `/api/settings/reinstall-hooks`| Claude Code フックを再インストールします |
+| `POST` | `/api/settings/reset-pricing`  | Claude、Codex、または両方の価格設定テーブルをデフォルトにリセットします |
+| `GET`  | `/api/settings/export`         | すべてのデータ（セッション、エージェント、イベント、token_usage、ワークフロー、dashboard_runs、alert_rules、model_pricing、gpt_model_pricing）を 1 つのバージョン管理された JSON ダウンロードとしてエクスポートします |
+| `POST` | `/api/settings/import`         | `/export` から最大 25 MiB までの 1 つのバンドルを復元します (マルチパートの `file` または JSON `{ path }`)。冪等性 + 非破壊的 — 既存のセッションは全体がスキップされます |
+| `POST` | `/api/settings/cleanup`        | 古いセッションを中断し、過去のデータをパージします |
 
-### Claude Config Explorer (`/api/cc-config`)
+### Claude 設定エクスプローラー (`/api/cc-config`)
 
-Read-only inspection of every Claude Code configuration surface, plus carefully-gated mutations for low-risk text-file artifacts. File reads canonicalize the requested path and allowed roots, so symlinks cannot escape the trusted Claude directories. All write paths create timestamped backups under `<root>/cc-config-backups/<type>/` before mutating.
+すべての Claude Code 構成サーフェスの読み取り専用の検査に加えて、低リスクのテキストファイルアーティファクトに対する慎重に保護された変更 (mutation) を提供します。ファイルの読み取りは要求されたパスと許可されたルートを正規化するため、シンボリックリンクが信頼された Claude ディレクトリから抜け出すことはできません。すべての書き込みパスは、変更前に `<root>/cc-config-backups/<type>/` の下にタイムスタンプ付きのバックアップを作成します。
 
-| Method   | Path                                | Description |
+| メソッド   | パス                                | 説明 |
 | -------- | ----------------------------------- | ----------- |
-| `GET`    | `/api/cc-config/overview`           | Roots (claude home, project .claude, project root, ~/.claude.json) + counts for every surface |
-| `GET`    | `/api/cc-config/skills`             | Skills under `<scope>/.claude/skills/<name>/SKILL.md` with parsed frontmatter; `?scope=user\|project\|all` |
-| `GET`    | `/api/cc-config/agents`             | Subagents `<scope>/.claude/agents/*.md` |
-| `GET`    | `/api/cc-config/commands`           | Slash commands `<scope>/.claude/commands/*.md` |
-| `GET`    | `/api/cc-config/output-styles`      | Output styles `<scope>/.claude/output-styles/*.md` |
-| `GET`    | `/api/cc-config/plugins`            | Installed plugins from `~/.claude/plugins/installed_plugins.json`, joined with `enabledPlugins` from settings; each entry includes `contributes` (count of skills/agents/commands/hooks/output-styles inside the plugin's install dir) plus `plugin.json` metadata |
-| `GET`    | `/api/cc-config/marketplaces`       | Registered marketplaces from `known_marketplaces.json`, enriched with each marketplace's own `marketplace.json` (plugin count, owner, description) |
-| `GET`    | `/api/cc-config/mcp`                | MCP servers from `~/.claude.json` (top-level + per-project) and `settings.json` |
-| `GET`    | `/api/cc-config/hooks`              | Hooks aggregated across user / project / project-local `settings.json` files |
-| `GET`    | `/api/cc-config/hook-scripts`       | Files in `~/.claude/hooks/` (the helper scripts referenced by `hooks.<event>.command`) |
-| `GET`    | `/api/cc-config/keybindings`        | `~/.claude/keybindings.json` parsed into context-grouped key/action pairs |
-| `PUT`    | `/api/cc-config/keybindings`        | Overwrite `keybindings.json` from `{ groups: [{ context, bindings: [{ key, action }] }] }`. Backs up first, preserves top-level metadata (`$schema`/`$docs`), rejects duplicate contexts/keys. Safe to edit (unlike `settings.json`, the CLI never rewrites it mid-session) |
-| `GET`    | `/api/cc-config/statusline`         | `settings.json.statusLine` config + the actual `statusline.py` / `statusline-command.sh` content if present |
-| `GET`    | `/api/cc-config/settings`           | User / project / project-local settings JSON, with secret-like keys (matching `/token\|secret\|password\|api[_-]?key\|auth/i`) replaced by `"<redacted>"` |
-| `GET`    | `/api/cc-config/memory`             | `CLAUDE.md` files at user + project scope, plus per-project file-based memory: `scope:"auto-memory"` items (each carrying `project`, `name`, `isIndex`, and parsed `frontmatter`) for every `*.md` under `~/.claude/projects/<slug>/memory/`. Mutate via `PUT`/`DELETE /api/cc-config/file` with `{ scope: "auto-memory", type: "auto-memory", project, name }` (backups land in `<memory-dir>/.cc-config-backups/auto-memory/`) |
-| `GET`    | `/api/cc-config/file?path=…`        | Body of a single file (path-contained to CLAUDE_HOME / project .claude / project CLAUDE.md) |
-| `GET`    | `/api/cc-config/backups`            | Listing of all timestamped backups, optionally filtered `?scope=&type=` |
-| `PUT`    | `/api/cc-config/file`               | Create or overwrite a text-file artifact. Body: `{ scope, type, name?, content }`. Auto-backs-up if file exists. Atomic temp + rename. 256 KB content cap, strict `name` regex |
-| `DELETE` | `/api/cc-config/file`               | Backup-then-delete a text-file artifact. Skill dirs are backed up whole (preserving bundled assets) before recursive removal |
+| `GET`    | `/api/cc-config/overview`           | ルート (claude ホーム, プロジェクトの .claude, プロジェクトルート, ~/.claude.json) + すべてのサーフェスのカウント |
+| `GET`    | `/api/cc-config/skills`             | `<scope>/.claude/skills/<name>/SKILL.md` の下のスキル (パースされたフロントマター付き)；`?scope=user\|project\|all` |
+| `GET`    | `/api/cc-config/agents`             | サブエージェント `<scope>/.claude/agents/*.md` |
+| `GET`    | `/api/cc-config/commands`           | スラッシュコマンド `<scope>/.claude/commands/*.md` |
+| `GET`    | `/api/cc-config/output-styles`      | 出力スタイル `<scope>/.claude/output-styles/*.md` |
+| `GET`    | `/api/cc-config/plugins`            | `~/.claude/plugins/installed_plugins.json` からインストールされたプラグインと、設定からの `enabledPlugins` を結合したもの。各エントリには `contributes`（プラグインのインストールディレクトリ内のスキル/エージェント/コマンド/フック/出力スタイルの数）と `plugin.json` メタデータが含まれます |
+| `GET`    | `/api/cc-config/marketplaces`       | `known_marketplaces.json` からの登録済みマーケットプレイスに、各マーケットプレイス自身の `marketplace.json`（プラグイン数、所有者、説明）を付加したもの |
+| `GET`    | `/api/cc-config/mcp`                | `~/.claude.json` (トップレベル + プロジェクトごと) と `settings.json` からの MCP サーバー |
+| `GET`    | `/api/cc-config/hooks`              | ユーザー / プロジェクト / プロジェクトローカルの `settings.json` ファイル全体で集約されたフック |
+| `GET`    | `/api/cc-config/hook-scripts`       | `~/.claude/hooks/` 内のファイル (`hooks.<event>.command` で参照されるヘルパースクリプト) |
+| `GET`    | `/api/cc-config/keybindings`        | コンテキストでグループ化されたキー/アクションのペアにパースされた `~/.claude/keybindings.json` |
+| `PUT`    | `/api/cc-config/keybindings`        | `{ groups: [{ context, bindings: [{ key, action }] }] }` から `keybindings.json` を上書きします。最初にバックアップを取り、トップレベルのメタデータ (`$schema`/`$docs`) を保持し、重複するコンテキスト/キーを拒否します。（`settings.json` とは異なり、CLI はセッションの途中でこれを書き換えないため）編集しても安全です |
+| `GET`    | `/api/cc-config/statusline`         | `settings.json.statusLine` の設定 + 存在する場合は実際の `statusline.py` / `statusline-command.sh` コンテンツ |
+| `GET`    | `/api/cc-config/settings`           | ユーザー / プロジェクト / プロジェクトローカルの設定 JSON。シークレットと思われるキー（`/token\|secret\|password\|api[_-]?key\|auth/i` に一致するもの）は `"<redacted>"` に置き換えられます |
+| `GET`    | `/api/cc-config/memory`             | ユーザーおよびプロジェクトスコープの `CLAUDE.md` ファイル、さらにプロジェクトごとのファイルベースのメモリ：`~/.claude/projects/<slug>/memory/` 下のすべての `*.md` に対する `scope:"auto-memory"` アイテム（それぞれ `project`, `name`, `isIndex`, およびパースされた `frontmatter` を持ちます）。`{ scope: "auto-memory", type: "auto-memory", project, name }` と共に `PUT`/`DELETE /api/cc-config/file` を介して変更します（バックアップは `<memory-dir>/.cc-config-backups/auto-memory/` に配置されます） |
+| `GET`    | `/api/cc-config/file?path=…`        | 単一ファイルの本文 (CLAUDE_HOME / プロジェクト .claude / プロジェクト CLAUDE.md にパス制限されます) |
+| `GET`    | `/api/cc-config/backups`            | すべてのタイムスタンプ付きバックアップのリスト (オプションで `?scope=&type=` フィルター可能) |
+| `PUT`    | `/api/cc-config/file`               | テキストファイルアーティファクトを作成または上書きします。本文: `{ scope, type, name?, content }`。ファイルが存在する場合は自動的にバックアップします。一時ファイル + リネームによるアトミック操作。256 KB のコンテンツ制限、厳格な `name` 正規表現 |
+| `DELETE` | `/api/cc-config/file`               | テキストファイルアーティファクトをバックアップしてから削除します。スキルディレクトリは（バンドルされたアセットを保持するために）再帰的に削除される前に全体がバックアップされます |
 
-### Run Claude (`/api/run`)
+### エージェントの実行 (`/api/run`)
 
-HTTP surface for spawning and supervising `claude` subprocesses from the dashboard. Same-origin guard on every route — browser requests must come from a localhost origin; missing-Origin (CLI/curl) requests pass. A supplied `cwd` must be an existing absolute directory and is canonicalized with `realpath`. It intentionally may be outside this repository so Run Agent can launch from the user's home or any recent project.
+ダッシュボードから `claude` サブプロセスをスポーンおよび監視するための HTTP サーフェス。すべてのルートで Same-Origin ガードが働きます — ブラウザのリクエストは localhost オリジンから来る必要があります。Origin がない (CLI/curl) リクエストは通過します。提供される `cwd` は存在する絶対ディレクトリでなければならず、`realpath` で正規化されます。ユーザーのホームディレクトリや最近の任意のプロジェクトから Run Agent を起動できるように、意図的にこのリポジトリの外部のディレクトリを指定することも可能です。
 
-| Method   | Path                              | Description |
+| メソッド   | パス                              | 説明 |
 | -------- | --------------------------------- | ----------- |
-| `GET`    | `/api/run`                        | List all in-memory run handles (live + recently finished); also returns `maxConcurrent` and `activeCount` |
-| `GET`    | `/api/run/binary`                 | Probe whether `claude` is on `PATH` and where it lives — used by the UI to surface a clear error before spawning |
-| `GET`    | `/api/run/cwds`                   | Suggested working directories: dashboard server cwd, `$HOME`, and recent cwds from the sessions table |
-| `GET`    | `/api/run/files?cwd=…&q=…`        | Fuzzy file search inside `cwd` for the Run page's `@`-file autocomplete. Skips `node_modules`, `.git`, `dist`, `build`, `.next`, `.cache`, `coverage`, etc. Cwd is required and must exist; results are capped and ranked by basename match |
-| `POST`   | `/api/run`                        | Spawn a new run. Body: `{ prompt, mode: "headless"\|"conversation", cwd?, model?, permissionMode?, resumeSessionId?, effort? }`. Headless puts prompt in argv via `-p` and closes stdin. Conversation pipes the prompt over stdin as a stream-json envelope and keeps stdin open for follow-ups. `resumeSessionId` (conversation only) adds `--resume <id>`; when set, `prompt` may be empty — the spawner skips the initial stdin write and `claude` idles on the resumed conversation until the user posts a follow-up via `POST /api/run/:id/message`. `effort` (`low` / `medium` / `high`) maps to `--effort`. The spawner always passes `--output-format stream-json --verbose --include-partial-messages` so the UI can render character-by-character deltas. Concurrency is effectively uncapped (default ceiling 10000 — override with `RUN_MAX_CONCURRENT`) |
-| `GET`    | `/api/run/:id`                    | Current handle state. `?envelopes=1` includes the in-memory envelope log so the UI can replay history when re-attaching |
-| `POST`   | `/api/run/:id/message`            | Send a follow-up turn to a running conversation (conversation mode only). Body: `{ text }` |
-| `DELETE` | `/api/run/:id`                    | Stop a run. SIGTERM, escalating to SIGKILL after 5 s |
+| `GET`    | `/api/run`                        | インメモリのすべての実行ハンドル（稼働中 + 最近完了したもの）を一覧表示します；`maxConcurrent` と `activeCount` も返します |
+| `GET`    | `/api/run/binary`                 | `claude` が `PATH` 上にあるか、またどこに存在するかをプローブします — 実行前に UI が明確なエラーを表示するために使用されます |
+| `GET`    | `/api/run/cwds`                   | 推奨される作業ディレクトリ：ダッシュボードサーバーの cwd、`$HOME`、およびセッションテーブルからの最近の cwd |
+| `GET`    | `/api/run/files?cwd=…&q=…`        | Run ページの `@`-file オートコンプリート用の、`cwd` 内のあいまい (Fuzzy) ファイル検索。`node_modules`、`.git`、`dist`、`build`、`.next`、`.cache`、`coverage` などをスキップします。Cwd は必須であり、存在する必要があります。結果は制限され、ベースネームの一致度でランク付けされます |
+| `POST`   | `/api/run`                        | 新しい実行をスポーンします。ボディ: `{ prompt, mode: "headless"\|"conversation", cwd?, model?, permissionMode?, resumeSessionId?, effort? }`。Headless は `-p` 経由でプロンプトを argv に入れ、標準入力を閉じます。Conversation は stream-json エンベロープとしてプロンプトを標準入力にパイプし、フォローアップのために標準入力を開いたままにします。`resumeSessionId` (conversation モードのみ) は `--resume <id>` を追加します；これが設定されている場合、`prompt` は空でもかまいません — スポーナーは最初の標準入力への書き込みをスキップし、`claude` はユーザーが `POST /api/run/:id/message` を介してフォローアップを送信するまで、再開された会話上で待機します。`effort` (`low` / `medium` / `high`) は `--effort` にマッピングされます。スポーナーは常に `--output-format stream-json --verbose --include-partial-messages` を渡すため、UI は文字ごとの差分 (delta) をレンダリングできます。同時実行数は実質的に無制限です (デフォルトの上限は 10000 — `RUN_MAX_CONCURRENT` でオーバーライド可能) |
+| `GET`    | `/api/run/:id`                    | 現在のハンドルの状態。`?envelopes=1` はインメモリのエンベロープログを含めるため、再アタッチ時に UI が履歴をリプレイできます |
+| `POST`   | `/api/run/:id/message`            | 実行中の会話にフォローアップターンを送信します (conversation モードのみ)。ボディ: `{ text }` |
+| `DELETE` | `/api/run/:id`                    | 実行を停止します。SIGTERM を送信し、5秒後に SIGKILL にエスカレーションします |
 
-Output streams over the existing dashboard WebSocket as three message types: `run_stream` (parsed stream-json envelope, including `stream_event` deltas from `--include-partial-messages`), `run_status` (status transitions), `run_input_ack` (stdin write confirmed). The Config Explorer page subscribes to a fourth message — `cc_config_changed` — broadcast by `server/lib/cc-watcher.js` (via `fs.watch` on `~/.claude/`) and by `routes/cc-config.js` after every successful PUT/DELETE, with payload `{ source: "dashboard"|"fs", action?, scope?, type?, name?, paths? }`. The Sessions list and SessionDetail page poll `/api/run` (and listen for `run_status`) to badge any session currently being driven by an in-flight Run with a clickable **▶ Run** indicator that links back to `/run`.
+出力は、既存のダッシュボード WebSocket 上を 3 つのメッセージタイプとしてストリームされます：`run_stream`（パースされた stream-json エンベロープ、`--include-partial-messages` からの `stream_event` デルタを含む）、`run_status`（ステータス遷移）、`run_input_ack`（標準入力の書き込み確認）。設定エクスプローラー（Config Explorer）ページは 4 つ目のメッセージ — `cc_config_changed` — を購読します。これは、`server/lib/cc-watcher.js` ( `~/.claude/` の `fs.watch` 経由) および `routes/cc-config.js` が、成功したすべての PUT/DELETE の後に、ペイロード `{ source: "dashboard"|"fs", action?, scope?, type?, name?, paths? }` とともにブロードキャストするものです。セッションリストとセッション詳細ページは、`/api/run` をポーリング（および `run_status` をリッスン）して、現在実行中の Run によって駆動されているセッションに対し、`/run` に戻るためのクリック可能な **▶ Run** インジケーターのバッジを付けます。
 
-### Import History
+### 履歴のインポート (Import History)
 
-Import existing **Claude Code** or **Codex** history through the provider
-tabs in **Settings → Import History**. Claude Code uses its shared JSONL
-parser for `~/.claude/projects`; Codex uses the same append-only rollout
-ingestor as real-time monitoring for `~/.codex/sessions`, including token
-snapshots, response-item tool calls, lifecycle state, and native `/rename`
-titles when `session_index.jsonl` is included. Re-imports are idempotent:
-Claude preserves compaction baselines and Codex retains byte cursors, so
-neither provider double-counts usage or cost. Folder and browser-uploaded
-Codex history is copied into dashboard-owned storage before temporary files
-are cleaned up, keeping the conversation view available later.
+**設定 (Settings) → 履歴のインポート (Import History)** のプロバイダータブから、既存の **Claude Code** または **Codex** の履歴をインポートします。Claude Code は `~/.claude/projects` 用の共有 JSONL パーサーを使用し、Codex は `~/.codex/sessions` に対するリアルタイム監視と同じ追記型ロールアウトインジェスターを使用します。これには、トークンスナップショット、response-item のツール呼び出し、ライフサイクル状態、および `session_index.jsonl` が含まれる場合はネイティブの `/rename` タイトルが含まれます。再インポートは冪等性があります：Claude はコンパクションのベースラインを保持し、Codex はバイトカーソルを保持するため、どちらのプロバイダーも使用量やコストを二重にカウントすることはありません。フォルダーやブラウザからアップロードされた Codex の履歴は、一時ファイルがクリーンアップされる前にダッシュボード所有のストレージにコピーされるため、後で会話ビューを引き続き利用できます。
 
-A fourth mode — **Restore backup** — imports a full dashboard export
-`.json` (produced by the **Export data** button, `ccam export`, or
-`GET /api/settings/export`) rather than raw Claude transcripts. This is
-the round-trip counterpart to Export: it restores every table (sessions,
-agents, events, token_usage, workflows, dashboard_runs, alert_rules,
-model_pricing, gpt_model_pricing) and is idempotent + non-destructive — a session already
-present is skipped whole, so you can safely **consolidate several
-machines** into one dashboard without duplicating or overwriting
-anything. Backed by `server/lib/data-transfer.js` and
-`POST /api/settings/import` (also `ccam import-data <file>`).
+4 番目のモード — **バックアップの復元 (Restore backup)** — は、生の Claude トランスクリプトではなく、完全なダッシュボードの `.json` エクスポート (**データのエクスポート** ボタン、`ccam export`、または `GET /api/settings/export` によって生成されたもの) をインポートします。これはエクスポートのラウンドトリップ版にあたります：すべてのテーブル（sessions, agents, events, token_usage, workflows, dashboard_runs, alert_rules, model_pricing, gpt_model_pricing）を復元し、冪等でかつ非破壊的です — すでに存在するセッションは全体がスキップされるため、何も複製したり上書きしたりすることなく、**複数のマシン**を安全に 1 つのダッシュボードに統合することができます。これは `server/lib/data-transfer.js` と `POST /api/settings/import` (または `ccam import-data <file>`) によってサポートされています。
 
 ```mermaid
 flowchart LR
@@ -1281,71 +1259,27 @@ flowchart LR
     style U fill:#a855f7,stroke:#c084fc,color:#fff
 ```
 
-**Routes**
+**ルート (Routes)**
 
-| Method | Path                    | Description                                                              |
+| メソッド | パス                    | 説明                                                              |
 | ------ | ----------------------- | ------------------------------------------------------------------------ |
-| `GET`  | `/api/import/guide`     | Provider-aware OS paths, archive command, extensions, and instructions (`?provider=claude\|codex`) |
-| `POST` | `/api/import/rescan`    | Rescan the selected default: `~/.claude/projects` or `~/.codex/sessions` (`{ provider }`) |
-| `POST` | `/api/import/scan-path` | Scan an absolute directory with `{ path, provider }`; walks recursively |
-| `POST` | `/api/import/upload`    | Multipart upload of `.jsonl`, `.meta.json`, `.zip`, `.tar(.gz)`, `.gz` with `provider` |
+| `GET`  | `/api/import/guide`     | プロバイダーを考慮した OS パス、アーカイブコマンド、拡張子、および指示 (`?provider=claude\|codex`) |
+| `POST` | `/api/import/rescan`    | 選択されたデフォルトを再スキャンします: `~/.claude/projects` または `~/.codex/sessions` (`{ provider }`) |
+| `POST` | `/api/import/scan-path` | `{ path, provider }` を使用して絶対パスのディレクトリをスキャンします；再帰的に走査します |
+| `POST` | `/api/import/upload`    | `.jsonl`, `.meta.json`, `.zip`, `.tar(.gz)`, `.gz` の `provider` 付きマルチパートアップロード |
 
-**Supported inputs.** Loose JSONL (`.jsonl`) session transcripts, their
-companion `.meta.json` sidecars, and archives (`.zip`, `.tar`,
-`.tar.gz`/`.tgz`, plain `.gz`) containing any nested directory layout.
-Both canonical Claude Code layouts are recognized automatically:
-`<project>/<sessionId>/subagents/agent-*.jsonl` (default) and
-`<project>/subagents/<sessionId>/agent-*.jsonl` (alternative).
-For Codex, the importer recognises recursive `rollout-*.jsonl` session files
-(including loose JSONL files with `session_meta`) and an optional
-`session_index.jsonl` for native session names.
+**サポートされている入力:** 単一の JSONL (`.jsonl`) セッショントランスクリプト、それに付随する `.meta.json` サイドカー、および任意のネストされたディレクトリレイアウトを含むアーカイブ（`.zip`, `.tar`, `.tar.gz`/`.tgz`, 単なる `.gz`）。2 つの正規の Claude Code レイアウトが自動的に認識されます：`<project>/<sessionId>/subagents/agent-*.jsonl` (デフォルト) および `<project>/subagents/<sessionId>/agent-*.jsonl` (代替)。Codex の場合、インポーターは再帰的な `rollout-*.jsonl` セッションファイル (`session_meta` を持つ単一の JSONL ファイルを含む) およびオプションの
+`session_index.jsonl` (ネイティブなセッション名の場合)。
 
-**Accuracy guarantees.** Sessions are deduplicated by UUID; re-running
-the importer is always safe. The compaction `baseline_input` /
-`baseline_output` / `baseline_cache_read` / `baseline_cache_write`
-columns preserve token counts from before a transcript was compacted,
-so re-ingesting a post-compaction JSONL never erases historical cost.
-Event-level dedup uses a per-event-type high-water mark
-(`MAX(created_at) GROUP BY event_type` for the session): on every
-re-import only JSONL entries with `ts > cutoff[type]` are inserted, so
-long-running sessions whose transcripts grow across multiple days
-continue to receive Stop / PostToolUse / TurnDuration / ToolError
-events without duplicating earlier work. `sessions.ended_at` is rolled
-forward to the JSONL's last activity when it surpasses the stored
-value, and message-count metadata is refreshed on every pass.
+**精度の保証 (Accuracy guarantees).** セッションは UUID によって重複排除されるため、インポーターを再実行しても常に安全です。コンパクションの `baseline_input` / `baseline_output` / `baseline_cache_read` / `baseline_cache_write` 列は、トランスクリプトがコンパクト化される前のトークン数を保持するため、コンパクション後の JSONL を再取り込みしても履歴のコストが消去されることはありません。イベントレベルの重複排除は、イベントタイプごとのハイウォーターマーク（セッションの `MAX(created_at) GROUP BY event_type`）を使用します。すべての再インポート時に、`ts > cutoff[type]` を持つ JSONL エントリのみが挿入されるため、トランスクリプトが複数日にまたがって成長するような長時間のセッションでも、以前の作業を重複させることなく Stop / PostToolUse / TurnDuration / ToolError イベントを受信し続けます。`sessions.ended_at` は、JSONL の最後のアクティビティが保存された値を超えた場合に前方にロールされ、メッセージ数のメタデータはすべてのパスで更新されます。
 
-**Huge-transcript safety.** The shared transcript cache
-(`server/lib/transcript-cache.js`) reads JSONL files in 4 MiB chunks
-and decodes only one line at a time, so transcripts larger than V8's
-max JS string length (~512 MiB on 64-bit Node 20) parse without
-aborting the process with `FATAL ERROR: v8::ToLocalChecked Empty
-MaybeLocal`. The same chunked path is used by hook ingestion, the
-periodic compaction sweep, and the history importer — none of them
-materialize the full file as a single JS string. Per-entry growable
-arrays (`turnDurations`, `errors`, `compaction.entries`,
-`usageExtras.*`) are tail-capped at `TRANSCRIPT_CACHE_MAX_ARRAY_LEN`
-(default `1000`), with trimming applied during parse at a `2 × cap`
-watermark so a fresh full-file parse on a multi-day session can't
-build an unbounded transient before finalization.
+**巨大なトランスクリプトの安全性 (Huge-transcript safety).** 共有トランスクリプトキャッシュ (`server/lib/transcript-cache.js`) は JSONL ファイルを 4 MiB のチャンクで読み取り、一度に 1 行だけをデコードします。これにより、V8 の最大 JS 文字列長（64 ビット Node 20 で約 512 MiB）を超えるトランスクリプトでも、プロセスを `FATAL ERROR: v8::ToLocalChecked Empty MaybeLocal` でアボートすることなくパースできます。フックの取り込み、定期的なコンパクションのスイープ、および履歴インポーターでも同じチャンク化されたパスが使用され、ファイル全体を 1 つの JS 文字列として実体化することはありません。エントリごとの拡張可能な配列 (`turnDurations`, `errors`, `compaction.entries`, `usageExtras.*`) は `TRANSCRIPT_CACHE_MAX_ARRAY_LEN` (デフォルト `1000`) でテールキャップされ、`2 × cap` ウォーターマークでのパース中にトリミングが適用されます。これにより、複数日にわたるセッションの完全なファイルの新規パースが、最終化の前に無制限の一時的メモリを構築することはなくなります。
 
-**Safety.** Archive extraction validates every entry against path
-traversal (absolute paths and `..` segments are rejected). A
-configurable extraction cap (`CCAM_IMPORT_MAX_EXTRACT_BYTES`, default
-4 GB) stops zip/tar/gzip bombs. Upload size is capped per file
-(`CCAM_IMPORT_MAX_BYTES`, default 1 GB) and per request
-(`CCAM_IMPORT_MAX_FILES`, default 2000). All staging directories are
-per-request and reclaimed in `finally`, including when multer rejects
-all files up front.
+**安全性 (Safety).** アーカイブ抽出は、すべてのエントリに対してパストラバーサル（絶対パスと `..` セグメントは拒否されます）を検証します。構成可能な抽出上限 (`CCAM_IMPORT_MAX_EXTRACT_BYTES`、デフォルト 4 GB) により、zip/tar/gzip ボムを防ぎます。アップロードサイズはファイルごと (`CCAM_IMPORT_MAX_BYTES`、デフォルト 1 GB) およびリクエストごと (`CCAM_IMPORT_MAX_FILES`、デフォルト 2000) に制限されています。すべてのステージングディレクトリはリクエストごとのものであり、`finally` 内で再利用 (reclaim) されます。これは、multer がすべてのファイルを最初に拒否した場合も含まれます。
 
-**Progress.** Import activity is broadcast over the existing WebSocket
-as `import.progress` messages (`phase`: `start` / `scan` / `extract` /
-`parse` / `complete` / `error`), throttled to avoid flooding the
-channel on large imports.
+**進捗 (Progress).** インポートのアクティビティは、既存の WebSocket を介して `import.progress` メッセージ（`phase`: `start` / `scan` / `extract` / `parse` / `complete` / `error`）としてブロードキャストされ、大規模なインポート時にチャンネルのフラッディングを避けるためにスロットリングされます。
 
-**UI.** Use the **Settings → Import History** panel for a guided,
-drag-and-drop experience with step-by-step instructions, live progress,
-and a post-import summary showing imported / enriched / skipped /
-error counts.
+**UI.** ステップバイステップの手順、ライブの進捗、およびインポートされた / 拡張された / スキップされた / エラー数のカウントを示すインポート後のサマリーを備えた、ガイド付きのドラッグアンドドロップエクスペリエンスについては、**設定 (Settings) → 履歴のインポート (Import History)** パネルを使用してください。
 
 <p align="center">
   <img src="images/import.png" alt="Import History UI" width="100%">
@@ -1353,7 +1287,7 @@ error counts.
 
 ### WebSocket
 
-Connect to `ws://localhost:4820/ws` to receive real-time push messages:
+`ws://localhost:4820/ws` に接続して、リアルタイムのプッシュメッセージを受信します:
 
 ```json
 {
@@ -1363,7 +1297,7 @@ Connect to `ws://localhost:4820/ws` to receive real-time push messages:
 }
 ```
 
-**Message types:** `session_created`, `session_updated`, `agent_created`, `agent_updated`, `new_event`, `alert_triggered`, `alert_updated`, `remote_source.status` (data `{ id, status: "idle"|"syncing"|"ok"|"error"|"deleted", error?, last_sync_at? }`)
+**メッセージの種類:** `session_created`, `session_updated`, `agent_created`, `agent_updated`, `new_event`, `alert_triggered`, `alert_updated`, `remote_source.status` (データ `{ id, status: "idle"|"syncing"|"ok"|"error"|"deleted", error?, last_sync_at? }`)
 
 ```mermaid
 stateDiagram-v2
@@ -1377,83 +1311,83 @@ stateDiagram-v2
 
 ---
 
-## Hook Events
+## フックイベント (Hook Events)
 
-The dashboard processes these Claude Code hook types:
+ダッシュボードは、以下の Claude Code フックタイプを処理します:
 
-| Hook Type           | Trigger                        | Dashboard Action                                                                             |
+| フックの種類 | トリガー | ダッシュボードのアクション |
 | ------------------- | ------------------------------ | -------------------------------------------------------------------------------------------- |
-| `SessionStart`      | Claude Code session begins     | Creates session and main agent. Stamps `awaiting_input_since` (with `awaiting_reason=session_start`) so a fresh session lands in **Waiting** — except a `compact`-source SessionStart (mid-turn auto-compaction), which leaves the flag untouched so a working session stays **Active**. Reactivates resumed sessions. Abandons orphaned sessions with no activity for `DASHBOARD_STALE_MINUTES` (default 180) |
-| `UserPromptSubmit`  | User hits enter on a prompt    | Clears the waiting flag and promotes the main agent to `working` — the only signal that text-only assistant turns have started, since they emit no `PreToolUse` |
-| `PreToolUse`        | Agent starts using a tool      | Clears the waiting flag, sets agent to `working`, sets `current_tool`. If tool is `Agent`, creates a subagent record |
-| `PostToolUse`       | Tool execution completed       | Clears the waiting flag (handles permission-prompt approvals where the Notification stamped it mid-tool). Clears `current_tool`. Agent stays `working` |
-| `Stop`              | Claude finishes responding     | Non-error: main agent → `waiting` — Claude finished its turn, ball is in the user's court. `stop_reason=error`: marks the agent and session `error`. Background subagents keep running |
-| `SubagentStop`      | Background agent finished      | Matches and completes the subagent by description, type, or task. Deliberately does NOT clear the waiting flag — a subagent finishing tells us nothing about the human. **Triggers a fire-and-forget JSONL scan** (`scanAndImportSubagents`) that emits per-tool `PreToolUse` + `PostToolUse` events under the subagent's own `agent_id` so the Timeline shows every tool the subagent ran, not just the spawn marker |
-| `Notification`      | Agent notification             | Logs event. Permission/input-prompt messages set the agent to `waiting` and stamp `awaiting_input_since` (with `awaiting_reason=notification`, matched by pattern: `permission`, `waiting for input`, `needs your approval`, …). Compaction notifications are tagged as `Compaction` events. Triggers a browser notification if enabled |
-| `SessionEnd`        | Claude Code CLI process exits  | Drops the waiting flag. If the session is already in `error`, the error state is preserved; otherwise marks all agents and the session as `completed` |
-| `Compaction`   | `/compact` detected in JSONL   | Creates a compaction subagent (type `compaction`) and Compaction event. Detected via `isCompactSummary` entries in the transcript JSONL. Also detected by periodic scanner for active sessions |
-| `APIError`     | API error in JSONL transcript  | Extracted from `isApiErrorMessage` entries (quota, rate limit, invalid_request) and raw `type: "error"` responses. **Now immediately marks the session and agent as `error`** — previously recorded as events without changing status. Stored as event with error details |
-| `TurnDuration` | Turn timing in JSONL transcript| Extracted from `system` subtype `turn_duration` messages with `durationMs`. Stored as event for turn-level timing analysis |
-| `ToolError`    | Tool result error in JSONL     | Extracted from `toolUseResult.is_error` entries. Tracks tool-level failures for error propagation analysis |
-| `Interrupted`  | Turn cancelled by the user (Esc) | Synthesized by the watchdog — `Esc` fires no hook, so a stuck `working` session is detected from the transcript's `[Request interrupted by user]` marker or, when Esc preceded any output, from the idle-working timeout (`DASHBOARD_WORKING_IDLE_SECONDS`). The session moves to **Waiting** (same as a normal `Stop`) |
+| `SessionStart`      | Claude Code セッション開始 | セッションとメインエージェントを作成します。`awaiting_input_since`（`awaiting_reason=session_start` 付き）をスタンプするため、新しいセッションは **待機中 (Waiting)** となります。例外として `compact` ソースの SessionStart（ターン中間の自動コンパクション）はフラグをそのままにするため、作業中のセッションは **アクティブ (Active)** のまま維持されます。再開されたセッションを再度アクティブ化します。`DASHBOARD_STALE_MINUTES`（デフォルト 180）の間アクティビティがない孤立したセッションを放棄します。 |
+| `UserPromptSubmit`  | ユーザーがプロンプトでエンターを押した時 | 待機フラグをクリアし、メインエージェントを `working` に昇格します — テキストのみのアシスタントターンは `PreToolUse` を発行しないため、これがターン開始の唯一のシグナルです |
+| `PreToolUse`        | エージェントがツールの使用を開始した時 | 待機フラグをクリアし、エージェントを `working` に設定し、`current_tool` を設定します。ツールが `Agent` の場合、サブエージェントレコードを作成します |
+| `PostToolUse`       | ツールの実行が完了した時 | 待機フラグをクリアします（Notification がツール使用の途中でスタンプした権限プロンプトの承認を処理します）。`current_tool` をクリアします。エージェントは `working` のまま維持されます |
+| `Stop`              | Claude が応答を終了した時 | エラーがない場合: メインエージェントは `waiting` になります — Claude はターンを終え、ボールはユーザーに渡されます。`stop_reason=error`: エージェントとセッションを `error` とマークします。バックグラウンドのサブエージェントは実行を継続します |
+| `SubagentStop`      | バックグラウンドエージェントが終了した時 | 説明、タイプ、またはタスクによってサブエージェントを一致させ、完了させます。意図的に待機フラグをクリア**しません** — サブエージェントの終了は人間についての情報を何も伝えないからです。**非同期 (fire-and-forget) の JSONL スキャンをトリガーし** (`scanAndImportSubagents`)、サブエージェント自身の `agent_id` の下でツールごとの `PreToolUse` + `PostToolUse` イベントを発行するため、タイムラインにはスポーンマーカーだけでなく、サブエージェントが実行したすべてのツールが表示されます |
+| `Notification`      | エージェントの通知 | イベントを記録します。権限/入力プロンプトメッセージはエージェントを `waiting` に設定し、`awaiting_input_since` (パターンのマッチによる `awaiting_reason=notification`: `permission`, `waiting for input`, `needs your approval`, …) をスタンプします。コンパクション通知は `Compaction` イベントとしてタグ付けされます。有効な場合、ブラウザ通知をトリガーします |
+| `SessionEnd`        | Claude Code CLI プロセスが終了した時 | 待機フラグを落とします。セッションがすでに `error` 状態の場合はエラー状態が維持され、それ以外の場合はすべてのエージェントとセッションが `completed` (完了) としてマークされます |
+| `Compaction`   | JSONL で `/compact` が検出された時 | コンパクションサブエージェント (タイプ `compaction`) と Compaction イベントを作成します。トランスクリプト JSONL の `isCompactSummary` エントリから検出されます。アクティブなセッションの定期的なスキャナーによっても検出されます |
+| `APIError`     | JSONL トランスクリプトの API エラー | `isApiErrorMessage` エントリ (quota, rate limit, invalid_request) および生の `type: "error"` 応答から抽出されます。**現在、セッションとエージェントはただちに `error` とマークされます** — 以前はステータスを変更せずにイベントとして記録されていました。エラーの詳細を含むイベントとして保存されます |
+| `TurnDuration` | JSONL トランスクリプトのターンのタイミング | `durationMs` を持つ `system` サブタイプの `turn_duration` メッセージから抽出されます。ターンレベルのタイミング分析のためのイベントとして保存されます |
+| `ToolError`    | JSONL でのツール結果のエラー | `toolUseResult.is_error` エントリから抽出されます。エラー伝播分析のためにツールレベルの失敗を追跡します |
+| `Interrupted`  | ユーザーによってキャンセルされたターン (Esc) | ウォッチドッグによって合成されます — `Esc` はフックを発生させないため、スタックした `working` セッションはトランスクリプトの `[Request interrupted by user]` マーカーから検出されるか、あるいはいかなる出力より前に Esc が押された場合は、アイドルワークタイムアウト (`DASHBOARD_WORKING_IDLE_SECONDS`) によって検出されます。セッションは **待機中 (Waiting)** に移行します (通常の `Stop` と同じ) |
 
 ---
 
-## Browser Notifications
+## ブラウザ通知 (Browser Notifications)
 
-The dashboard supports persistent browser notifications via Web Push (VAPID) for real-time alerts even when the dashboard tab is not focused or the browser is backgrounded.
+ダッシュボードは、ダッシュボードのタブにフォーカスがない場合やブラウザがバックグラウンドにある場合でも、Web Push (VAPID) を使用した永続的なブラウザ通知をサポートし、リアルタイムのアラートを提供します。
 
-### How It Works
+### 仕組み (How It Works)
 
-1. **Enable** notifications in the Settings page via the master toggle
-2. **Grant** browser permission when prompted — this registers a Service Worker and creates a push subscription
-3. **Configure** which events trigger notifications:
+1. 設定 (Settings) ページでマスタートグルを使用して通知を**有効 (Enable)** にします。
+2. プロンプトが表示されたらブラウザの権限を**付与 (Grant)** します — これにより Service Worker が登録され、プッシュサブスクリプションが作成されます。
+3. どのイベントで通知をトリガーするかを**設定 (Configure)** します:
 
-| Event                        | Default | Description                                                     |
+| イベント (Event) | デフォルト | 説明 (Description) |
 | ---------------------------- | ------- | --------------------------------------------------------------- |
-| New session starts           | On      | Fires when a new Claude Code session is created                 |
-| Claude finished responding   | Off     | Fires on `Stop` events when Claude finishes a response turn     |
-| Session closed               | Off     | Fires on `SessionEnd` when the CLI process exits                |
-| Session errors               | On      | Fires when a session ends with an error                         |
-| Subagent spawned             | Off     | Fires when a background subagent is created                     |
+| 新しいセッション開始 | オン | 新しい Claude Code セッションが作成されたときに発行されます |
+| Claude の応答完了 | オフ | Claude が応答ターンを終了したときの `Stop` イベントで発行されます |
+| セッションの終了 | オフ | CLI プロセスが終了したときの `SessionEnd` で発行されます |
+| セッションエラー | オン | セッションがエラーで終了したときに発行されます |
+| サブエージェントのスポーン | オフ | バックグラウンドのサブエージェントが作成されたときに発行されます |
 
-Additionally, any `Notification` hook event from Claude Code triggers a browser notification regardless of the per-event toggles (as long as the master toggle is enabled).
+さらに、Claude Code からの `Notification` フックイベントは、イベントごとのトグルに関係なく（マスタートグルが有効である限り）ブラウザ通知をトリガーします。
 
-### Notifications Architecture
+### 通知アーキテクチャ (Notifications Architecture)
 
-- **VAPID Pipeline:** Uses `web-push` on the server for secure message delivery. VAPID keys are auto-generated and stored in `data/vapid-keys.json`.
-- **Service Worker:** A dedicated worker (`client/public/sw.js`) handles incoming `push` events and displays notifications with `silent: false` to ensure audio playback on macOS.
-- **Subscriptions:** Browser-specific endpoints are stored in the `push_subscriptions` table in SQLite.
-- **Persistence:** Notifications arrive even if the browser is closed, as the Service Worker operates in the background.
-- **Test notification:** button in Settings lets you verify the VAPID pipeline and audio playback.
+- **VAPID パイプライン:** 安全なメッセージ配信のためにサーバー上で `web-push` を使用します。VAPID キーは自動生成され、`data/vapid-keys.json` に保存されます。
+- **Service Worker:** 専用のワーカー (`client/public/sw.js`) が受信した `push` イベントを処理し、macOS で確実に音声が再生されるように `silent: false` を指定して通知を表示します。
+- **サブスクリプション:** ブラウザ固有のエンドポイントは SQLite の `push_subscriptions` テーブルに保存されます。
+- **永続性:** Service Worker がバックグラウンドで動作するため、ブラウザが閉じられていても通知が届きます。
+- **テスト通知:** 設定 (Settings) にあるボタンを使用すると、VAPID パイプラインとオーディオの再生を確認できます。
 
-### PWA & Offline Support
+### PWA とオフラインサポート (PWA & Offline Support)
 
-The project ships three independent Progressive Web Apps — one each for the **dashboard**, **landing page**, and **wiki**. Each has its own `manifest.json` and Service Worker so the browser treats them as separate installable applications.
+このプロジェクトは、**ダッシュボード**、**ランディングページ**、**Wiki** 用に 3 つの独立したプログレッシブ Web アプリ (PWA) を提供しています。それぞれに独自の `manifest.json` と Service Worker があるため、ブラウザはそれらを個別のインストール可能なアプリケーションとして扱います。
 
-| Surface | Manifest | Service Worker | Caching Strategy |
+| サーフェス | マニフェスト | Service Worker | キャッシュ戦略 |
 | --- | --- | --- | --- |
-| Dashboard (`client/`) | `client/public/manifest.json` | `client/public/sw.js` | Vite's content-hashed bundles under `/assets/*` are served cache-first (URLs are immutable per build). Everything else — navigations, the SW itself, `manifest.json`, icons, root `/` — is network-first with cache fallback, so a rebuild always shows the freshest UI without a hard refresh. API (`/api/*`), WebSocket (`/ws`), and Vite HMR requests are never cached. Push notification handlers are preserved alongside the caching logic. The Express static middleware (`server/index.js`) reinforces this by sending `Cache-Control: public, max-age=31536000, immutable` for `/assets/*` and `Cache-Control: no-cache, must-revalidate` for `index.html`, `sw.js`, and `manifest.json`. `client/src/main.tsx` listens for `controllerchange`: when a new SW activates on an already-controlled page it reloads exactly once (first installs do not). |
-| Landing page (root) | `manifest.json` | `sw.js` | Precaches the HTML shell, favicon, and OG image. Screenshot PNGs are lazy-cached on first view (cache-first) to avoid a heavy initial precache. Navigation is network-first with offline fallback. |
-| Wiki (`wiki/`) | `wiki/manifest.json` | `wiki/sw.js` | Precaches `index.html`, `style.css`, `script.js`, manifest, and favicon. Fully offline-capable after one visit. Network-first HTML, cache-first for CSS/JS. |
+| ダッシュボード (`client/`) | `client/public/manifest.json` | `client/public/sw.js` | `/assets/*` 配下の Vite のコンテンツハッシュ化されたバンドルは、キャッシュファーストで提供されます (URL はビルドごとに不変です)。それ以外 (ナビゲーション、SW 自身、`manifest.json`、アイコン、ルート `/`) はキャッシュをフォールバックとしたネットワークファーストなので、ハードリフレッシュなしでもリビルド後は常に最新の UI が表示されます。API (`/api/*`)、WebSocket (`/ws`)、および Vite HMR リクエストはキャッシュされません。プッシュ通知ハンドラーはキャッシュロジックと一緒に保持されます。Express の静的ミドルウェア (`server/index.js`) は、`/assets/*` に対して `Cache-Control: public, max-age=31536000, immutable` を送信し、`index.html`、`sw.js`、`manifest.json` に対して `Cache-Control: no-cache, must-revalidate` を送信することでこれを強化します。`client/src/main.tsx` は `controllerchange` をリッスンし、すでに制御されているページで新しい SW がアクティブ化すると、一度だけリロードを実行します (初回のインストールでは実行されません)。 |
+| ランディングページ (ルート) | `manifest.json` | `sw.js` | HTML シェル、ファビコン、OG 画像をプリキャッシュします。スクリーンショットの PNG は初回表示時に遅延キャッシュ (キャッシュファースト) され、重い初期プリキャッシュを避けます。ナビゲーションはオフラインフォールバック付きのネットワークファーストです。 |
+| Wiki (`wiki/`) | `wiki/manifest.json` | `wiki/sw.js` | `index.html`、`style.css`、`script.js`、マニフェスト、およびファビコンをプリキャッシュします。1 回のアクセス後は完全にオフライン対応となります。HTML はネットワークファースト、CSS/JS はキャッシュファーストです。 |
 
-**Cache lifecycle:** All three SWs call `skipWaiting()` on install and delete stale caches on activate (keyed by version strings like `dashboard-v2`, `landing-v1`, `wiki-v1`). Bumping the version constant forces a clean refresh.
+**キャッシュのライフサイクル:** 3 つの SW はすべてインストール時に `skipWaiting()` を呼び出し、アクティブ化時に古いキャッシュを削除します（`dashboard-v2`、`landing-v1`、`wiki-v1` のようなバージョン文字列をキーとします）。バージョン定数をインクリメントするとクリーンなリフレッシュが強制されます。
 
-**iOS support:** All three HTML files include `<meta name="apple-mobile-web-app-capable" content="yes">` and `<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">` for standalone home-screen mode on Safari.
+**iOS サポート:** すべての 3 つの HTML ファイルには、Safari でのスタンドアロン・ホーム画面モードのために `<meta name="apple-mobile-web-app-capable" content="yes">` と `<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">` が含まれています。
 
-**Icons:** Manifests reference `favicon.svg` with `sizes="any"` and `type="image/svg+xml"` — supported in Chrome 107+, Firefox 110+, Edge 107+. Apple touch icons also use the SVG favicon.
+**アイコン:** マニフェストは `sizes="any"` および `type="image/svg+xml"` を指定した `favicon.svg` を参照します — これは Chrome 107 以降、Firefox 110 以降、Edge 107 以降でサポートされています。Apple のタッチアイコンも SVG ファビコンを使用します。
 
 ---
 
-## Update Notifier
+## アップデート通知 (Update Notifier)
 
-The dashboard watches its own git checkout and surfaces a modal whenever the canonical default branch has commits ahead of HEAD. **Branch- and fork-aware:** if you have an `upstream` remote (the standard convention for forks), it's preferred over `origin`; the chosen remote's `master`/`main`/`HEAD` is the comparison ref. The `manual_command` adapts to your situation — `git pull --ff-only` only when your branch actually tracks the canonical ref, otherwise a `git fetch` (and a fast-forward merge in the fork case) so the command never lies. Users get the exact command to run in a terminal — the server **never** pulls or restarts itself, which keeps the mechanism portable across dev sessions, pm2/systemd/launchd/Docker supervision, and remote deployments.
+ダッシュボードは自身の git チェックアウトを監視し、正規のデフォルトブランチのコミットが HEAD より進んでいる場合にモーダルを表示します。**ブランチおよびフォーク対応:** `upstream` リモート（フォークの標準的な規約）がある場合、`origin` よりも優先されます。選択されたリモートの `master`/`main`/`HEAD` が比較参照 (ref) になります。`manual_command` は状況に適応します — ローカルブランチが正規の参照を追跡している場合のみ `git pull --ff-only` となり、それ以外の場合はコマンドが嘘をつかないように `git fetch`（フォークの場合はファストフォワードマージ）になります。ユーザーはターミナルで実行するための正確なコマンドを受け取ります — サーバーは自身を自らプルしたり再起動したり**しません**。これにより、このメカニズムは開発セッション、pm2/systemd/launchd/Docker スーパービジョン、リモートデプロイメント全体でポータブルなまま維持されます。
 
 <p align="center">
   <img src="images/update.png" alt="Dashboard update modal with copy-to-clipboard command" width="100%">
 </p>
 
-### How It Works
+### 仕組み (How It Works)
 
 ```mermaid
 flowchart LR
@@ -1473,24 +1407,24 @@ flowchart LR
     style CLIENT fill:#10b981,stroke:#34d399,color:#fff
 ```
 
-A single check is cheap (`git fetch <remote> --prune` against the canonical remote — `upstream` if configured, else `origin`), wrapped with `execFile` (no shell) and a 120s timeout. Failures — offline network, non-git install, no remotes configured, unresolvable upstream ref — all return **soft payloads** (e.g. `fetch_error: "..."`) rather than throwing, so a flaky remote never blocks the dashboard.
+単一のチェックは安価であり（正規のリモートに対して `git fetch <remote> --prune` を実行 — 設定されていれば `upstream`、そうでなければ `origin`）、`execFile`（シェルなし）と 120 秒のタイムアウトでラップされています。オフラインのネットワーク、git 以外のインストール、設定されたリモートがない、解決できないアップストリーム参照などの失敗は、例外を投げるのではなく、すべて**ソフトなペイロード**（例: `fetch_error: "..."`）を返します。そのため、リモートが不安定であってもダッシュボードがブロックされることはありません。
 
-### UI Surfaces
+### UI サーフェス
 
-| Surface | Behavior |
+| サーフェス | 動作 |
 | --- | --- |
-| **Modal** (`client/src/components/UpdateNotifier.tsx`) | Appears when `update_available === true` and the user hasn't already dismissed this specific `remote_sha`. Shows commits-behind, the tracked ref, an optional `situation_note` (when on a feature branch / fork the note explains why the command differs), the copy-pastable command, and three buttons: **Copy command** (primary), **Check now**, **Dismiss**. ESC and backdrop clicks dismiss. Keyed by `remote_sha` in `localStorage`, so a newer upstream commit re-opens the modal automatically. |
-| **Sidebar button** (`client/src/components/Sidebar.tsx`) | Always-visible "Check for updates" button in the footer. Emerald border + green badge dot when behind, amber when the last check hit a fetch error. Clicking it clears any prior dismissal, then fires `POST /api/updates/check`. |
-| **Server terminal** | When the scheduler transitions from "up to date" to "behind," it prints a framed block to stdout with the command so users running headless still see it. |
+| **モーダル** (`client/src/components/UpdateNotifier.tsx`) | `update_available === true` であり、ユーザーがこの特定の `remote_sha` をまだ閉じて (dismiss) いない場合に表示されます。遅延しているコミット数、追跡されている参照、オプションの `situation_note`（機能ブランチ/フォークにいる場合に、なぜコマンドが異なるかを説明するメモ）、コピー・ペースト可能なコマンド、および 3 つのボタン（**コマンドをコピー**, **今すぐ確認する**, **閉じる**）を表示します。ESC とバックドロップのクリックで閉じます。`localStorage` で `remote_sha` をキーにしているため、新しいアップストリームコミットがある場合はモーダルが自動的に再び開きます。 |
+| **サイドバーボタン** (`client/src/components/Sidebar.tsx`) | フッターにある常に表示される「アップデートを確認」ボタン。遅れている場合はエメラルドの枠 + 緑色のバッジドット、前回の確認がフェッチエラーになった場合はアンバー色になります。クリックすると以前の「閉じた」状態がクリアされ、`POST /api/updates/check` が発火します。 |
+| **サーバーターミナル** | スケジューラーが「最新 (up to date)」から「遅延 (behind)」に遷移すると、コマンドを含むフレーム付きのブロックを標準出力にプリントするため、ヘッドレスで実行しているユーザーにも表示されます。 |
 
-### API Surface
+### API サーフェス
 
-| Endpoint | Purpose |
+| エンドポイント | 目的 |
 | --- | --- |
-| `GET /api/updates/status` | Read-only check: runs `git fetch` against the canonical remote, compares HEAD to its default branch, returns the payload. |
-| `POST /api/updates/check` | Same check, but also broadcasts `update_status` over WebSocket so all connected clients update at once. |
+| `GET /api/updates/status` | 読み取り専用チェック: 正規のリモートに対して `git fetch` を実行し、HEAD をそのデフォルトブランチと比較し、ペイロードを返します。 |
+| `POST /api/updates/check` | 同じチェックですが、WebSocket 上で `update_status` をブロードキャストするため、接続されているすべてのクライアントが一度に更新されます。 |
 
-Both endpoints return the same payload shape:
+どちらのエンドポイントも同じペイロード構造を返します:
 
 ```json
 {
@@ -1512,69 +1446,69 @@ Both endpoints return the same payload shape:
 }
 ```
 
-`situation` is one of `tracking_canonical` (typical clone on the default branch — `git pull --ff-only` works), `fork_or_diverged_tracking` (local branch name matches canonical, but tracks a different remote — `git fetch <remote> && git merge --ff-only <ref>`), `feature_branch` (off the default branch — fetch only, integration left to the user), or `detached_head`.
+`situation` は以下のいずれかになります: `tracking_canonical`（デフォルトブランチの通常のクローン — `git pull --ff-only` が機能します）、`fork_or_diverged_tracking`（ローカルブランチ名は正規のものと一致するが別のリモートを追跡している — `git fetch <remote> && git merge --ff-only <ref>`）、`feature_branch`（デフォルトブランチから外れている — フェッチのみで統合はユーザーに任されます）、または `detached_head`。
 
-### What's Intentionally **Not** Here
+### 意図的に**ここにはない**もの
 
-There is no `POST /api/updates/apply` and no self-restart helper, by design. Self-updating a process from inside itself is unreliable without an external supervisor — `npm run dev` (concurrently), `npm start`, `pm2`, `systemd`, `launchd`, and Docker each need different restart logic, and `git pull` / `npm install` failures on a dying server have no clean rollback path. Detection-only keeps behaviour predictable across every supervisor, every OS, and every branch state, while still closing the "when do I need to pull?" information gap; the user owns the actual update in their own shell.
+`POST /api/updates/apply` や自己再起動ヘルパーは、意図的に存在しません。プロセス内からのプロセスの自己更新は、外部のスーパーバイザーなしには信頼できません — `npm run dev` (concurrently)、`npm start`、`pm2`、`systemd`、`launchd`、および Docker はそれぞれ異なる再起動ロジックを必要とします。また、死にかけているサーバーでの `git pull` / `npm install` の失敗にはクリーンなロールバックパスがありません。検出のみに限定することで、すべてのスーパーバイザー、すべての OS、すべてのブランチの状態で動作の予測可能性が保たれつつ、「いつプルすればいいか」という情報のギャップは埋められます。実際の更新はユーザー自身のシェルでの操作に委ねられます。
 
-### Configuration
+### 構成 (Configuration)
 
-| Env Var | Default | Notes |
+| 環境変数 | デフォルト | メモ |
 | --- | --- | --- |
-| `DASHBOARD_UPDATE_CHECK` | enabled | Set to `0` / `false` / `off` to disable the scheduler entirely. |
-| `DASHBOARD_UPDATE_CHECK_INTERVAL_MS` | `300000` (5 min) | Interval between automatic checks. Floor is 60 000 ms — values below are clamped. |
+| `DASHBOARD_UPDATE_CHECK` | 有効 | `0` / `false` / `off` に設定すると、スケジューラーが完全に無効になります。 |
+| `DASHBOARD_UPDATE_CHECK_INTERVAL_MS` | `300000` (5分) | 自動チェック間のインターバル。下限は 60 000 ms です — それ以下の値は切り上げられます。 |
 
 ---
 
-## Tabby — Floating Cat Companion
+## Tabby — フローティングキャットコンパニオン (Tabby — Floating Cat Companion)
 
-**Tabby** is a cute floating cat companion pinned to the bottom-right corner of every page in the dashboard. Always present, it turns the live session stream into an at-a-glance, reactive mascot you can also talk to.
+**Tabby (タビー)** は、ダッシュボードのすべてのページの右下隅にピン留めされた、かわいいフローティングの猫のコンパニオンです。常に存在し、ライブセッションのストリームを、一目でわかる反応的なマスコット（会話も可能）に変換します。
 
 <p align="center">
   <img src="images/tabby.png" alt="Tabby the reactive dashboard mascot, shown in various moods and with a speech bubble" width="100%">
 </p>
 
-### Reactive mascot
+### リアクティブマスコット (Reactive mascot)
 
-Tabby is a cursor-tracking SVG cat with **eight moods** derived from the live session stream, each with its own animation:
+Tabby はライブセッションのストリームから派生した **8つの気分** を持つ、カーソルを追跡する SVG キャットであり、それぞれに独自のアニメーションがあります:
 
-| Mood | When | Animation |
+| 気分 (Mood) | いつ | アニメーション |
 | --- | --- | --- |
-| `idle` | Nothing notable happening | Resting tail flick |
-| `watching` | Sessions are active | Ear perk, eyes follow the cursor |
-| `happy` | A session or run finished cleanly | Head bob + sparkle |
-| `worried` | Something looks off | Subtle shake |
-| `stuck` | A session appears blocked | Alert "!" |
-| `thinking` | An agent is mid-work | Slow head bob |
-| `sleeping` | Quiet for a while | `zzz` |
-| `disconnected` | WebSocket is down | Calm, still pose |
+| `idle` | 特筆すべきことが何も起こっていないとき | しっぽを休めて振る |
+| `watching` | セッションがアクティブなとき | 耳を立てて、目がカーソルを追う |
+| `happy` | セッションや実行が正常に終了したとき | 頭を上下に振る + キラキラ |
+| `worried` | 何かおかしいとき | 微妙に震える |
+| `stuck` | セッションがブロックされていると思われるとき | 警告 "!" |
+| `thinking` | エージェントが作業中のとき | 頭をゆっくり上下に振る |
+| `sleeping` | しばらく静かなとき | `zzz` |
+| `disconnected` | WebSocket がダウンしているとき | 穏やかで静止したポーズ |
 
-### Speech bubbles
+### 吹き出し (Speech bubbles)
 
-Tabby auto-surfaces short quips on notable events (session started/finished, errors, run completed). Bubbles are **throttled and coalesced** so a burst of events never spams the screen, they use `aria-live` for screen readers, and they can be **muted** from the panel.
+Tabby は注目すべきイベント（セッションの開始/終了、エラー、実行完了）で短い皮肉を自動的に表示します。吹き出しは**スロットリングされ、まとめられる (coalesced)** ため、イベントのバーストが画面をスパムすることはありません。スクリーンリーダー用に `aria-live` を使用し、パネルから**ミュート**することもできます。
 
-### Panel
+### パネル (Panel)
 
-Open the panel by clicking the cat or pressing **⌘B / Ctrl+B** (Esc closes). It shows:
+猫をクリックするか、**⌘B / Ctrl+B**（Esc で閉じる）を押してパネルを開きます。以下が表示されます:
 
-- A live **status line** — `N live · M errored · connection state`.
-- **Quick actions** — jump to Run Claude, Activity, Sessions, or errored sessions; mute bubbles; clear alerts.
-- An **Ask** box (see below).
+- ライブの**ステータスライン** — `N ライブ · M エラー · 接続状態`。
+- **クイックアクション** — Run Claude、アクティビティ、セッション、またはエラーセッションへのジャンプ。吹き出しのミュート。アラートのクリア。
+- **Ask** ボックス（下記参照）。
 
-### Ask box → Run Claude handoff
+### Ask ボックス → Run Claude ハンドオフ
 
-The **Ask** box answers simple status questions locally from cached data — for example "what's running", "any errors", or "status". Any other question is handed off to the existing **Run Claude** page (it deep-links to `/run?prompt=…`) to spawn a real Claude Code session. Tabby never calls an LLM itself; it simply reuses the Run Claude page for anything beyond a quick status lookup.
+**Ask** ボックスは、「何が動いているか」、「エラーはあるか」、「ステータスは」といった単純なステータスの質問には、キャッシュされたデータからローカルで応答します。それ以外の質問は、実際の Claude Code セッションをスポーンするために、既存の **Run Claude** ページに引き継がれます（`/run?prompt=…` にディープリンクします）。Tabby 自身が LLM を呼び出すことは決してありません。簡単なステータスの検索以外のすべてのことについて、Run Claude ページを再利用するだけです。
 
-### Accessibility & safe degradation
+### アクセシビリティと安全な劣化 (Accessibility & safe degradation)
 
-Tabby is keyboard-operable, uses `aria-live` for its bubbles, and honors `prefers-reduced-motion`. If the WebSocket is down it degrades safely to a calm `disconnected` state rather than erroring. You can toggle Tabby on or off in **Settings** (localized in English, Chinese, Vietnamese, Korean, and Spanish), and the implementation lives in `client/src/components/Tabby/`.
+Tabby はキーボードで操作でき、吹き出しには `aria-live` を使用し、`prefers-reduced-motion`（モーション軽減の推奨）を尊重します。WebSocket がダウンした場合、エラーを起こすのではなく、穏やかな `disconnected` 状態に安全に劣化します。Tabby は **設定 (Settings)** (英語、中国語、ベトナム語、韓国語、スペイン語にローカライズされています) でオン/オフを切り替えることができ、実装は `client/src/components/Tabby/` にあります。
 
 ---
 
-## Connection Status Modal
+## 接続ステータスモーダル (Connection Status Modal)
 
-Click the **Live** / **Disconnected** pill in the sidebar footer to open a small details panel about the dashboard's WebSocket transport. It shows the active `ws://` endpoint, how long the current socket has been up, total events received, top event types as a horizontal bar chart, a 60-second throughput sparkline, and the last 8 events as a recent-activity list. Cumulative stats (totals, type breakdown, recent list) persist across reloads via `localStorage` under `sidebar-connection-stats`; the rolling sparkline and "connected since" timer are intentionally ephemeral. A **Reset** button in the footer clears everything on demand.
+サイドバーのフッターにある **Live** / **Disconnected** のピルをクリックすると、ダッシュボードの WebSocket トランスポートに関する詳細を示す小さなパネルが開きます。アクティブな `ws://` エンドポイント、現在のソケットの起動時間、受信した合計イベント数、横棒グラフでの上位のイベントタイプ、60 秒の処理量を示すスパークライン、および最近のアクティビティリストとしての直近の 8 つのイベントが表示されます。累積統計（合計、タイプの内訳、最近のリスト）は、`sidebar-connection-stats` という名前で `localStorage` を経由してリロードをまたいで保持されます。ローリングしているスパークラインと「connected since」のタイマーは、意図的にエフェメラル (短命) なものになっています。フッターの **リセット (Reset)** ボタンを押すと、オンデマンドですべての項目がクリアされます。
 
 <p align="center">
   <img src="images/live.png" alt="Connection details modal with throughput sparkline, top event types, and recent activity" width="100%">
@@ -1582,55 +1516,55 @@ Click the **Live** / **Disconnected** pill in the sidebar footer to open a small
 
 ---
 
-## VS Code Extension
+## VS Code 拡張機能 (VS Code Extension)
 
-The **Claude Code Agent Monitor** is available as a first-class VS Code extension, allowing you to monitor your AI agents without leaving your editor.
+**Claude Code Agent Monitor** は、ファーストクラスの VS Code 拡張機能として利用でき、エディタを離れることなく AI エージェントを監視することができます。
 
 <p align="center">
   <img src="vscode-extension/vscode.png" alt="VS Code Extension Screenshot" width="100%">
 </p>
 
-### 🚀 Key Features
-- **Live Sidebar**: Dedicated Activity Bar view showing real-time Agent Health (Working, Waiting, Completed, etc.).
-- **Usage Analytics**: Track total tokens, live USD costs, and event counts directly in the sidebar.
-- **Status Bar Integration**: Quick-glance pulse monitor in the bottom bar showing active sessions and agents.
-- **Deep Navigation**: One-click access to specific dashboard views (Kanban, Analytics, Settings) or recent sessions.
-- **Integrated Tab**: Opens the full monitoring dashboard as a native VS Code webview tab.
+### 🚀 主な機能 (Key Features)
+- **ライブサイドバー**: リアルタイムのエージェントヘルス（作業中、待機中、完了など）を表示する専用のアクティビティバービュー。
+- **使用状況分析**: サイドバー内で総トークン数、ライブの USD コスト、およびイベント数を直接追跡します。
+- **ステータスバー統合**: ボトムバーにある、アクティブなセッションとエージェントを表示する一目でわかるパルスモニター。
+- **ディープナビゲーション**: 特定のダッシュボードビュー（かんばん、分析、設定）または最近のセッションへのワンクリックアクセス。
+- **統合タブ**: ネイティブの VS Code Webview タブとしてフル監視ダッシュボードを開きます。
 
-### 📦 Installation & Setup
-1. Open the [vscode-extension](./vscode-extension) directory.
-2. Install the Marketplace extension or package it yourself using `vsce package`.
-3. Ensure your local dashboard server is running (`npm run dev`).
-4. Click the **Radar icon** in the VS Code Activity Bar to get started.
+### 📦 インストールとセットアップ (Installation & Setup)
+1. [vscode-extension](./vscode-extension) ディレクトリを開きます。
+2. Marketplace から拡張機能をインストールするか、`vsce package` を使用して自分でパッケージ化します。
+3. ローカルのダッシュボードサーバーが実行中であることを確認します (`npm run dev`)。
+4. 開始するには、VS Code アクティビティバーの **レーダーアイコン** をクリックします。
 
-For detailed developer configuration, see the [.vscode](./.vscode) and [vscode-extension](./vscode-extension) directories.
+開発者向けの詳細な構成については、[.vscode](./.vscode) および [vscode-extension](./vscode-extension) ディレクトリを参照してください。
 
 > [!TIP]
-> Extension on VS Code Marketplace: [Claude Code Agent Monitor](https://marketplace.visualstudio.com/items?itemName=hoangsonw.claude-code-agent-monitor)
+> VS Code Marketplace の拡張機能: [Claude Code Agent Monitor](https://marketplace.visualstudio.com/items?itemName=hoangsonw.claude-code-agent-monitor)
 
 ---
 
-## Desktop App (macOS & Windows)
+## デスクトップアプリ (macOS & Windows)
 
-The dashboard also ships as an optional **native desktop application** you install once and forget — a macOS `.app` (distributed as a `.dmg`) and a Windows `.exe` (an NSIS installer plus a no-install portable build). It lives in the `desktop/` workspace, a sibling of `client/`, `server/`, `mcp/`, and `vscode-extension/`, and is built with **Electron 35**.
+ダッシュボードは、一度インストールすればそのまま使えるオプションの **ネイティブデスクトップアプリケーション** としても提供されています — macOS 用の `.app`（`.dmg` として配布）と Windows 用の `.exe`（NSIS インストーラーおよびインストール不要のポータブルビルド）。これは `client/`、`server/`、`mcp/`、および `vscode-extension/` の兄弟にあたる `desktop/` ワークスペースに存在し、**Electron 35** で構築されています。
 
 <p align="center">
   <img src="images/macos.png" alt="Claude Code Monitor running as a native desktop app" width="100%">
   <br>
-  <em>🍎🪟 <strong>Desktop App</strong> — native shell with a menu-bar / notification-area (tray) icon, Open-at-Login, and a single-instance lock. The same dashboard, in a real OS window (macOS shown).</em>
+  <em>🍎🪟 <strong>デスクトップアプリ (Desktop App)</strong> — メニューバー / 通知領域（トレイ）アイコン、ログイン時の自動起動、および単一インスタンスロックを備えたネイティブシェル。実際の OS ウィンドウ内に同じダッシュボードが表示されます（画像は macOS のもの）。</em>
 </p>
 
 <p align="center">
   <img src="images/windows_app.png" alt="Claude Code Monitor running as a native Windows desktop app, showing the Activity Feed with the Windows window menu bar and Tabby panel" width="100%">
   <br>
-  <em>🪟 The same dashboard as a native Windows app — notification-area (tray) icon, native window menu, and Open-at-Login.</em>
+  <em>🪟 ネイティブ Windows アプリと同じダッシュボード — 通知領域（トレイ）アイコン、ネイティブのウィンドウメニュー、およびログイン時の自動起動。</em>
 </p>
 
-Everything you see in the browser at `localhost:4820` lives inside this window, with native OS lifecycle on top: a tray icon, a native application menu, auto-start integration, and a single quit button that cleanly shuts the server down.
+ブラウザの `localhost:4820` で表示されるすべてのものがこのウィンドウ内にあり、その上にネイティブ OS のライフサイクルが存在します：トレイアイコン、ネイティブアプリケーションメニュー、自動起動の統合、およびサーバーをクリーンにシャットダウンする単一の終了 (quit) ボタンです。
 
-### How it works
+### 仕組み (How it works)
 
-Unlike running the dashboard from a terminal, the desktop app needs no `npm start`, no open shell, and no second copy of the server. The Electron **main process** hosts the Express server **in-process** — it `require()`s `server/index.js` directly in the same Node runtime, with **no child process and no IPC** — and points a Chromium `BrowserWindow` at the built React client.
+ターミナルからダッシュボードを実行する場合とは異なり、デスクトップアプリは `npm start` も、開いているシェルも、サーバーの 2 つ目のコピーも必要としません。Electron の **メインプロセス** は Express サーバーを **インプロセス** でホストします — これは **子プロセスも IPC も使用せず** に、同じ Node ランタイム内で `server/index.js` を直接 `require()` します — そして、Chromium の `BrowserWindow` をビルド済みの React クライアントに向けます。
 
 ```mermaid
 flowchart LR
@@ -1657,135 +1591,135 @@ flowchart LR
     style host fill:#1f6feb,stroke:#1158c7,color:#fff
 ```
 
-On launch the app:
+起動時にアプリは以下を行います:
 
-1. Picks a free port — preferring **4820**, falling back to **4821–4829**, then a random high port if all of those are taken.
-2. If a healthy dashboard server already answers `/api/health` on `4820` (e.g. you ran `npm start` in a terminal), it **adopts that server** instead of double-binding — no port collision, no SQLite contention. An adopted server keeps running after you quit the app.
-3. Otherwise it boots the embedded server, and on **first owned-server boot** auto-installs the Claude Code hooks and starts the background services (update scheduler, `cc-watcher`, orphaned-run reconciliation). A DMG-only user therefore gets events flowing with **zero manual setup** — no checkout, no `npm run install-hooks`.
-4. **(macOS)** Recovers your **login-shell `PATH`** so the **Run Claude** feature can find and spawn the `claude` CLI — a Finder/Dock-launched app otherwise inherits only launchd's minimal `PATH` and would miss CLIs in `~/.local/bin`, `/opt/homebrew/bin`, version-manager bins, etc. (On Windows the process already inherits the user `PATH`.)
-5. Opens the dashboard window — unless the app was launched at login (on macOS via Login Items; on Windows via the tagged `HKCU\…\Run` entry), in which case it stays tray-only.
-6. On quit, shuts the embedded server down gracefully and **closes SQLite cleanly** (WAL checkpoint).
+1. 空いているポートを選択します — 優先的に **4820**、フォールバックとして **4821–4829**、それらがすべて使用中の場合はランダムなハイポートを選択します。
+2. 正常なダッシュボードサーバーがすでに `4820` で `/api/health` に応答している場合（例えば、ターミナルで `npm start` を実行した場合）、二重にバインドする代わりに **そのサーバーを採用 (adopt)** します — ポートの衝突や SQLite の競合は発生しません。採用されたサーバーは、アプリを終了した後も実行を継続します。
+3. そうでない場合は、埋め込みサーバーを起動し、**最初に所有したサーバーの起動時**に、Claude Code フックを自動インストールし、バックグラウンドサービス（アップデートスケジューラー、`cc-watcher`、孤立した実行の調整）を開始します。したがって、DMG のみのユーザーは、**手動でのセットアップなし**（チェックアウトも `npm run install-hooks` も不要）でイベントを流すことができます。
+4. **(macOS)** **ログインシェルの `PATH`** を復元するため、**Run Claude** 機能が `claude` CLI を見つけてスポーンできるようにします — Finder/Dock から起動されたアプリは通常 launchd の最小限の `PATH` しか継承しないため、`~/.local/bin`、`/opt/homebrew/bin`、バージョンマネージャーの bin 内の CLI などを見逃してしまいます。（Windows では、プロセスはすでにユーザーの `PATH` を継承しています。）
+5. ダッシュボードウィンドウを開きます — ただし、アプリがログイン時に起動された場合（macOS ではログインアイテム、Windows ではタグ付けされた `HKCU\…\Run` エントリ経由）を除き、その場合はトレイのみで待機します。
+6. 終了時に、埋め込みサーバーを正常にシャットダウンし、**SQLite をクリーンに閉じます**（WAL チェックポイント）。
 
-### Features
+### 機能 (Features)
 
-- **Tray icon** — always-on status surface (macOS menu bar / Windows notification area). Left-click toggles the dashboard window; right-click opens a context menu with **Open Dashboard**, **Open in Browser**, **Restart Server**, **Show Logs**, **Open at Login** (toggle), and **Quit**. macOS uses a tinted template glyph; Windows uses the colored `icon.ico` (a black template would vanish on the dark taskbar).
-- **Window & taskbar icon** — the `BrowserWindow` is wired to the colored app logo (`icon.ico` on Windows, `icon.png` elsewhere), so the title bar / taskbar show the real Claude Code Monitor icon — even an unpackaged `npm run desktop:dev` run no longer shows the generic Electron icon.
-- **Native application menu** — standard `About` / `File` / `Edit` / `View` / `Window` / `Help` menu with `⌘` / `Ctrl` shortcuts. The **File → Open Dashboard** item (`⌘1`) is **macOS-only**: macOS keeps a global menu bar after the window hides, so it can reopen the window — on Windows/Linux the menu is attached to the window and can't fire while it's hidden, so reopen from the tray's **Open Dashboard** instead (which reliably raises the window even when minimized or behind other windows).
-- **Auto-start at login** — toggle **Open at Login** from the tray or app menu. On macOS it registers through the modern `SMAppService` API, so the entry appears under **System Settings → General → Login Items**; on Windows it writes a per-user `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` entry, visible in **Task Manager → Startup**.
-- **Window-close hides, server keeps running** — closing the window just hides it; the server and tray stay up. Click the tray to bring the window back.
-- **Single-instance lock** — double-launching simply focuses the existing window; no second server, no port collision. (Applies on every platform.)
-- **Data survives reinstalls and updates** — the SQLite database and VAPID keys live in the per-user app-data directory **outside the app bundle / install dir** — `~/Library/Application Support/Claude Code Monitor/data/` on macOS, `%APPDATA%\Claude Code Monitor\data\` on Windows. A packaged bundle is read-only, so writing the database inside it would break History Import and event persistence; keeping it in app-data fixes that and means your imported history is untouched when you replace or upgrade the app. (The Windows NSIS uninstaller keeps this data by default.)
-- **`claude` CLI on PATH** — on macOS the app recovers your login-shell `PATH` at startup, so the **Run Claude** feature works even though a Finder/Dock-launched app would otherwise only inherit launchd's minimal `PATH`. (On Windows the inherited user `PATH` already includes it.)
-- **Logs** — the main process writes to `~/Library/Logs/Claude Code Monitor/desktop.log` (macOS) or `%APPDATA%\Claude Code Monitor\logs\desktop.log` (Windows); reach it from the tray menu's **Show Logs**.
+- **トレイアイコン** — 常時表示のステータスサーフェス (macOS のメニューバー / Windows の通知領域)。左クリックでダッシュボードウィンドウを切り替えます。右クリックでコンテキストメニューが開き、**ダッシュボードを開く (Open Dashboard)**、**ブラウザで開く (Open in Browser)**、**サーバーの再起動 (Restart Server)**、**ログを表示 (Show Logs)**、**ログイン時に開く (Open at Login)** (トグル)、および **終了 (Quit)** が可能です。macOS では色付きのテンプレートグリフが使用され、Windows では色付きの `icon.ico` が使用されます（黒のテンプレートは暗いタスクバーで消えてしまうため）。
+- **ウィンドウとタスクバーのアイコン** — `BrowserWindow` はカラーのアプリロゴ（Windows では `icon.ico`、その他のプラットフォームでは `icon.png`）に関連付けられているため、タイトルバー / タスクバーには本物の Claude Code Monitor アイコンが表示されます — パッケージ化されていない `npm run desktop:dev` の実行でも、一般的な Electron アイコンは表示されなくなりました。
+- **ネイティブアプリケーションメニュー** — `About` / `File` / `Edit` / `View` / `Window` / `Help` などの標準メニューと `⌘` / `Ctrl` ショートカット。**File → Open Dashboard** アイテム (`⌘1`) は **macOS のみ**です：macOS はウィンドウが非表示になった後もグローバルメニューバーを保持するため、ウィンドウを再び開くことができます — Windows/Linux ではメニューはウィンドウにアタッチされており、非表示の間は起動できないため、代わりにトレイの **Open Dashboard** から再表示します（最小化されている場合や他のウィンドウの背後にある場合でも、確実にウィンドウを最前面に表示します）。
+- **ログイン時の自動起動** — トレイまたはアプリメニューから **Open at Login** を切り替えます。macOS では最新の `SMAppService` API を介して登録されるため、エントリは **システム設定 → 一般 → ログイン項目** に表示されます。Windows ではユーザーごとの `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` エントリに書き込まれ、**タスクマネージャー → スタートアップ** で確認できます。
+- **ウィンドウを閉じると非表示になり、サーバーは実行を継続する** — ウィンドウを閉じると非表示になるだけです。サーバーとトレイは起動したままです。トレイをクリックするとウィンドウが戻ります。
+- **単一インスタンスロック** — 二重起動すると、既存のウィンドウにフォーカスが当たるだけです。2 つ目のサーバーは起動せず、ポートの衝突も発生しません。（すべてのプラットフォームに適用されます。）
+- **データは再インストールや更新後も残る** — SQLite データベースと VAPID キーは、**アプリバンドル / インストールディレクトリの外部**の、ユーザーごとのアプリデータディレクトリに存在します — macOS では `~/Library/Application Support/Claude Code Monitor/data/`、Windows では `%APPDATA%\Claude Code Monitor\data\` です。パッケージ化されたバンドルは読み取り専用であるため、その内部にデータベースを書き込むと履歴インポートやイベントの永続性が損なわれます。これをアプリデータディレクトリに保持することでこの問題が解決し、アプリを交換またはアップグレードした際にも、インポートした履歴がそのまま維持されます。（Windows の NSIS アンインストーラーは、デフォルトでこのデータを保持します。）
+- **PATH 上の `claude` CLI** — macOS では、アプリは起動時にログインシェルの `PATH` を回復するため、Finder/Dock から起動されたアプリが通常 launchd の最小限の `PATH` しか継承しないにもかかわらず、**Run Claude** 機能が動作します。（Windows では継承されたユーザー `PATH` にすでに含まれています。）
+- **ログ** — メインプロセスは `~/Library/Logs/Claude Code Monitor/desktop.log` (macOS) または `%APPDATA%\Claude Code Monitor\logs\desktop.log` (Windows) にログを書き込みます；トレイメニューの **Show Logs** からアクセスできます。
 
-### Get it
+### 取得方法 (Get it)
 
-**Option A — download a pre-built installer (recommended).** From **[Releases → latest](https://github.com/hoangsonww/Claude-Code-Agent-Monitor/releases/latest)** (public, no GitHub sign-in). CI auto-publishes a new `vX.Y.Z` release whenever the version in `package.json` is bumped on `master`, so this link always serves the current build:
+**オプション A — ビルド済みのインストーラーをダウンロードする（推奨）:** **[Releases → latest](https://github.com/hoangsonww/Claude-Code-Agent-Monitor/releases/latest)** から取得できます（公開されており、GitHub へのサインインは不要）。CI は `master` 上の `package.json` のバージョンがインクリメントされるたびに新しい `vX.Y.Z` リリースを自動公開するため、このリンクは常に現在のビルドを提供します:
 
-| Platform | Asset | Notes |
+| プラットフォーム | アセット | メモ |
 | --- | --- | --- |
-| macOS (Apple Silicon) | `ClaudeCodeMonitor-<ver>-arm64.dmg` | drag into `/Applications` |
-| macOS (Intel) | `ClaudeCodeMonitor-<ver>-x64.dmg` | drag into `/Applications` |
-| Windows (installer) | `ClaudeCodeMonitor-Setup-<ver>-x64.exe` | per-user install, no admin |
-| Windows (portable) | `ClaudeCodeMonitor-<ver>-x64-portable.exe` | run without installing |
+| macOS (Apple Silicon) | `ClaudeCodeMonitor-<ver>-arm64.dmg` | `/Applications` にドラッグ |
+| macOS (Intel) | `ClaudeCodeMonitor-<ver>-x64.dmg` | `/Applications` にドラッグ |
+| Windows (インストーラー) | `ClaudeCodeMonitor-Setup-<ver>-x64.exe` | ユーザーごとのインストール、管理者権限不要 |
+| Windows (ポータブル) | `ClaudeCodeMonitor-<ver>-x64-portable.exe` | インストールせずに実行 |
 
-Per-commit fresh builds also live as CI artifacts (sign-in required, 14-day retention): `ClaudeCodeMonitor-dmg` from the `🍎 macOS Desktop (DMG)` job and `ClaudeCodeMonitor-win` from the `🪟 Windows Desktop (EXE)` job — useful for testing `master` before the next release tag.
+コミットごとの最新ビルドは、CI アーティファクトとしても存在します（サインインが必要、14 日間保持されます）: `🍎 macOS Desktop (DMG)` ジョブからの `ClaudeCodeMonitor-dmg` および `🪟 Windows Desktop (EXE)` ジョブからの `ClaudeCodeMonitor-win` — 次のリリースタグの前に `master` をテストするのに便利です。
 
-**Option B — build it yourself.** From the repo root:
+**オプション B — 自分でビルドする:** リポジトリのルートから実行します:
 
 ```bash
-npm run setup                # install root + client deps, build client, install hooks
-npm run build                # build the React client (client/dist)
-npm run desktop:install      # install Electron + electron-builder into desktop/ (preflights native deps; prints setup help on failure)
-npm run desktop:dmg:arm64    # macOS:   fast single-arch DMG → desktop/release/ClaudeCodeMonitor-<ver>-arm64.dmg
-npm run desktop:win          # Windows: NSIS installer → desktop/release/ClaudeCodeMonitor-Setup-<ver>-x64.exe
+npm run setup                # ルート + クライアントの依存関係をインストールし、クライアントをビルドし、フックをインストールします
+npm run build                # React クライアントをビルドします (client/dist)
+npm run desktop:install      # Electron + electron-builder を desktop/ にインストールします (ネイティブ依存関係の事前確認を行い、失敗時にはセットアップのヘルプを表示します)
+npm run desktop:dmg:arm64    # macOS:   高速な単一アーキテクチャの DMG → desktop/release/ClaudeCodeMonitor-<ver>-arm64.dmg
+npm run desktop:win          # Windows: NSIS インストーラー → desktop/release/ClaudeCodeMonitor-Setup-<ver>-x64.exe
 ```
 
 > [!NOTE]
-> **DMGs build on macOS; Windows `.exe`s build on Windows** — electron-builder packages for the host OS. The macOS `npm run desktop:dmg` build packages the app **twice** (once per architecture) and emits **both** per-arch DMGs (`arm64` + `x64`) — the release build; it does not merge them into one universal binary. For your own Mac use the single-arch `desktop:dmg:arm64` / `desktop:dmg:x64`. On Windows, `better-sqlite3` is fetched as a prebuilt Electron binary by `npm run desktop:install`, so no Visual Studio C++ toolchain is needed in the common case. If the build does fail (no prebuilt binary, or a missing C++ toolchain), `desktop:install` prints the exact per-OS fix plus a no-toolchain alternative and fails loudly instead of leaving a broken install.
+> **DMG は macOS でビルドされ、Windows `.exe` は Windows でビルドされます** — electron-builder はホスト OS 向けにパッケージ化します。macOS の `npm run desktop:dmg` ビルドは、アプリを**2回**（各アーキテクチャごとに1回ずつ）パッケージ化し、アーキテクチャごとの **両方** の DMG (`arm64` + `x64`) を出力します — これがリリースビルドであり、それらを 1 つのユニバーサルバイナリに統合することはしません。自分用の Mac では、単一アーキテクチャの `desktop:dmg:arm64` または `desktop:dmg:x64` を使用してください。Windows では、`npm run desktop:install` によってビルド済みの Electron 用バイナリとして `better-sqlite3` が取得されるため、一般的なケースでは Visual Studio C++ ツールチェーンは不要です。ビルドが失敗した場合（ビルド済みのバイナリがない、または C++ ツールチェーンがない場合）、`desktop:install` は壊れたインストールを残すのではなく、OS ごとの正確な修正方法とツールチェーンなしの代替案を出力し、はっきりと失敗を報告します。
 
-### Install it
+### インストール方法 (Install it)
 
 **macOS:**
 
-1. Double-click the `.dmg` to mount it.
-2. Drag **Claude Code Monitor.app** into your `/Applications` folder.
-3. The DMG is **ad-hoc signed** by default, so macOS Gatekeeper warns on first launch (*"Apple could not verify…"*). Clear the quarantine attribute:
+1. `.dmg` をダブルクリックしてマウントします。
+2. **Claude Code Monitor.app** を `/Applications` フォルダーにドラッグします。
+3. DMG はデフォルトで**アドホック署名 (ad-hoc signed)** されているため、macOS の Gatekeeper が初回起動時に警告を表示します（*"Apple could not verify…"*）。隔離属性 (quarantine attribute) をクリアします:
 
    ```bash
    xattr -cr "/Applications/Claude Code Monitor.app"
    ```
 
-   Or open **System Settings → Privacy & Security** and click **Open Anyway**.
+   または、**システム設定 → プライバシーとセキュリティ**を開き、**このまま開く (Open Anyway)** をクリックします。
 
-4. Launch the app. The tray icon appears and the dashboard window opens.
+4. アプリを起動します。トレイアイコンが表示され、ダッシュボードウィンドウが開きます。
 
 **Windows:**
 
-1. Run `ClaudeCodeMonitor-Setup-<ver>-x64.exe`. It installs **per-user** under `%LOCALAPPDATA%\Programs\Claude Code Monitor` (no administrator elevation) and lets you pick the install directory; or run the `*-portable.exe` to launch without installing.
-2. The installer is **unsigned** by default, so Windows **SmartScreen** may show *"Windows protected your PC"* on first launch — click **More info → Run anyway**.
-3. Launch from the Start menu / desktop shortcut. The notification-area (tray) icon appears and the dashboard window opens.
+1. `ClaudeCodeMonitor-Setup-<ver>-x64.exe` を実行します。これは `%LOCALAPPDATA%\Programs\Claude Code Monitor` の下に**ユーザーごと (per-user)** にインストールされ（管理者権限は不要）、インストールディレクトリを選択できます。または、インストールせずに起動するには `*-portable.exe` を実行します。
+2. インストーラーはデフォルトで**未署名**であるため、初回起動時に Windows の **SmartScreen** が *"Windows protected your PC"* と表示する場合があります — **詳細情報 (More info) → 実行 (Run anyway)** をクリックします。
+3. スタートメニュー / デスクトップのショートカットから起動します。通知領域（トレイ）アイコンが表示され、ダッシュボードウィンドウが開きます。
 
 <p align="center">
   <img src="images/setup_win_wizard.png" alt="NSIS installer step 1 — Choose Installation Options, with per-user (Only for me) versus all-users selection" width="100%">
   <br>
-  <em>Windows installer · Step 1 — <strong>Choose Installation Options</strong> (per-user "Only for me" vs. all users).</em>
+  <em>Windows インストーラー · ステップ 1 — <strong>インストールオプションの選択</strong>（ユーザーごとの "Only for me" vs 全ユーザー）。</em>
 </p>
 
 <p align="center">
   <img src="images/setup_win_wizard2.png" alt="NSIS installer step 2 — Choose Install Location, with the per-user %LOCALAPPDATA%\Programs destination folder" width="100%">
   <br>
-  <em>Windows installer · Step 2 — <strong>Choose Install Location</strong> (defaults to per-user <code>%LOCALAPPDATA%\Programs</code>).</em>
+  <em>Windows インストーラー · ステップ 2 — <strong>インストール場所の選択</strong>（デフォルトはユーザーごとの <code>%LOCALAPPDATA%\Programs</code>）。</em>
 </p>
 
 <p align="center">
   <img src="images/setup_win_wizard3.png" alt="NSIS installer step 3 — Completing Setup, with the option to finish and run the app" width="100%">
   <br>
-  <em>Windows installer · Step 3 — <strong>Completing Setup</strong> (Finish and launch the app).</em>
+  <em>Windows インストーラー · ステップ 3 — <strong>セットアップの完了</strong>（終了してアプリを起動）。</em>
 </p>
 
-### Build commands
+### ビルドコマンド (Build commands)
 
-All commands run from the **repo root**:
+すべてのコマンドは**リポジトリのルート**から実行します:
 
-| Command                     | What it does                                                                 |
+| コマンド | 行うこと |
 | --------------------------- | ---------------------------------------------------------------------------- |
-| `npm run desktop:install`   | Install Electron + electron-builder into `desktop/`; rebuild `better-sqlite3` for Electron's ABI; preflights the native `better-sqlite3` build and prints actionable setup help (incl. a no-toolchain alternative) on failure |
-| `npm run desktop:build`     | Compile the desktop TypeScript sources into `desktop/out/`                    |
-| `npm run desktop:dev`       | Build and launch the Electron app for local iteration                         |
-| `npm run desktop:test`      | Run the smoke test (spawn Electron, probe `/api/health`, shut down)            |
-| `npm run desktop:dmg`       | **macOS:** build **both** DMGs (arm64 + x64) — correct for release, **slower** (packages each arch) |
-| `npm run desktop:dmg:arm64` | **macOS:** build an Apple-Silicon-only DMG — **fast** (~1 min), recommended for your own Mac |
-| `npm run desktop:dmg:x64`   | **macOS:** build an Intel-only DMG — **fast** (~1 min)                         |
-| `npm run desktop:dmg:universal` | **macOS:** build one merged **universal** DMG (arm64 + x86_64) — optional, **slowest**, not what the release ships |
-| `npm run desktop:win`       | **Windows:** build the NSIS installer `.exe` (x64)                             |
-| `npm run desktop:win:portable` | **Windows:** build the no-install portable `.exe` (x64)                     |
+| `npm run desktop:install`   | Electron と electron-builder を `desktop/` にインストールします。Electron の ABI に合わせて `better-sqlite3` をリビルドします。ネイティブの `better-sqlite3` ビルドを事前確認し、失敗時には実行可能なセットアップのヘルプ（ツールチェーンなしの代替案を含む）を出力します |
+| `npm run desktop:build`     | デスクトップの TypeScript ソースを `desktop/out/` にコンパイルします |
+| `npm run desktop:dev`       | ローカルイテレーション用に Electron アプリをビルドして起動します |
+| `npm run desktop:test`      | スモークテストを実行します（Electron をスポーンし、`/api/health` をプローブし、シャットダウンします） |
+| `npm run desktop:dmg`       | **macOS:** **両方**の DMG (arm64 + x64) をビルドします — リリース用としては正しいですが、**遅い**です (各アーキテクチャをパッケージ化します) |
+| `npm run desktop:dmg:arm64` | **macOS:** Apple Silicon 専用の DMG をビルドします — **高速** (約1分)、自分用の Mac にお勧めです |
+| `npm run desktop:dmg:x64`   | **macOS:** Intel 専用の DMG をビルドします — **高速** (約1分) |
+| `npm run desktop:dmg:universal` | **macOS:** マージされた 1 つの **ユニバーサル** DMG (arm64 + x86_64) をビルドします — オプションであり、**最も遅く**、リリースで提供されるものではありません |
+| `npm run desktop:win`       | **Windows:** NSIS インストーラー `.exe` (x64) をビルドします |
+| `npm run desktop:win:portable` | **Windows:** インストール不要のポータブル `.exe` (x64) をビルドします |
 
-The resulting macOS DMG is **~80 MB** (≈ 250 MB on disk once installed) and the Windows installer is comparable — the standard Electron bundle tax.
+得られる macOS DMG は **約 80 MB**（インストールされるとディスク上で ≈ 250 MB）で、Windows インストーラーも同程度です — 標準的な Electron バンドルのオーバーヘッドです。
 
-### Signing & notarization
+### 署名と公証 (Signing & notarization)
 
-The macOS DMG is **ad-hoc signed** by default so anyone can build a working `.app` without a paid Apple Developer account — the `package` script sets `CSC_IDENTITY_AUTO_DISCOVERY=false` so a code-signing certificate already in the contributor's keychain is never auto-picked. Real **Developer ID signing** is opt-in via `CSC_LINK` (a base64-encoded `.p12`) and `CSC_KEY_PASSWORD`; **Apple notarization** is opt-in via `APPLE_ID`, `APPLE_TEAM_ID`, and `APPLE_APP_SPECIFIC_PASSWORD`. The **Windows** build is **unsigned** by default (SmartScreen may prompt on first launch — *More info → Run anyway*); Authenticode signing activates only when an explicit certificate is provided via `CSC_LINK` + `CSC_KEY_PASSWORD`. CI picks all of these up automatically when provided — no code change required.
+macOS DMG はデフォルトで**アドホック署名**されているため、有料の Apple Developer アカウントを持っていなくても誰でも動作する `.app` をビルドできます — `package` スクリプトは `CSC_IDENTITY_AUTO_DISCOVERY=false` を設定するため、コントリビューターのキーチェーンにすでにあるコード署名証明書が自動で選択されることはありません。実際の **Developer ID 署名** は `CSC_LINK`（base64 エンコードされた `.p12`）と `CSC_KEY_PASSWORD` を介してオプトインします。**Apple 公証**は `APPLE_ID`、`APPLE_TEAM_ID`、および `APPLE_APP_SPECIFIC_PASSWORD` を介してオプトインします。**Windows** ビルドはデフォルトで**未署名**です（初回起動時に SmartScreen が警告を出す場合があります — *詳細情報 → 実行*）。Authenticode 署名は、明示的な証明書が `CSC_LINK` + `CSC_KEY_PASSWORD` 経由で提供された場合にのみアクティブになります。これらが提供されると、CI はそれらをすべて自動的に取得します — コードの変更は不要です。
 
-### Implementation notes
+### 実装ノート (Implementation notes)
 
-- **`better-sqlite3`** is the only native module in the dependency tree, and a native module must be compiled against the exact Node ABI it runs on. The `desktop/` workspace ships its **own copy** of `better-sqlite3` rebuilt for Electron's ABI and uses a process-local `require` redirect to point `server/db.js` at it; the repo-root copy stays built for system Node (so `npm run test:server` keeps working).
-- **Building a DMG rebuilds `better-sqlite3` for the target architecture**, which can leave the desktop copy built for the other CPU arch and break `npm run desktop:dev` / `npm run desktop:test` with `ERR_DLOPEN_FAILED`. The desktop `prebuild` step now **auto-heals** the native module for the local machine on the next build, so the dev and smoke-test flows keep working after an arch-specific DMG build. The `prebuild` step also **fails fast with setup help** when the `better-sqlite3` native binary is missing entirely, turning a runtime crash into a copy-pasteable build-time error.
-- The **only change outside `desktop/`** is a behavior-preserving refactor of `server/index.js`: its post-listen bootstrap (update scheduler, `cc-watcher`, orphaned-run reconciliation) was extracted into an exported `startBackgroundServices()` so the embedded server runs exactly what `node server/index.js` runs. The standalone `node server/index.js` path is functionally unchanged; `client/`, `scripts/`, `mcp/`, and `vscode-extension/` are untouched.
-- Two path-filtered desktop CI jobs build, smoke-test, and package the app: **`🍎 macOS Desktop (DMG)`** on `macos-latest` (uploads the `ClaudeCodeMonitor-dmg` artifact — two single-arch DMGs) and **`🪟 Windows Desktop (EXE)`** on `windows-latest` (uploads the `ClaudeCodeMonitor-win` artifact — NSIS installer + portable). On a version-bump push to `master`, the `release` job attaches **both** the macOS DMGs and the Windows `.exe`s to the published `vX.Y.Z` GitHub Release. The Windows icon (`desktop/assets/icon.ico`) is committed to the repo (regenerate it from `icon.png` with `npm run build:win-icon`, PowerShell + .NET, no extra tooling).
+- **`better-sqlite3`** は依存関係ツリーの中で唯一のネイティブモジュールであり、ネイティブモジュールはそれが実行される正確な Node ABI に対してコンパイルされる必要があります。`desktop/` ワークスペースは Electron の ABI 向けにリビルドされた **独自のコピー** の `better-sqlite3` を提供し、プロセスローカルの `require` リダイレクトを使用して `server/db.js` をそれに向けます。リポジトリのルートのコピーはシステム Node 向けにビルドされたまま維持されます（したがって `npm run test:server` は機能し続けます）。
+- **DMG をビルドすると、ターゲットアーキテクチャ用に `better-sqlite3` がリビルドされます**。これにより、デスクトップのコピーが別の CPU アーキテクチャ用にビルドされたままになり、`npm run desktop:dev` / `npm run desktop:test` が `ERR_DLOPEN_FAILED` で失敗する可能性があります。デスクトップの `prebuild` ステップは、次のビルド時にローカルマシン向けにネイティブモジュールを**自動修復**するようになったため、アーキテクチャ固有の DMG ビルド後も dev およびスモークテストのフローは引き続き機能します。`prebuild` ステップはまた、`better-sqlite3` のネイティブバイナリが完全に欠落している場合、**セットアップヘルプを表示して即座に失敗し**、ランタイムのクラッシュをコピー＆ペースト可能なビルド時エラーに変換します。
+- **`desktop/` 外の唯一の変更点**は、動作を保持したまま行われた `server/index.js` のリファクタリングです。リスン後のブートストラップ（アップデートスケジューラー、`cc-watcher`、孤立した実行の調整）がエクスポートされた `startBackgroundServices()` に抽出されたため、埋め込みサーバーは `node server/index.js` が実行するものとまったく同じものを実行します。スタンドアロンの `node server/index.js` パスは機能的に変更されていません。`client/`、`scripts/`、`mcp/`、および `vscode-extension/` は手を加えられていません。
+- パスでフィルタリングされた 2 つのデスクトップ CI ジョブがアプリをビルド、スモークテスト、パッケージ化します。`macos-latest` 上の **`🍎 macOS Desktop (DMG)`** (2 つの単一アーキテクチャ DMG である `ClaudeCodeMonitor-dmg` アーティファクトをアップロード) と、`windows-latest` 上の **`🪟 Windows Desktop (EXE)`** (NSIS インストーラー + ポータブルである `ClaudeCodeMonitor-win` アーティファクトをアップロード) です。`master` へのバージョンアップのプッシュ時には、`release` ジョブが公開された `vX.Y.Z` GitHub リリースに macOS の DMG と Windows `.exe` の**両方**を添付します。Windows のアイコン (`desktop/assets/icon.ico`) はリポジトリにコミットされています (`icon.png` から `npm run build:win-icon` で再生成できます。PowerShell + .NET を使用し、追加のツールは不要です)。
 
-For the full user guide (download, install, Gatekeeper / SmartScreen, tray menu, auto-start) see [`DESKTOP.md`](./DESKTOP.md); for the contributor / architecture reference (process model, boot lifecycle, port discovery, build pipeline — with Mermaid diagrams) see [`desktop/README.md`](./desktop/README.md).
+完全なユーザーガイド (ダウンロード、インストール、Gatekeeper / SmartScreen、トレイメニュー、自動起動) については [`DESKTOP.md`](./DESKTOP.md) を参照してください。コントリビューター / アーキテクチャのリファレンス (プロセスモデル、ブートライフサイクル、ポート検出、ビルドパイプライン — Mermaid ダイアグラム付き) については [`desktop/README.md`](./desktop/README.md) を参照してください。
 
 ---
 
-## Data Storage
+## データストレージ (Data Storage)
 
-- **Engine:** SQLite 3 via `better-sqlite3` (optional) or Node.js built-in `node:sqlite`
-- **Location:** `data/dashboard.db`
-- **Journal mode:** WAL (concurrent reads during writes)
-- **Reset:** Delete `data/dashboard.db` to clear all data
+- **エンジン:** `better-sqlite3` を経由した SQLite 3（オプション）または Node.js 組み込みの `node:sqlite`
+- **場所:** `data/dashboard.db`
+- **ジャーナルモード:** WAL (書き込み中の並行読み取り)
+- **リセット:** すべてのデータを消去するには `data/dashboard.db` を削除します
 
-### Entity Relationship Diagram
+### エンティティリレーションシップ (ER) 図
 
 ```mermaid
 erDiagram
@@ -1849,9 +1783,9 @@ erDiagram
 
 ---
 
-## Plugin Marketplace
+## プラグインマーケットプレイス (Plugin Marketplace)
 
-CCAM ships **14 plugins** from one shared source tree. Claude Code reads `.claude-plugin/marketplace.json`; Codex reads `.agents/plugins/marketplace.json` plus each plugin's `.codex-plugin/plugin.json`. The bundle contains **66 plugin skills, 18 Claude subagents, 34 Claude commands, 3 CLI helpers, 3 hook configurations, and 2 MCP-enabled plugins**.
+CCAM は、1 つの共有ソースツリーから **14 のプラグイン** を提供します。Claude Code は `.claude-plugin/marketplace.json` を読み取ります。Codex は `.agents/plugins/marketplace.json` に加えて、各プラグインの `.codex-plugin/plugin.json` を読み取ります。バンドルには、**66 のプラグインスキル、18 の Claude サブエージェント、34 の Claude コマンド、3 つの CLI ヘルパー、3 つのフック構成、および 2 つの MCP 対応プラグイン** が含まれています。
 
 ```bash
 # Claude Code
@@ -1862,22 +1796,22 @@ claude plugin install ccam-platform@claude-code-agent-monitor-plugins
 codex plugin marketplace add hoangsonww/Claude-Code-Agent-Monitor
 codex plugin add ccam-platform@claude-code-agent-monitor-plugins
 
-# Open Agent Skills / skills.sh-compatible CLI
+# オープンエージェントスキル / skills.sh 互換の CLI
 npx skills add hoangsonww/Claude-Code-Agent-Monitor --list
 
-# Install one skill for Claude Code and Codex in the current project
+# 現在のプロジェクトに Claude Code と Codex の 1 つのスキルをインストール
 npx skills add hoangsonww/Claude-Code-Agent-Monitor \
   --skill mcp-server \
   --agent claude-code \
   --agent codex \
   --yes
 
-# Verify, update, and remove the project-scoped skill
+# プロジェクトスコープのスキルの確認、更新、および削除
 npx skills list --json
 npx skills update --project --yes
 npx skills remove mcp-server --yes
 
-# Add --global to install at user scope, then manage that scope explicitly
+# --global を追加してユーザースコープにインストールし、そのスコープを明示的に管理します
 npx skills add hoangsonww/Claude-Code-Agent-Monitor \
   --skill mcp-server \
   --agent claude-code \
@@ -1889,47 +1823,46 @@ npx skills update --global --yes
 npx skills remove --global mcp-server --yes
 ```
 
-The `skills` CLI discovers **75 total repository skills**, including the 66 plugin skills and repository-maintenance skills. Project installs use `.agents/skills/` plus agent-specific links. Global Claude Code skills default to `~/.claude/skills/`, or `$CLAUDE_CONFIG_DIR/skills/` when set. Global Codex skills default to `~/.codex/skills/`, or `$CODEX_HOME/skills/` when set. Multi-agent installs may deduplicate files through a shared store and link those destinations. Every plugin skill has canonical `name`/`description` frontmatter and `agents/openai.yaml` metadata. No upstream PR to `vercel-labs/skills` is needed for installation. The public GitHub repository is the source, and skills.sh visibility follows publication and real install telemetry.
+`skills` CLI は、66 のプラグインスキルとリポジトリメンテナンススキルを含む、**合計 75 のリポジトリスキル**を検出します。プロジェクトのインストールでは、`.agents/skills/` に加えてエージェント固有のリンクが使用されます。グローバルな Claude Code スキルはデフォルトで `~/.claude/skills/` になりますが、設定されている場合は `$CLAUDE_CONFIG_DIR/skills/` になります。グローバルな Codex スキルはデフォルトで `~/.codex/skills/` になりますが、設定されている場合は `$CODEX_HOME/skills/` になります。マルチエージェントのインストールは、共有ストアを介してファイルを重複排除し、それらの宛先をリンクする場合があります。すべてのプラグインスキルには、正規の `name`/`description` フロントマターと `agents/openai.yaml` メタデータが含まれています。インストールするために `vercel-labs/skills` へのアップストリームの PR は不要です。パブリックな GitHub リポジトリがソースであり、skills.sh の可視性はパブリケーションと実際のインストールテレメトリに従います。
 
-New focused packs complement the existing analytics, productivity, quality, sessions, workflows, config, and dashboard plugins:
+新しいフォーカスパックは、既存の分析、生産性、品質、セッション、ワークフロー、設定、およびダッシュボードプラグインを補完します:
 
-- `ccam-runner`: monitored Claude Code/Codex launch, follow-up, stop, resume, and run history
-- `ccam-integrations`: alert rules, webhooks, push notifications, and SSH remote collection
-- `ccam-platform`: Claude/Codex Config Explorer, provider-aware import, backup restore, hook setup, updates, and MCP operations
-- `ccam-reports`: stakeholder-ready executive, cost, reliability, and workflow reports
-
-Validate and regenerate the distribution metadata with:
+- `ccam-runner`: 監視された Claude Code/Codex の起動、フォローアップ、停止、再開、および実行履歴
+- `ccam-integrations`: アラートルール、Webhook、プッシュ通知、および SSH リモートコレクション
+- `ccam-platform`: Claude/Codex 設定エクスプローラー、プロバイダーを認識するインポート、バックアップの復元、フックのセットアップ、更新、および MCP 操作
+- `ccam-reports`: ステークホルダー向けのエグゼクティブ、コスト、信頼性、およびワークフローレポート
+以下のコマンドでディストリビューションメタデータを検証および再生成します:
 
 ```bash
 npm run extensions:sync
 npm run extensions:validate
 ```
 
-Full catalog, installation commands, skills.sh behavior, public-submission boundary, and clean-install checks: [docs/PLUGINS.md](docs/PLUGINS.md).
+完全なカタログ、インストールコマンド、skills.sh の動作、パブリック送信の境界、およびクリーンインストールチェックについては、[docs/PLUGINS.md](docs/PLUGINS.md) を参照してください。
 
 ---
 
 ## Statusline
 
-A standalone CLI statusline utility for Claude Code that displays model name, user, working directory, git branch, context window usage bar, per-direction token counts, and session cost -- all color-coded with ANSI escape sequences.
+Claude Code 用のスタンドアロン CLI ステータスラインユーティリティです。モデル名、ユーザー、作業ディレクトリ、git ブランチ、コンテキストウィンドウの使用状況バー、方向ごとのトークン数、セッションコストを、ANSI エスケープシーケンスで色分けして表示します。
 
 ```
 nguyens6@host ~/agent-dashboard/client | Sonnet 4.6 | main | ████████░░ 79% | 3↑ 2↓ 156586c | $0.4231
 ```
 
-| Segment     | Color                | Example                                                        |
+| セグメント     | 色                | 例                                                        |
 | ----------- | -------------------- | -------------------------------------------------------------- |
-| Model       | Cyan                 | `Sonnet 4.6`                                                   |
-| User        | Green                | `nguyens6`                                                     |
-| CWD         | Yellow               | `~/agent-dashboard`                                            |
-| Git branch  | Magenta              | `main`                                                         |
-| Context bar | Green / Yellow / Red | `████████░░ 79%`                                               |
-| Tokens      | Green / Cyan / Dim   | `3↑ 2↓ 156586c` (green `↑` in, cyan `↓` out, dim `c` cache)    |
-| Cost (USD)  | Green / Yellow / Red | `$0.4231` (session total — shown on API and subscription plans)|
+| モデル       | シアン (Cyan)                 | `Sonnet 4.6`                                                   |
+| ユーザー        | 緑 (Green)                | `nguyens6`                                                     |
+| CWD         | 黄 (Yellow)               | `~/agent-dashboard`                                            |
+| Git ブランチ  | マゼンタ (Magenta)              | `main`                                                         |
+| コンテキストバー | 緑 / 黄 / 赤 | `████████░░ 79%`                                               |
+| トークン      | 緑 / シアン / ディム (Dim)   | `3↑ 2↓ 156586c` (緑 `↑` は入力、シアン `↓` は出力、ディム `c` はキャッシュ)    |
+| コスト (USD)  | 緑 / 黄 / 赤 | `$0.4231` (セッション合計 — API およびサブスクリプションプランで表示)|
 
-Cost color thresholds: green under $5, yellow $5–$20, red $20+.
+コストの色分けのしきい値: $5 未満は緑、$5–$20 は黄、$20 以上は赤。
 
-See [`statusline/README.md`](statusline/README.md) for installation instructions.
+インストール手順については [`statusline/README.md`](statusline/README.md) を参照してください。
 
 <p align="center">
   <img src="images/statusline.png" alt="Statusline Demo" width="100%">
@@ -1937,7 +1870,7 @@ See [`statusline/README.md`](statusline/README.md) for installation instructions
 
 ---
 
-## Server Architecture
+## サーバーアーキテクチャ (Server Architecture)
 
 ```mermaid
 graph TD
@@ -1973,7 +1906,7 @@ graph TD
 
 ---
 
-## Client Routing
+## クライアントルーティング (Client Routing)
 
 ```mermaid
 graph LR
@@ -1997,7 +1930,7 @@ graph LR
 
 ---
 
-## Hook Handler Flow
+## フックハンドラーフロー (Hook Handler Flow)
 
 ```mermaid
 flowchart TD
@@ -2018,9 +1951,9 @@ flowchart TD
 
 ---
 
-## Deployment Modes
+## デプロイメントモード (Deployment Modes)
 
-We support both development and production deployment modes with different process architectures:
+開発モードと本番環境デプロイメントモードの両方を、異なるプロセスアーキテクチャでサポートしています:
 
 ```mermaid
 graph LR
@@ -2043,7 +1976,7 @@ graph LR
     style P_DIST fill:#646CFF,stroke:#818cf8,color:#fff
 ```
 
-Optional local MCP sidecar (supports stdio, HTTP+SSE, and REPL transports):
+オプションのローカル MCP サイドカー (stdio, HTTP+SSE, および REPL トランスポートをサポート):
 
 ```mermaid
 graph LR
@@ -2066,7 +1999,7 @@ graph LR
     style M_REPL fill:#0f766e,stroke:#14b8a6,color:#fff
 ```
 
-Optional **desktop app (macOS & Windows)** — a single Electron process that hosts the Express server in-process (no terminal, no child process):
+オプションの **デスクトップアプリ (macOS & Windows)** — Express サーバーをインプロセスでホストする単一の Electron プロセス (ターミナルも子プロセスも不要):
 
 ```mermaid
 flowchart LR
@@ -2089,9 +2022,9 @@ flowchart LR
     style E_WIN fill:#61DAFB,stroke:#3aa9c9,color:#000
 ```
 
-### Cloud Deployment
+### クラウドデプロイメント (Cloud Deployment)
 
-The `deployments/` stack targets any conformant Kubernetes service, including EKS, GKE, AKS, OKE, and self-managed clusters. CCAM uses SQLite, so every supported manifest enforces **one active dashboard writer per persistent volume** with a Recreate rollout. HPA, active-active replicas, blue-green, and canary are intentionally unsupported while SQLite remains the persistence backend.
+`deployments/` スタックは、EKS、GKE、AKS、OKE、および自己管理クラスターを含む、準拠する任意の Kubernetes サービスを対象としています。CCAM は SQLite を使用するため、サポートされているすべてのマニフェストは、Recreate ロールアウトにより**永続ボリュームごとに 1 つのアクティブなダッシュボードライター**を強制します。HPA、アクティブ-アクティブレプリカ、ブルーグリーン、およびカナリアデプロイメントは、SQLite が永続化バックエンドである間は意図的にサポートされません。
 
 ```mermaid
 flowchart LR
@@ -2103,11 +2036,11 @@ flowchart LR
   MCP["Authenticated MCP sidecar"] --> APP
 ```
 
-- **Helm:** schema-enforced one writer, digest support, retained PVC, Ingress or Gateway API, External-Secret-compatible token mount, NetworkPolicy, optional MCP and ServiceMonitor.
-- **Kustomize:** restricted-PSS base plus dev/staging/production overlays and optional MCP, monitoring, Gateway API, and CSI snapshot components.
-- **Terraform:** deploys the validated Helm chart to an existing Kubernetes cluster. Cloud networking, cluster identity, CSI, TLS, and secret synchronization remain provider-owned.
-- **Operations:** consistent SQLite online backup with SHA-256, verified restore with scale-to-zero, backup-first deploy/rollback/teardown, and authenticated health checks.
-- **CI supply chain:** app and MCP images are scanned, published for amd64/arm64 with SBOM and SLSA provenance, and keyless-signed with Cosign.
+- **Helm:** スキーマによって強制された 1 つのライター、ダイジェストサポート、保持された PVC、Ingress または Gateway API、External-Secret 互換のトークンマウント、NetworkPolicy、オプションの MCP と ServiceMonitor。
+- **Kustomize:** 制限付き PSS ベースに加えて、dev/staging/production オーバーレイ、オプションの MCP、監視、Gateway API、および CSI スナップショットコンポーネント。
+- **Terraform:** 検証済みの Helm チャートを既存の Kubernetes クラスターにデプロイします。クラウドのネットワーキング、クラスター ID、CSI、TLS、およびシークレットの同期は、引き続きプロバイダーが所有します。
+- **オペレーション:** SHA-256 を使用した一貫性のある SQLite オンラインバックアップ、ゼロスケールによる検証済みのリストア、バックアップ優先のデプロイ/ロールバック/ティアダウン、および認証されたヘルスチェック。
+- **CI サプライチェーン:** アプリおよび MCP イメージはスキャンされ、SBOM および SLSA の来歴とともに amd64/arm64 向けに公開され、Cosign を使用してキーレス署名されます。
 
 ```bash
 npm run deploy:validate
@@ -2124,200 +2057,200 @@ helm upgrade --install agent-monitor deployments/helm/agent-monitor \
 ```
 
 > [!NOTE]
-> Full production setup, secrets, Docker/Podman stack, Gateway API, Terraform, backup, restore, and rollback are documented in [DEPLOYMENT.md](DEPLOYMENT.md) and [deployments/README.md](deployments/README.md).
+> 完全な本番環境のセットアップ、シークレット、Docker/Podman スタック、Gateway API、Terraform、バックアップ、リストア、およびロールバックについては、[DEPLOYMENT.md](DEPLOYMENT.md) および [deployments/README.md](deployments/README.md) に文書化されています。
 
 ---
 
-## Project Structure
+## プロジェクト構造 (Project Structure)
 
 ```
 agent-dashboard/
-|-- CLAUDE.md                   # Claude Code project memory and working agreements
-|-- AGENTS.md                   # Codex project instructions
-|-- package.json                # Root scripts (dashboard + MCP helpers) + server dependencies
+|-- CLAUDE.md                   # Claude Code プロジェクトのメモリと作業に関する合意
+|-- AGENTS.md                   # Codex プロジェクトの指示
+|-- package.json                # ルートスクリプト (ダッシュボード + MCP ヘルパー) + サーバーの依存関係
 |-- .claude/
-|   +-- rules/                  # Path-scoped Claude rules
-|   +-- skills/                 # Claude reusable project skills
-|   +-- agents/                 # Claude custom subagents
+|   +-- rules/                  # パススコープの Claude ルール
+|   +-- skills/                 # Claude の再利用可能なプロジェクトスキル
+|   +-- agents/                 # Claude カスタムサブエージェント
 |-- .claude-plugin/
-|   +-- marketplace.json        # Claude Code marketplace manifest (14 plugins)
+|   +-- marketplace.json        # Claude Code マーケットプレイス マニフェスト (14 プラグイン)
 |-- .agents/plugins/
-|   +-- marketplace.json        # Codex marketplace manifest (same 14 plugins)
+|   +-- marketplace.json        # Codex マーケットプレイス マニフェスト (同じ 14 プラグイン)
 |-- plugins/
-|   |-- ccam-analytics/         # Analytics: session reports, cost breakdown, usage trends, productivity score
+|   |-- ccam-analytics/         # 分析: セッションレポート、コスト内訳、使用状況の傾向、生産性スコア
 |   |   |-- .claude-plugin/plugin.json
 |   |   |-- skills/ (4)         # session-report, cost-breakdown, usage-trends, productivity-score
-|   |   |-- agents/             # analytics-advisor (Sonnet model)
-|   |   |-- hooks/hooks.json    # Stop + SubagentStop event logging
-|   |   +-- bin/ccam-stats      # Terminal dashboard CLI
-|   |-- ccam-productivity/      # Productivity: standups, reports, sprints, workflow optimizer
-|   |-- ccam-devtools/          # DevTools: debug, diagnostics, export, health checks
-|   |   +-- bin/                # ccam-doctor + ccam-export CLIs
-|   |-- ccam-insights/          # Insights: patterns, anomalies, optimization, comparison
-|   |-- ccam-cost-guard/        # Cost guardrails: budgets, spend forecast, cost alerts, model savings
-|   |-- ccam-sessions/          # Session forensics: search, timeline, transcript replay, cwd rollup, cleanup
-|   |-- ccam-workflows/         # Workflow orchestration: DAG map, delegation audit, concurrency, fleet runs
-|   |-- ccam-quality/           # Reliability & SLOs: error scan, API-error report, hook-failure audit, SLO check
-|   |-- ccam-config/            # Config & memory governance: config audit, memory review, skill/MCP/hook inventory
-|   +-- ccam-dashboard/         # Dashboard connector: status, quick stats, MCP integration
-|       +-- .mcp.json           # MCP server configuration
+|   |   |-- agents/             # analytics-advisor (Sonnet モデル)
+|   |   |-- hooks/hooks.json    # Stop + SubagentStop イベントロギング
+|   |   +-- bin/ccam-stats      # ターミナルダッシュボード CLI
+|   |-- ccam-productivity/      # 生産性: スタンドアップ、レポート、スプリント、ワークフローオプティマイザー
+|   |-- ccam-devtools/          # DevTools: デバッグ、診断、エクスポート、ヘルスチェック
+|   |   +-- bin/                # ccam-doctor + ccam-export CLI
+|   |-- ccam-insights/          # インサイト: パターン、異常、最適化、比較
+|   |-- ccam-cost-guard/        # コストガードレール: 予算、支出予測、コストアラート、モデルの節約
+|   |-- ccam-sessions/          # セッションフォレンジック: 検索、タイムライン、トランスクリプトの再生、cwd ロールアップ、クリーンアップ
+|   |-- ccam-workflows/         # ワークフローオーケストレーション: DAG マップ、委任監査、同時実行、フリートの実行
+|   |-- ccam-quality/           # 信頼性 & SLO: エラースキャン、API エラーレポート、フック障害の監査、SLO チェック
+|   |-- ccam-config/            # 設定 & メモリのガバナンス: 設定監査、メモリレビュー、スキル/MCP/フックのインベントリ
+|   +-- ccam-dashboard/         # ダッシュボードコネクター: ステータス、クイックスタッツ、MCP 統合
+|       +-- .mcp.json           # MCP サーバー設定
 |-- server/
-|   |-- index.js                 # Express app, HTTP server, static serving
-|   |-- db.js                    # SQLite schema, migrations, prepared statements
-|   |-- websocket.js             # WebSocket server with heartbeat
+|   |-- index.js                 # Express アプリ、HTTP サーバー、静的ファイル提供
+|   |-- db.js                    # SQLite スキーマ、マイグレーション、プリペアドステートメント
+|   |-- websocket.js             # ハートビート付きの WebSocket サーバー
 |   +-- routes/
-|       |-- hooks.js             # Hook event processing (transactional)
-|       |-- sessions.js          # Session CRUD
-|       |-- agents.js            # Agent CRUD
-|       |-- events.js            # Event listing
-|       |-- stats.js             # Aggregate statistics
-|       |-- analytics.js         # Token, tool, and trend analytics
-|       |-- workflows.js         # Aggregate workflow data and per-session drill-in
-|       |-- pricing.js           # Model pricing CRUD and cost calculation
-|       +-- settings.js          # System info, data management, export, cleanup
+|       |-- hooks.js             # フックイベント処理 (トランザクション)
+|       |-- sessions.js          # セッション CRUD
+|       |-- agents.js            # エージェント CRUD
+|       |-- events.js            # イベントリスティング
+|       |-- stats.js             # 集計統計
+|       |-- analytics.js         # トークン、ツール、およびトレンド分析
+|       |-- workflows.js         # ワークフローの集計データとセッションごとのドリルイン
+|       |-- pricing.js           # モデルの価格設定 CRUD とコスト計算
+|       +-- settings.js          # システム情報、データ管理、エクスポート、クリーンアップ
 |   +-- lib/
-|       +-- transcript-cache.js  # Stat-based JSONL transcript cache with chunked sync byte-stream reader (4 MiB chunks, line-by-line UTF-8 decode) so files larger than V8's max string length (~512 MiB) parse without aborting Node with "FATAL ERROR: v8::ToLocalChecked Empty MaybeLocal". Extracts tokens, compactions, API errors, turn durations, thinking blocks, and usage extras (service_tier, speed, inference_geo)
-|   +-- compat-sqlite.js         # node:sqlite compatibility wrapper (fallback for better-sqlite3)
+|       +-- transcript-cache.js  # V8 の最大文字列長 (~512 MiB) を超えるファイルでも Node をアボートさせることなくパースするための、チャンク同期バイトストリームリーダー (4 MiB チャンク、行ごとの UTF-8 デコード) を備えた JSONL トランスクリプトキャッシュ。トークン、コンパクション、API エラー、ターンの期間、思考ブロック、および使用量の追加情報 (service_tier, speed, inference_geo) を抽出します
+|   +-- compat-sqlite.js         # node:sqlite 互換性ラッパー (better-sqlite3 のフォールバック)
 |-- client/
-|   |-- package.json             # Client dependencies
-|   |-- index.html               # HTML entry point
-|   |-- vite.config.ts           # Vite + proxy config
-|   |-- tailwind.config.js       # Custom dark theme
+|   |-- package.json             # クライアントの依存関係
+|   |-- index.html               # HTML エントリーポイント
+|   |-- vite.config.ts           # Vite + プロキシ設定
+|   |-- tailwind.config.js       # カスタムダークテーマ
 |   |-- tsconfig.json            # Strict TypeScript
 |   +-- src/
-|       |-- main.tsx             # React entry
-|       |-- App.tsx              # Router + WebSocket provider
-|       |-- index.css            # Tailwind + custom utilities
+|       |-- main.tsx             # React エントリー
+|       |-- App.tsx              # ルーター + WebSocket プロバイダー
+|       |-- index.css            # Tailwind + カスタムユーティリティ
 |       |-- lib/
-|       |   |-- types.ts         # Shared TypeScript interfaces
-|       |   |-- api.ts           # Typed fetch client
-|       |   |-- format.ts        # Date/time formatting utilities
-|       |   +-- eventBus.ts      # Pub/sub for WebSocket distribution
+|       |   |-- types.ts         # 共有 TypeScript インターフェース
+|       |   |-- api.ts           # 型付きの fetch クライアント
+|       |   |-- format.ts        # 日付/時刻のフォーマットユーティリティ
+|       |   +-- eventBus.ts      # WebSocket 配信用の Pub/sub
 |       |-- hooks/
-|       |   |-- useWebSocket.ts      # Auto-reconnecting WebSocket hook
-|       |   +-- useNotifications.ts  # Browser notification triggers from WebSocket events
+|       |   |-- useWebSocket.ts      # 自動再接続 WebSocket フック
+|       |   +-- useNotifications.ts  # WebSocket イベントからのブラウザ通知トリガー
 |       |-- components/
-|       |   |-- Layout.tsx       # Shell with sidebar + outlet
-|       |   |-- Sidebar.tsx      # Navigation + connection indicator
-|       |   |-- AgentCard.tsx    # Agent info card with status
-|       |   |-- StatCard.tsx     # Metric card
-|       |   |-- StatusBadge.tsx  # Color-coded status pills
-|       |   |-- EmptyState.tsx   # Placeholder for empty lists
-|       |   +-- workflows/       # D3.js workflow visualization components
-|       |       |-- OrchestrationDAG.tsx            # Horizontal DAG of agent spawning patterns
-|       |       |-- ToolExecutionFlow.tsx           # d3-sankey diagram of tool-to-tool transitions
-|       |       |-- AgentCollaborationNetwork.tsx   # Force-directed agent pipeline graph
-|       |       |-- SubagentEffectiveness.tsx       # Scorecard grid with SVG success rings
-|       |       |-- WorkflowPatterns.tsx            # Auto-detected orchestration sequences
-|       |       |-- ModelDelegationFlow.tsx         # Model routing through agent hierarchies
-|       |       |-- ErrorPropagationMap.tsx         # Error clustering by hierarchy depth
-|       |       |-- ConcurrencyTimeline.tsx         # Swim-lane parallel agent execution
-|       |       |-- SessionComplexityScatter.tsx    # D3 bubble chart (duration vs agents vs tokens)
-|       |       |-- CompactionImpact.tsx            # Token compression events and recovery
-|       |       |-- WorkflowStats.tsx               # Aggregate workflow statistics
-|       |       +-- SessionDrillIn.tsx              # Per-session agent tree, tool timeline, events
+|       |   |-- Layout.tsx       # サイドバーとアウトレットを含むシェル
+|       |   |-- Sidebar.tsx      # ナビゲーション + 接続インジケーター
+|       |   |-- AgentCard.tsx    # ステータス付きのエージェント情報カード
+|       |   |-- StatCard.tsx     # メトリクスカード
+|       |   |-- StatusBadge.tsx  # 色分けされたステータスピル
+|       |   |-- EmptyState.tsx   # 空のリストのプレースホルダー
+|       |   +-- workflows/       # D3.js ワークフロー可視化コンポーネント
+|       |       |-- OrchestrationDAG.tsx            # エージェント生成パターンの水平 DAG
+|       |       |-- ToolExecutionFlow.tsx           # ツール間遷移の d3-sankey ダイアグラム
+|       |       |-- AgentCollaborationNetwork.tsx   # 力学モデルによるエージェントパイプライングラフ
+|       |       |-- SubagentEffectiveness.tsx       # SVG サクセスリング付きのスコアカードグリッド
+|       |       |-- WorkflowPatterns.tsx            # 自動検出されたオーケストレーションシーケンス
+|       |       |-- ModelDelegationFlow.tsx         # エージェント階層を通じたモデルのルーティング
+|       |       |-- ErrorPropagationMap.tsx         # 階層の深さによるエラークラスタリング
+|       |       |-- ConcurrencyTimeline.tsx         # スイムレーンによる並列エージェント実行
+|       |       |-- SessionComplexityScatter.tsx    # D3 バブルチャート (期間 vs エージェント数 vs トークン数)
+|       |       |-- CompactionImpact.tsx            # トークン圧縮イベントとリカバリ
+|       |       |-- WorkflowStats.tsx               # ワークフローの集計統計
+|       |       +-- SessionDrillIn.tsx              # セッションごとのエージェントツリー、ツールタイムライン、イベント
 |       +-- pages/
-|           |-- Dashboard.tsx      # Overview page
-|           |-- KanbanBoard.tsx    # Agents/Sessions toggle, status columns
-|           |-- Sessions.tsx       # Server-paginated sessions table
-|           |-- SessionDetail.tsx  # Single session deep dive
-|           |-- ActivityFeed.tsx   # Real-time event stream
-|           |-- Analytics.tsx      # Token usage, heatmap, trends
-|           |-- Workflows.tsx      # D3.js workflow visualizations and session drill-in
-|           |-- Settings.tsx       # Model pricing, notifications, hooks, export, cleanup
-|           +-- NotFound.tsx       # 404 catch-all page
+|           |-- Dashboard.tsx      # 概要ページ
+|           |-- KanbanBoard.tsx    # エージェント/セッションのトグル、ステータスカラム
+|           |-- Sessions.tsx       # サーバー側でページネーションされたセッションテーブル
+|           |-- SessionDetail.tsx  # 単一セッションのディープダイブ
+|           |-- ActivityFeed.tsx   # リアルタイムのイベントストリーム
+|           |-- Analytics.tsx      # トークン使用量、ヒートマップ、トレンド
+|           |-- Workflows.tsx      # D3.js ワークフローの可視化とセッションのドリルイン
+|           |-- Settings.tsx       # モデル価格、通知、フック、エクスポート、クリーンアップ
+|           +-- NotFound.tsx       # 404 キャッチオールページ
 |-- scripts/
-|   |-- hook-handler.js          # Lightweight stdin-to-HTTP forwarder
-|   |-- install-hooks.js         # Auto-configures ~/.claude/settings.json
-|   |-- import-history.js        # Imports sessions from ~/.claude/ with enhanced JSONL extraction (API errors, turn durations, entrypoint, permission modes, thinking blocks, usage extras, tool errors, subagent JSONL files). Re-import is fully incremental: a per-event-type high-water mark (`MAX(created_at) GROUP BY event_type` per session) is computed up-front and only JSONL entries with `ts > cutoff[type]` are inserted, so long-running sessions whose transcripts grow across multiple days continue to receive Stop / PostToolUse / TurnDuration / ToolError events on every re-run. Also rolls `sessions.ended_at` forward when the JSONL advances past the stored value and refreshes message-count metadata on every pass
-|   +-- seed.js                  # Sample data generator
+|   |-- hook-handler.js          # 軽量な stdin-to-HTTP フォワーダー
+|   |-- install-hooks.js         # ~/.claude/settings.json を自動設定
+|   |-- import-history.js        # ~/.claude/ からセッションをインポート。高度な JSONL 抽出（API エラー、ターン期間、エントリポイント、パーミッションモード、思考ブロック、使用量の追加情報、ツールエラー、サブエージェントの JSONL ファイル）を伴う。再インポートは完全にインクリメンタル：イベントタイプごとの高水準点（セッションごとの `MAX(created_at) GROUP BY event_type`）が事前に計算され、`ts > cutoff[type]` を満たす JSONL エントリのみが挿入されます。これにより、トランスクリプトが複数日にまたがって増大する長期実行セッションでも、再実行のたびに Stop / PostToolUse / TurnDuration / ToolError イベントを引き続き受信します。また、JSONL が保存された値を過ぎて進行した場合は `sessions.ended_at` をロールフォワードし、実行ごとにメッセージ数のメタデータを更新します
+|   +-- seed.js                  # サンプルデータジェネレーター
 |-- mcp/
-|   |-- package.json             # MCP package scripts + dependencies
-|   |-- README.md                # MCP setup, host config, tool catalog, safety model
+|   |-- package.json             # MCP パッケージスクリプト + 依存関係
+|   |-- README.md                # MCP のセットアップ、ホスト設定、ツールカタログ、安全モデル
 |   |-- src/
-|   |   |-- index.ts             # MCP runtime entrypoint (transport router)
-|   |   |-- server.ts            # MCP server assembly
-|   |   |-- clients/             # Dashboard API client with retry/backoff
-|   |   |-- config/              # Environment/CLI config parsing
-|   |   |-- core/                # Logger, tool registry, result helpers
-|   |   |-- policy/              # Mutation/destructive guards
-|   |   |-- tools/               # 16 domain modules registering 97 tools
-|   |   |-- transports/          # HTTP+SSE server, REPL, tool collector
-|   |   |-- ui/                  # ANSI banner, colors, formatter, tables
-|   |   +-- types/               # Shared MCP type definitions
-|   +-- build/                   # Built MCP runtime output
+|   |   |-- index.ts             # MCP ランタイムエントリポイント (トランスポートルーター)
+|   |   |-- server.ts            # MCP サーバーアセンブリ
+|   |   |-- clients/             # リトライ/バックオフ付きダッシュボード API クライアント
+|   |   |-- config/              # 環境/CLI 設定のパース
+|   |   |-- core/                # ロガー、ツールレジストリ、結果ヘルパー
+|   |   |-- policy/              # ミューテーション/破壊的ガード
+|   |   |-- tools/               # 97 個のツールを登録する 16 個のドメインモジュール
+|   |   |-- transports/          # HTTP+SSE サーバー、REPL、ツールコレクター
+|   |   |-- ui/                  # ANSI バナー、カラー、フォーマッター、テーブル
+|   |   +-- types/               # 共有 MCP 型定義
+|   +-- build/                   # ビルドされた MCP ランタイム出力
 |-- desktop/
-|   |-- package.json             # Electron + electron-builder dependencies and scripts
-|   |-- electron-builder.yml     # DMG packaging config; signing/notarization hooks
+|   |-- package.json             # Electron + electron-builder の依存関係とスクリプト
+|   |-- electron-builder.yml     # DMG パッケージング設定。署名/公証のフック
 |   |-- tsconfig.json            # Strict TypeScript (src/ -> out/)
-|   |-- README.md                # Desktop app architecture reference (contributor docs)
-|   |-- assets/                  # icon.svg + generated icon.icns + tray PNGs
+|   |-- README.md                # デスクトップアプリアーキテクチャのリファレンス (コントリビューター向けドキュメント)
+|   |-- assets/                  # icon.svg + 生成された icon.icns + トレイ用 PNG
 |   |-- src/
-|   |   |-- main.ts              # Electron main process entry — lifecycle, wiring
-|   |   |-- server-host.ts       # In-process Express boot, port discovery, adoption, DB close
-|   |   |-- window.ts            # BrowserWindow + persisted window geometry
-|   |   |-- tray.ts              # Menu-bar (tray) icon + context menu
-|   |   |-- menu.ts              # Native application menu (File ▸ Open Dashboard is macOS-only)
-|   |   |-- login-item.ts        # macOS Login Items auto-start toggle (SMAppService)
-|   |   |-- logger.ts            # File logger -> ~/Library/Logs/Claude Code Monitor/desktop.log
-|   |   |-- constants.ts         # App name, ports, timeouts, window size
-|   |   +-- preload.ts           # Intentionally empty (zero renderer privilege)
+|   |   |-- main.ts              # Electron メインプロセスのエントリ — ライフサイクル、配線
+|   |   |-- server-host.ts       # インプロセスでの Express ブート、ポート検出、採用、DB クローズ
+|   |   |-- window.ts            # BrowserWindow + 永続化されたウィンドウのジオメトリ
+|   |   |-- tray.ts              # メニューバー (トレイ) アイコン + コンテキストメニュー
+|   |   |-- menu.ts              # ネイティブアプリケーションメニュー (File ▸ Open Dashboard は macOS のみ)
+|   |   |-- login-item.ts        # macOS のログイン項目 (Login Items) 自動起動トグル (SMAppService)
+|   |   |-- logger.ts            # ファイルロガー -> ~/Library/Logs/Claude Code Monitor/desktop.log
+|   |   |-- constants.ts         # アプリ名、ポート、タイムアウト、ウィンドウサイズ
+|   |   +-- preload.ts           # 意図的に空 (レンダラー特権をゼロにするため)
 |   |-- scripts/
-|   |   |-- install.js           # Preflights native deps for desktop:install; prints setup help + exits non-zero on failure
-|   |   |-- preflight.js         # Shared better-sqlite3 binary check + actionable per-OS setup help (incl. no-toolchain alternative)
-|   |   |-- prebuild.js          # Ensures root + client are built before tsc; fails fast with setup help if native binary missing
-|   |   |-- build-icons.sh       # SVG -> PNG/ICNS via qlmanage/sips/iconutil
-|   |   +-- notarize.js          # electron-builder afterSign hook (opt-in notarization)
+|   |   |-- install.js           # desktop:install 用のネイティブ依存関係の事前確認。失敗時にはセットアップのヘルプを表示し、非ゼロで終了
+|   |   |-- preflight.js         # 共有の better-sqlite3 バイナリチェック + 実行可能な OS ごとのセットアップヘルプ (ツールチェーンなしの代替案を含む)
+|   |   |-- prebuild.js          # tsc の前にルート + クライアントがビルドされていることを確認。ネイティブバイナリがない場合はセットアップヘルプを表示して即座に失敗
+|   |   |-- build-icons.sh       # qlmanage/sips/iconutil による SVG -> PNG/ICNS 変換
+|   |   +-- notarize.js          # electron-builder の afterSign フック (オプトインの公証)
 |   +-- tests/
-|       +-- smoke.test.mjs       # Spawn Electron + probe /api/health
+|       +-- smoke.test.mjs       # Electron のスポーン + /api/health のプローブ
 |-- deployments/
-|   |-- README.md                # Production deployment reference
-|   |-- nginx/                   # Rootless Nginx edge and opt-in hook/MCP policies
-|   |-- secrets/                 # Ignored Compose token/password files
-|   |-- terraform/               # Helm deployment to an existing Kubernetes cluster
-|   |-- kubernetes/              # One-writer Kustomize base + environment overlays
-|   |   |-- base/                # Restricted PSS, Recreate Deployment, PVC, Service, Ingress
-|   |   |-- overlays/            # Dev, staging, production namespaces and resources
-|   |   +-- components/          # MCP, ServiceMonitor, Gateway API, VolumeSnapshot
-|   |-- helm/agent-monitor/      # Schema-enforced Helm chart and environment values
-|   +-- scripts/                 # Validate, deploy, backup, restore, rollback, health, teardown
+|   |-- README.md                # 本番デプロイメントリファレンス
+|   |-- nginx/                   # ルートレスの Nginx エッジおよびオプトインのフック/MCP ポリシー
+|   |-- secrets/                 # 無視される Compose トークン/パスワードファイル
+|   |-- terraform/               # 既存の Kubernetes クラスターへの Helm デプロイメント
+|   |-- kubernetes/              # 1 つのライターを持つ Kustomize ベース + 環境のオーバーレイ
+|   |   |-- base/                # 制限付き PSS、Recreate デプロイメント、PVC、Service、Ingress
+|   |   |-- overlays/            # Dev、staging、production ネームスペースとリソース
+|   |   +-- components/          # MCP、ServiceMonitor、Gateway API、VolumeSnapshot
+|   |-- helm/agent-monitor/      # スキーマによって強制された Helm チャートと環境変数値
+|   +-- scripts/                 # 検証、デプロイ、バックアップ、リストア、ロールバック、ヘルス、ティアダウン
 |-- .codex/
-|   |-- config.toml              # Codex runtime configuration
-|   |-- README.md                # Codex setup guide for agents and skills
-|   |-- rules/                   # Codex execution policy rules
-|   |-- agents/                  # Codex custom agent templates
-|   +-- skills/                  # Codex project skills
+|   |-- config.toml              # Codex ランタイム設定
+|   |-- README.md                # エージェントとスキル向けの Codex セットアップガイド
+|   |-- rules/                   # Codex 実行ポリシーのルール
+|   |-- agents/                  # Codex カスタムエージェントテンプレート
+|   +-- skills/                  # Codex プロジェクトスキル
 |-- statusline/
-|   |-- README.md                # Statusline installation & usage guide
-|   |-- statusline.py            # Python script that renders the statusline
-|   +-- statusline-command.sh    # Shell wrapper for Claude Code's statusLine config
+|   |-- README.md                # Statusline インストールおよび使用ガイド
+|   |-- statusline.py            # ステータスラインを描画する Python スクリプト
+|   +-- statusline-command.sh    # Claude Code の statusLine 設定用のシェルラッパー
 +-- data/
-    +-- dashboard.db             # SQLite database (gitignored)
+    +-- dashboard.db             # SQLite データベース (gitignored)
 ```
 
 ---
 
-## Troubleshooting
+## トラブルシューティング (Troubleshooting)
 
-| Problem                           | Solution                                                                                                                                                         |
+| 問題                           | 解決策                                                                                                                                                         |
 | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `better-sqlite3` fails to install | This is non-fatal — the server falls back to Node.js built-in `node:sqlite` automatically (Node 22+). On older Node versions, install Python 3 and C++ build tools, then run `npm rebuild better-sqlite3` |
-| Hooks not firing                  | Run `npm run install-hooks` and restart Claude Code. Verify hooks exist in `~/.claude/settings.json`                                                             |
-| Dashboard shows no data           | Ensure the server is running (`npm run dev`) before starting a Claude Code session. Check `http://localhost:4820/api/health`                                     |
-| WebSocket disconnected            | The client auto-reconnects every 2 seconds. Check that port 4820 is not blocked by a firewall                                                                    |
-| Stale data after restart          | The database persists across restarts. Run `npm run seed` for fresh demo data, or delete `data/dashboard.db` to reset                                            |
-| MCP tools fail to connect         | Confirm dashboard API is up on `MCP_DASHBOARD_BASE_URL` and rebuild/start MCP (`npm run mcp:build`, `npm run mcp:start`)                                         |
+| `better-sqlite3` のインストールに失敗する | これは致命的ではありません — サーバーは自動的に Node.js 組み込みの `node:sqlite` にフォールバックします (Node 22+)。古い Node バージョンの場合は、Python 3 と C++ ビルドツールをインストールしてから、`npm rebuild better-sqlite3` を実行してください |
+| フックが発火しない                  | `npm run install-hooks` を実行し、Claude Code を再起動します。フックが `~/.claude/settings.json` に存在することを確認してください                                                             |
+| ダッシュボードにデータが表示されない           | Claude Code セッションを開始する前に、サーバーが実行中である (`npm run dev`) ことを確認してください。`http://localhost:4820/api/health` をチェックしてください                                     |
+| WebSocket が切断される            | クライアントは 2 秒ごとに自動再接続します。ポート 4820 がファイアウォールによってブロックされていないことを確認してください                                                                    |
+| 再起動後にデータが古いままになる          | データベースは再起動を超えて永続化されます。新しいデモデータを作成するには `npm run seed` を実行するか、データをリセットするには `data/dashboard.db` を削除してください                                            |
+| MCP ツールが接続に失敗する         | ダッシュボード API が `MCP_DASHBOARD_BASE_URL` 上で起動していることを確認し、MCP を再ビルド/起動してください (`npm run mcp:build`、`npm run mcp:start`)                                         |
 
 ---
 
-## Contributing
+## 貢献 (Contributing)
 
-Contributions are welcome — see [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) for the full guide.
+コントリビューションを歓迎します。完全なガイドについては [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) を参照してください。
 
-All contributors must sign the [Contributor License Agreement](https://github.com/hoangsonww/Claude-Code-Agent-Monitor/blob/master/CLA.md). This is enforced automatically on every pull request by the `🖋️ CLA Assistant` GitHub Action: the first time you open a PR, a bot asks you to sign by commenting `I have read the CLA Document and I hereby sign the CLA`. The PR's **CLA Assistant** status check stays red until you do, and signing once covers all future contributions.
+すべてのコントリビューターは、[Contributor License Agreement](https://github.com/hoangsonww/Claude-Code-Agent-Monitor/blob/master/CLA.md) (CLA) に署名する必要があります。これは、プルリクエストごとに `🖋️ CLA Assistant` GitHub Action によって自動的に強制されます。最初に PR を開いたときに、ボットが `I have read the CLA Document and I hereby sign the CLA` とコメントして署名するように求めてきます。あなたが署名するまで、PR の **CLA Assistant** ステータスチェックは赤のままになり、一度署名すれば、今後のすべてのコントリビューションに適用されます。
 
 ---
 
-## License
+## ライセンス (License)
 
-MIT. See [LICENSE](LICENSE) for details.
+MIT. 詳細については [LICENSE](LICENSE) を参照してください。
