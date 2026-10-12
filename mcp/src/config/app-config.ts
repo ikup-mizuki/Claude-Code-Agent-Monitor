@@ -106,8 +106,9 @@ export interface AppConfig {
    * (see `policy/tool-guards.ts`). From `MCP_DASHBOARD_ALLOW_MUTATIONS`,
    * default `false`. */
   allowMutations: boolean;
-  /** Gate for `dashboard_clear_all_data` only; requires `allowMutations`
-   * too. From `MCP_DASHBOARD_ALLOW_DESTRUCTIVE`, default `false`. */
+  /** Gate for the irreversible tools (`dashboard_clear_all_data` and an
+   * applied `dashboard_prune_snapshots`); requires `allowMutations` too.
+   * From `MCP_DASHBOARD_ALLOW_DESTRUCTIVE`, default `false`. */
   allowDestructive: boolean;
   /** From `MCP_LOG_LEVEL`, default `"info"`. */
   logLevel: LogLevel;
@@ -123,6 +124,13 @@ export interface AppConfig {
   /** Optional bearer token for HTTP/SSE clients. Read from
    * `MCP_HTTP_AUTH_TOKEN` or `MCP_HTTP_AUTH_TOKEN_FILE`. */
   httpAuthToken?: string;
+  /** How long an HTTP/SSE session may sit without a request before the
+   * server closes it, reclaiming its `McpServer`. Clients are not required
+   * to send `DELETE /mcp` on the way out, so without this a dropped client
+   * would hold its session for the life of the process. From
+   * `MCP_HTTP_SESSION_TIMEOUT_MS`, default 30 minutes, clamped
+   * `[60_000, 86_400_000]`; `0` disables reaping entirely. */
+  httpSessionTimeoutMs: number;
 }
 
 /** Allowlist of hostnames the dashboard URL may target: loopback addresses
@@ -138,10 +146,16 @@ const LOCAL_DASHBOARD_HOSTS = new Set([
   "host.containers.internal",
   "agent-monitor",
 ]);
+/** Log levels accepted in `MCP_LOG_LEVEL`. */
 const VALID_LOG_LEVELS = new Set<LogLevel>(["debug", "info", "warn", "error"]);
 
 /** Parses `1/true/yes/on` / `0/false/no/off` (case-insensitive); anything
- * else, including `undefined`, resolves to `fallback`. */
+ * else, including `undefined`, resolves to `fallback`.
+ *
+ * @param value - Raw environment value.
+ * @param fallback - Result for missing or unrecognized values.
+ * @returns The parsed flag.
+ */
 function parseBoolean(value: string | undefined, fallback: boolean): boolean {
   if (value === undefined) return fallback;
   const normalized = value.trim().toLowerCase();
@@ -151,7 +165,14 @@ function parseBoolean(value: string | undefined, fallback: boolean): boolean {
 }
 
 /** Parses and clamps an integer env var into `[min, max]`; non-numeric or
- * missing input falls back to `fallback` rather than throwing. */
+ * missing input falls back to `fallback` rather than throwing.
+ *
+ * @param value - Raw environment value.
+ * @param fallback - Result for missing or non-numeric values.
+ * @param min - Lowest allowed value.
+ * @param max - Highest allowed value.
+ * @returns The clamped integer.
+ */
 function parseInteger(
   value: string | undefined,
   fallback: number,
@@ -164,7 +185,12 @@ function parseInteger(
   return Math.min(max, Math.max(min, parsed));
 }
 
-/** Normalizes `MCP_LOG_LEVEL`, falling back to `"info"`. */
+/**
+ * Normalizes `MCP_LOG_LEVEL`, falling back to `"info"`.
+ *
+ * @param value - Raw `MCP_LOG_LEVEL` value.
+ * @returns A valid log level.
+ */
 function parseLogLevel(value: string | undefined): LogLevel {
   const normalized = value?.trim().toLowerCase() as LogLevel | undefined;
   return normalized && VALID_LOG_LEVELS.has(normalized) ? normalized : "info";
@@ -176,6 +202,9 @@ function parseLogLevel(value: string | undefined): LogLevel {
  * target is startup-fatal, not something to paper over.
  * @throws {Error} on an invalid URL, a non-http(s) scheme, or a hostname
  *   outside {@link LOCAL_DASHBOARD_HOSTS}.
+ *
+ * @param raw - Raw `MCP_DASHBOARD_BASE_URL`; defaults to `http://127.0.0.1:4820`.
+ * @returns The validated URL.
  */
 function parseDashboardUrl(raw: string | undefined): URL {
   const value = (raw ?? "http://127.0.0.1:4820").trim();
@@ -201,6 +230,13 @@ function parseDashboardUrl(raw: string | undefined): URL {
   return url;
 }
 
+/**
+ * Read the dashboard API token: `MCP_DASHBOARD_API_TOKEN` or `DASHBOARD_API_TOKEN`, else the file
+ * named by `MCP_DASHBOARD_API_TOKEN_FILE` or `DASHBOARD_API_TOKEN_FILE`.
+ *
+ * @param env - Process environment.
+ * @returns The token, or undefined when none is configured.
+ */
 function readDashboardToken(env: NodeJS.ProcessEnv): string | undefined {
   const direct = env.MCP_DASHBOARD_API_TOKEN?.trim() || env.DASHBOARD_API_TOKEN?.trim();
   if (direct) return direct;
@@ -214,6 +250,14 @@ function readDashboardToken(env: NodeJS.ProcessEnv): string | undefined {
   }
 }
 
+/**
+ * Read a secret from an environment variable, or else from the file named by a second variable.
+ *
+ * @param env - Process environment.
+ * @param directName - Variable holding the secret itself.
+ * @param fileName - Variable holding a path to a file with the secret.
+ * @returns The trimmed secret, or undefined.
+ */
 function readSecret(
   env: NodeJS.ProcessEnv,
   directName: string,
@@ -230,6 +274,15 @@ function readSecret(
   }
 }
 
+/**
+ * Read the dashboard token and refuse to send it over plain HTTP, except to loopback addresses and
+ * the `agent-monitor` container alias.
+ *
+ * @param env - Process environment.
+ * @param dashboardBaseUrl - Dashboard URL the token will be sent to.
+ * @returns The token, or undefined.
+ * @throws When a token is configured for a non-loopback HTTP URL.
+ */
 function parseDashboardToken(env: NodeJS.ProcessEnv, dashboardBaseUrl: URL): string | undefined {
   const token = readDashboardToken(env);
   if (
@@ -245,7 +298,11 @@ function parseDashboardToken(env: NodeJS.ProcessEnv, dashboardBaseUrl: URL): str
 }
 
 /** Normalizes `MCP_TRANSPORT`, falling back to `"stdio"`. This is only the
- * default — `index.ts`'s `resolveTransport` may override it with CLI flags. */
+ * default — `index.ts`'s `resolveTransport` may override it with CLI flags.
+ *
+ * @param value - Raw `MCP_TRANSPORT` value.
+ * @returns `stdio`, `http`, or `repl`.
+ */
 function parseTransport(value: string | undefined): TransportMode {
   const normalized = value?.trim().toLowerCase();
   if (normalized === "http" || normalized === "repl" || normalized === "stdio") return normalized;
@@ -275,5 +332,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     httpPort: parseInteger(env.MCP_HTTP_PORT, 8819, 1, 65535),
     httpHost: env.MCP_HTTP_HOST?.trim() || "127.0.0.1",
     httpAuthToken: readSecret(env, "MCP_HTTP_AUTH_TOKEN", "MCP_HTTP_AUTH_TOKEN_FILE"),
+    // `0` is an explicit "never reap" opt-out, so it bypasses the clamp.
+    httpSessionTimeoutMs:
+      env.MCP_HTTP_SESSION_TIMEOUT_MS?.trim() === "0"
+        ? 0
+        : parseInteger(env.MCP_HTTP_SESSION_TIMEOUT_MS, 1_800_000, 60_000, 86_400_000),
   };
 }

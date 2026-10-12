@@ -18,5 +18,9 @@
   "failedConnect": "サーバーへの接続に失敗しました",
   "failedLoad": "データの読み込みに失敗しました",
   "activeTrend": " アクティブ",
-  "totalTrend": " （アクティブなセッション内）"
+  "totalTrend": " （アクティブなセッション内）",
+  "tabs": {
+    "monitor": "モニター",
+    "health": "ヘルス"
+  }
 }

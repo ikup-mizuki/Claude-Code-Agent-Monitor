@@ -1,23 +1,60 @@
 /**
  * @file Derives owner-attributed task progress from Claude and Codex JSONL
- * transcripts plus persisted task and session lifecycle events. Top-level
- * work boundaries expire older tracker state, turn-end markers discard
- * unfinished state, and bounded stat-based caching keeps session APIs safe.
+ * transcripts plus persisted Claude, Cursor, and Codex lifecycle events.
+ * Top-level work boundaries expire older tracker state, turn-end markers
+ * discard unfinished state, and bounded incremental transcript caching keeps
+ * session APIs safe.
  * @author Son Nguyen <hoangson091104@gmail.com>
  */
 
 const fs = require("fs");
 const path = require("path");
 const { updatePlanArgumentIndexes } = require("./codex-plan-call");
+const {
+  isCompressedPath,
+  logicalPath,
+  readCompressedSync,
+  transcriptLength,
+} = require("./snapshot-store");
 
-const MAX_CACHE_ENTRIES = 200;
+// One entry per transcript file, main and subagent alike. A single session
+// can have several hundred subagent files, and a list request touches up to
+// 100 sessions, so a small cap evicts everything between requests and every
+// parse runs cold. An entry holds only the task observations and pending
+// task calls inside its 32 MiB window (measured: 285 real files in under
+// 1 MB), so 4000 entries are cheap for real transcripts.
+const MAX_CACHE_ENTRIES = 4000;
 const MAX_ITEMS = 200;
 const MAX_TEXT = 500;
 const MAX_LINE_BYTES = 16 * 1024 * 1024;
 const MAX_SCAN_BYTES = 32 * 1024 * 1024;
 const READ_CHUNK_BYTES = 1024 * 1024;
+// A compressed snapshot (`.jsonl.gz`, written once the original transcript was
+// pruned — see snapshot-store.js) has no random access, so it is inflated in
+// memory to scan its tail. Larger archives are skipped (events still feed the
+// task summary) rather than risk a huge allocation. Parses are cached by
+// size+mtime and archives never change, so each is inflated at most once.
+const MAX_COMPRESSED_PARSE_BYTES = 256 * 1024 * 1024;
+// How long a parse of a since-grown transcript may be served from cache. The
+// size+mtime cache key can never hit while a file is being appended to, so
+// without this floor a burst of list requests (e.g. the dashboard reloading on
+// every hook-driven WebSocket event) can parse each closely spaced append.
+// Task summaries tolerate a couple seconds of staleness.
+// Tunable via DASHBOARD_TASK_SUMMARY_TTL_MS; 0 disables the floor (every
+// append is parsed immediately). Read lazily so tests
+// and operators can adjust it without a restartable module-load dependency.
+const FRESH_PARSE_TTL_MS = 2_000;
+function freshParseTtlMs() {
+  const raw = process.env.DASHBOARD_TASK_SUMMARY_TTL_MS;
+  // Trim first: Number(" ") is 0, which would silently DISABLE stale reuse
+  // for a whitespace-only value instead of applying the documented default.
+  const trimmed = typeof raw === "string" ? raw.trim() : raw;
+  if (trimmed === undefined || trimmed === "") return FRESH_PARSE_TTL_MS;
+  const value = Number(trimmed);
+  return Number.isFinite(value) && value >= 0 ? value : FRESH_PARSE_TTL_MS;
+}
 const cache = new Map();
-const RESET_ALL_EVENT_TYPES = new Set(["UserPromptSubmit"]);
+const RESET_ALL_EVENT_TYPES = new Set(["UserPromptSubmit", "cursor_user_message"]);
 const FINALIZE_ALL_EVENT_TYPES = new Set(["Stop", "SessionEnd", "Interrupted"]);
 
 function cleanText(value) {
@@ -377,6 +414,22 @@ function toolObservation(name, inputValue, outputValue, context) {
   return null;
 }
 
+const TASK_OBSERVATION_PROBE_OUTPUT = {
+  task: { id: "task-progress-probe", subject: "Task progress probe" },
+  tasks: [{ id: "task-progress-probe", subject: "Task progress probe" }],
+};
+
+function canProduceTaskObservation(name, inputValue) {
+  // Ask the parser itself so pending-call eligibility cannot drift from the
+  // tools and wrapped calls that can actually yield task observations.
+  return Boolean(
+    toolObservation(name, inputValue, TASK_OBSERVATION_PROBE_OUTPUT, {
+      ownerId: "main",
+      ownerType: "main",
+    })
+  );
+}
+
 function observationsFromEntry(entry, line, owner) {
   const observations = [];
   const timestamp = entry?.timestamp || null;
@@ -465,50 +518,108 @@ function observationsFromEntry(entry, line, owner) {
   return observations;
 }
 
-function parseFileLines(filePath, onLine, { maxBytes = MAX_SCAN_BYTES, tail = false } = {}) {
+/**
+ * Positional reader over a transcript: a file descriptor for plain JSONL, or
+ * the inflated bytes of a compressed snapshot. Throws when unreadable.
+ */
+function openLineSource(filePath) {
+  if (isCompressedPath(filePath)) {
+    const data = readCompressedSync(filePath, MAX_COMPRESSED_PARSE_BYTES);
+    if (!data) throw new Error("compressed transcript unreadable or too large");
+    return {
+      size: data.length,
+      read: (target, offset, length, position) =>
+        data.copy(target, offset, position, Math.min(data.length, position + length)),
+      close() {},
+    };
+  }
   const descriptor = fs.openSync(filePath, "r");
+  return {
+    size: fs.fstatSync(descriptor).size,
+    read: (target, offset, length, position) =>
+      fs.readSync(descriptor, target, offset, length, position),
+    close: () => fs.closeSync(descriptor),
+  };
+}
+
+function parseFileLines(
+  filePath,
+  onLine,
+  { maxBytes = MAX_SCAN_BYTES, tail = false, start = 0, lineNumber = 0, end } = {}
+) {
+  const source = openLineSource(filePath);
   const buffer = Buffer.allocUnsafe(READ_CHUNK_BYTES);
   let pending = Buffer.alloc(0);
-  const fileSize = fs.fstatSync(descriptor).size;
+  const fileSize = Math.min(source.size, end ?? Number.MAX_SAFE_INTEGER);
   const boundedBytes = Math.max(0, Math.min(fileSize, maxBytes));
-  let position = tail ? fileSize - boundedBytes : 0;
-  const endPosition = tail ? fileSize : boundedBytes;
-  let skipPartialLine = position > 0;
-  let lineNumber = 0;
+  let position = tail ? fileSize - boundedBytes : Math.max(0, Math.min(start, fileSize));
+  const endPosition = tail ? fileSize : Math.min(fileSize, position + boundedBytes);
+  let skipPartialLine = false;
+  if (tail && position > 0) {
+    const previousByte = Buffer.allocUnsafe(1);
+    skipPartialLine =
+      source.read(previousByte, 0, previousByte.length, position - 1) === 1 &&
+      previousByte[0] !== 0x0a;
+  }
+  // A tail scan may begin inside an incomplete line. Until its newline is
+  // found, zero is the only earlier byte position known to be a boundary.
+  let completeOffset = skipPartialLine ? 0 : position;
+  let lineByte = position;
+  let discardLongLine = false;
   try {
     while (position < endPosition) {
       const bytesToRead = Math.min(buffer.length, endPosition - position);
-      const bytesRead = fs.readSync(descriptor, buffer, 0, bytesToRead, position);
+      const bytesRead = source.read(buffer, 0, bytesToRead, position);
       if (bytesRead <= 0) break;
       position += bytesRead;
       let chunk = buffer.subarray(0, bytesRead);
       if (pending.length) chunk = Buffer.concat([pending, chunk]);
+      const chunkPosition = position - chunk.length;
       let start = 0;
       for (let index = 0; index < chunk.length; index++) {
         if (chunk[index] !== 0x0a) continue;
+        const currentLineByte = lineByte;
+        completeOffset = chunkPosition + index + 1;
+        lineByte = completeOffset;
         if (skipPartialLine) {
           skipPartialLine = false;
+          discardLongLine = false;
           start = index + 1;
           continue;
         }
         lineNumber++;
+        if (discardLongLine || index - start > MAX_LINE_BYTES) {
+          discardLongLine = false;
+          onLine("", lineNumber, currentLineByte);
+          start = index + 1;
+          continue;
+        }
         const keepGoing = onLine(
           chunk.toString("utf8", start, index).replace(/\r$/, ""),
-          lineNumber
+          lineNumber,
+          currentLineByte
         );
         start = index + 1;
-        if (keepGoing === false) return;
+        if (keepGoing === false) return completeOffset;
       }
       pending = chunk.subarray(start);
-      if (pending.length > MAX_LINE_BYTES) pending = Buffer.alloc(0);
-      else pending = Buffer.from(pending);
+      if (pending.length > MAX_LINE_BYTES) {
+        pending = Buffer.alloc(0);
+        discardLongLine = true;
+      } else {
+        pending = Buffer.from(pending);
+      }
     }
-    if (pending.length && !skipPartialLine) {
-      lineNumber++;
-      onLine(pending.toString("utf8").replace(/\r$/, ""), lineNumber);
+    // A trailing fragment is either a record still being written or a file
+    // whose last record has no newline (imports, copies). Parse it as
+    // provisional: the caller sees it now, but the returned offset stays at
+    // the last complete line so the next call re-reads it.
+    if (pending.length && !skipPartialLine && !discardLongLine) {
+      onLine(pending.toString("utf8").replace(/\r$/, ""), lineNumber + 1, lineByte, true);
     }
+    return completeOffset;
   } finally {
-    fs.closeSync(descriptor);
+    source.close();
   }
 }
 
@@ -527,27 +638,68 @@ function parseTranscript(filePath, owner) {
   } catch {
     return [];
   }
+  if (isCompressedPath(filePath)) {
+    // Window math below is in uncompressed bytes; the archive's header records
+    // that length exactly. Archives are immutable, so the size+mtime key holds.
+    const length = transcriptLength(filePath);
+    if (length === null) return [];
+    stat = { size: length, mtimeMs: stat.mtimeMs, dev: stat.dev, ino: stat.ino };
+  }
   const key = `${filePath}:${owner.id}:${owner.type}`;
   const cached = cache.get(key);
-  if (cached && cached.size === stat.size && cached.mtimeMs === stat.mtimeMs) {
+  // `dev`+`ino` identify the actual inode, so a DIFFERENT file rotated in at
+  // the same path can never be served from the previous file's parse — neither
+  // through the TTL window nor through a size+mtime collision. The serve-stale
+  // branch additionally refuses a shrunken file: transcripts are append-only,
+  // so a smaller size means truncation or replacement and the cached
+  // observations no longer describe it.
+  const sameFile =
+    cached && (cached.dev === undefined || (cached.dev === stat.dev && cached.ino === stat.ino));
+  if (
+    cached &&
+    sameFile &&
+    ((cached.size === stat.size && cached.mtimeMs === stat.mtimeMs) ||
+      (stat.size >= cached.size && Date.now() - cached.parsedAt < freshParseTtlMs()))
+  ) {
     cache.delete(key);
     cache.set(key, cached);
     return cached.observations;
   }
-  const observations = [];
-  const pendingCalls = new Map();
+  // Compare against the cached size, not the cached line-boundary offset: a
+  // same-inode rewrite that lands between the two would otherwise reuse
+  // observations from content that no longer exists.
+  const canIncrement =
+    cached && sameFile && stat.size >= cached.size && stat.size - cached.offset <= MAX_SCAN_BYTES;
+  const windowStart = Math.max(0, stat.size - MAX_SCAN_BYTES);
+  // Invariant: retained incremental state is exactly the state a fresh parse
+  // of the current byte window could produce. Calls or observations before
+  // the window cannot affect lines that remain inside it.
+  // State at or past the cached offset came from a provisional trailing
+  // fragment; it is re-read below, so drop it here to avoid double counting.
+  const retained = (item) =>
+    item._byte >= windowStart && (!canIncrement || item._byte < cached.offset);
+  const observations = canIncrement ? cached.observations.filter(retained) : [];
+  const pendingCalls = canIncrement
+    ? new Map([...cached.pendingCalls].filter(([, call]) => retained(call)))
+    : new Map();
+  const start = canIncrement ? cached.offset : 0;
+  // sourceLine is relative to the scanned range. Incremental parses continue
+  // cached line positions, while a cold tail parse restarts them at one.
+  let lineNumber = canIncrement ? cached.lineNumber : 0;
+  let offset;
   try {
-    parseFileLines(
+    offset = parseFileLines(
       filePath,
-      (line, lineNumber) => {
-        if (!line) return;
+      (line, currentLineNumber, lineByteOffset, partial = false) => {
+        if (!partial) lineNumber = currentLineNumber;
+        if (!line || lineByteOffset < windowStart) return;
         let entry;
         try {
           entry = JSON.parse(line);
         } catch {
           return;
         }
-        const direct = observationsFromEntry(entry, lineNumber, owner);
+        const direct = observationsFromEntry(entry, currentLineNumber, owner);
         for (const observation of direct) {
           if (observation.kind === "result") {
             const call = pendingCalls.get(observation.task.callId);
@@ -558,32 +710,55 @@ function parseTranscript(filePath, owner) {
               ownerId: owner.id,
               ownerType: owner.type,
             });
-            if (enriched) observations.push(enriched);
+            if (enriched) observations.push({ ...enriched, _byte: call._byte });
             pendingCalls.delete(observation.task.callId);
             continue;
           }
-          observations.push(observation);
+          observations.push({ ...observation, _byte: lineByteOffset });
         }
 
         const blocks = entry?.message?.content;
         if (!Array.isArray(blocks)) return;
         for (const block of blocks) {
-          if (block?.type === "tool_use" && block.id) {
+          if (
+            block?.type === "tool_use" &&
+            block.id &&
+            canProduceTaskObservation(block.name, block.input)
+          ) {
             pendingCalls.set(block.id, {
               tool: block.name,
               input: block.input,
               timestamp: entry.timestamp || null,
+              _byte: lineByteOffset,
             });
           }
         }
       },
-      { tail: true }
+      canIncrement
+        ? { start, lineNumber, maxBytes: stat.size - start, end: stat.size }
+        : { tail: true, end: stat.size }
     );
   } catch {
     return [];
   }
-  cacheSet(key, { size: stat.size, mtimeMs: stat.mtimeMs, observations });
-  return observations;
+  const retainedObservations = observations.filter(
+    (observation) => observation._byte >= windowStart
+  );
+  for (const [callId, call] of pendingCalls) {
+    if (call._byte < windowStart) pendingCalls.delete(callId);
+  }
+  cacheSet(key, {
+    size: stat.size,
+    mtimeMs: stat.mtimeMs,
+    dev: stat.dev,
+    ino: stat.ino,
+    parsedAt: Date.now(),
+    offset,
+    lineNumber,
+    pendingCalls,
+    observations: retainedObservations,
+  });
+  return retainedObservations;
 }
 
 function observationFromEvent(event, agentsById) {
@@ -628,7 +803,34 @@ function observationFromEvent(event, agentsById) {
   });
 }
 
+// A JSONL transcript is append-only, so its first timestamp never changes —
+// cache it per path. Without this, every list request re-opens (with a 1 MiB
+// read buffer) every discovered subagent file just to re-read line one. A hit
+// still pays one statSync: a file whose size SHRANK was truncated or replaced
+// at the same path, so the cached first line no longer applies and the entry
+// is dropped. Growth keeps the hit — appends cannot change line one.
+const timestampCache = new Map();
+const MAX_TIMESTAMP_CACHE_ENTRIES = 2_000;
+
 function transcriptTimestamp(filePath) {
+  let stat = null;
+  try {
+    stat = fs.statSync(filePath);
+  } catch {
+    timestampCache.delete(filePath);
+    return null;
+  }
+  const size = stat.size;
+  const cached = timestampCache.get(filePath);
+  if (cached) {
+    // Growth alone is not proof of identity: a replacement file at the same
+    // path can be the same size or larger, and its first line may differ. Pin
+    // the entry to the inode (dev+ino) as well, so only a genuine append to
+    // the SAME file keeps the cached first-line timestamp.
+    const sameFile = cached.dev === stat.dev && cached.ino === stat.ino;
+    if (sameFile && size >= cached.size) return cached.timestamp;
+    timestampCache.delete(filePath);
+  }
   let timestamp = null;
   try {
     parseFileLines(filePath, (line) => {
@@ -643,11 +845,18 @@ function transcriptTimestamp(filePath) {
   } catch {
     return null;
   }
+  // Only a found timestamp is immutable; a file with none yet may gain one.
+  if (timestamp) {
+    timestampCache.set(filePath, { timestamp, size, dev: stat.dev, ino: stat.ino });
+    while (timestampCache.size > MAX_TIMESTAMP_CACHE_ENTRIES) {
+      timestampCache.delete(timestampCache.keys().next().value);
+    }
+  }
   return timestamp;
 }
 
 function readMeta(filePath) {
-  const metaPath = filePath.replace(/\.jsonl$/, ".meta.json");
+  const metaPath = logicalPath(filePath).replace(/\.jsonl$/, ".meta.json");
   try {
     return JSON.parse(fs.readFileSync(metaPath, "utf8"));
   } catch {
@@ -666,7 +875,8 @@ function discoverSubagentFiles(mainTranscriptPath, sessionId) {
   for (const candidate of candidates) {
     try {
       for (const entry of fs.readdirSync(candidate, { withFileTypes: true })) {
-        if (!entry.isFile() || !entry.name.endsWith(".jsonl")) continue;
+        // Snapshot subagent dirs may hold compressed `.jsonl.gz` files.
+        if (!entry.isFile() || !logicalPath(entry.name).endsWith(".jsonl")) continue;
         if (entry.name.startsWith("agent-acompact-")) continue;
         files.push(path.join(candidate, entry.name));
       }
@@ -674,7 +884,10 @@ function discoverSubagentFiles(mainTranscriptPath, sessionId) {
       /* ignore */
     }
   }
-  return files;
+  // An interrupted compression can briefly leave both `x.jsonl` and
+  // `x.jsonl.gz`; they are identical, so keep only the plain one.
+  const plain = new Set(files.filter((file) => !isCompressedPath(file)));
+  return files.filter((file) => !isCompressedPath(file) || !plain.has(logicalPath(file)));
 }
 
 function mapSubagentOwners(files, agents) {
@@ -687,7 +900,7 @@ function mapSubagentOwners(files, agents) {
   return files
     .map((filePath) => {
       const shortId = path
-        .basename(filePath)
+        .basename(logicalPath(filePath))
         .replace(/^agent-/, "")
         .replace(/\.jsonl$/, "");
       const meta = readMeta(filePath);
@@ -963,6 +1176,7 @@ function extractSessionTaskProgress({
 
 function clearTaskProgressCache() {
   cache.clear();
+  timestampCache.clear();
 }
 
 module.exports = {

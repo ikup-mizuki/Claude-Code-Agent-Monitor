@@ -2,9 +2,9 @@
 # This YAML mirrors the live spec served at GET /api/openapi.json.
 openapi: 3.0.3
 info:
-  title: Agent Dashboard for Claude Code API
-  version: 2.0.8
-  description: HTTP API for real-time Claude Code session monitoring, agent lifecycle tracking, analytics, pricing, hooks ingestion, and workflow intelligence.
+  title: Agent Dashboard for Claude Code, Cursor, and Codex API
+  version: 2.3.0
+  description: HTTP API for real-time Claude Code, Cursor, and Codex session monitoring, agent lifecycle tracking, analytics, provider-specific pricing, hooks ingestion, and workflow intelligence.
   contact:
     name: Son Nguyen
     email: hoangson091104@gmail.com
@@ -26,7 +26,7 @@ tags:
   - name: Metrics
     description: Prometheus / OpenMetrics scrape endpoint
   - name: Sessions
-    description: Claude Code and Codex session lifecycle
+    description: Claude Code, Cursor, and Codex session lifecycle
   - name: Agents
     description: Main/subagent records and status
   - name: Events
@@ -158,7 +158,7 @@ components:
       schema:
         type: string
         example: claude,codex
-      description: 'Comma-separated product providers to include: `claude`, `codex`, or both. Omit to include every provider.'
+      description: 'Comma-separated stored providers to include: `claude`, `cursor`, and/or `codex`. Requesting `claude` also includes Cursor because the product scope groups their local workflows. Omit to include every provider.'
   schemas:
     ErrorObject:
       type: object
@@ -399,9 +399,19 @@ components:
         cwd:
           type: string
           nullable: true
+        repo_remote_url:
+          type: string
+          nullable: true
+          description: Credential-free Git remote URL first observed by an authenticated collector. Consumers may canonicalize it to match a repository across machine-local working-directory paths.
         model:
           type: string
           nullable: true
+        provider:
+          type: string
+          enum:
+            - claude
+            - cursor
+            - codex
         started_at:
           type: string
           format: date-time
@@ -431,6 +441,10 @@ components:
         cost:
           type: number
           nullable: true
+        has_token_usage:
+          type: boolean
+          nullable: true
+          description: True when durable token-usage buckets exist for this session. It is independent of cost, which may be zero for genuinely empty or unpriced usage.
         awaiting_input_since:
           type: string
           format: date-time
@@ -573,7 +587,7 @@ components:
         version:
           type: string
           description: Dashboard release version from package.json
-          example: 2.0.8
+          example: 2.3.0
         timestamp:
           type: string
           format: date-time
@@ -720,6 +734,9 @@ components:
         - type
         - content
       properties:
+        id:
+          type: string
+          description: Stable provider-local message identity when available. Cursor uses it while prompt history hands off to canonical JSONL.
         type:
           type: string
           enum:
@@ -801,6 +818,9 @@ components:
           type: integer
           minimum: 0
           description: JSONL line number of the oldest returned message — pass back as `before` to page backwards.
+        refresh:
+          type: boolean
+          description: When true, messages are a latest-window refresh to merge by message id rather than a strict append-only page.
     SessionStatsResponse:
       type: object
       description: Aggregated counts powering the SessionOverview panel on the Session Detail page. All aggregation runs in SQL.
@@ -1338,13 +1358,81 @@ components:
       properties:
         pricing:
           $ref: '#/components/schemas/PricingRule'
+    CursorPricingRule:
+      type: object
+      required:
+        - model_pattern
+        - display_name
+        - input_per_mtok
+        - cache_write_per_mtok
+        - cache_read_per_mtok
+        - output_per_mtok
+        - updated_at
+      properties:
+        model_pattern:
+          type: string
+        display_name:
+          type: string
+        input_per_mtok:
+          type: number
+          minimum: 0
+        cache_write_per_mtok:
+          type: number
+          minimum: 0
+        cache_read_per_mtok:
+          type: number
+          minimum: 0
+        output_per_mtok:
+          type: number
+          minimum: 0
+        updated_at:
+          type: string
+          format: date-time
+    CursorPricingUpsertRequest:
+      type: object
+      required:
+        - model_pattern
+        - display_name
+      properties:
+        model_pattern:
+          type: string
+        display_name:
+          type: string
+        input_per_mtok:
+          type: number
+          minimum: 0
+        cache_write_per_mtok:
+          type: number
+          minimum: 0
+        cache_read_per_mtok:
+          type: number
+          minimum: 0
+        output_per_mtok:
+          type: number
+          minimum: 0
+    CursorPricingListResponse:
+      type: object
+      required:
+        - pricing
+      properties:
+        pricing:
+          type: array
+          items:
+            $ref: '#/components/schemas/CursorPricingRule'
+    CursorPricingUpsertResponse:
+      type: object
+      required:
+        - pricing
+      properties:
+        pricing:
+          $ref: '#/components/schemas/CursorPricingRule'
     GptPricingRule:
       type: object
       required:
         - model_pattern
         - display_name
         - updated_at
-      description: OpenAI/Codex token pricing. Standard requests use short rates at or below 272K input tokens and long rates above that; Fast requests use the explicit fast rate card.
+      description: OpenAI/Codex token pricing. Standard requests use short rates at or below 272K input tokens and long rates above that; Fast requests use fast_* short rates or fast_long_* long rates at the same boundary.
       properties:
         model_pattern:
           type: string
@@ -1367,6 +1455,14 @@ components:
         long_output_per_mtok:
           type: number
         fast_input_per_mtok:
+          type: number
+        fast_long_input_per_mtok:
+          type: number
+        fast_long_cached_input_per_mtok:
+          type: number
+        fast_long_cache_write_per_mtok:
+          type: number
+        fast_long_output_per_mtok:
           type: number
         fast_cached_input_per_mtok:
           type: number
@@ -1404,6 +1500,14 @@ components:
         long_output_per_mtok:
           type: number
         fast_input_per_mtok:
+          type: number
+        fast_long_input_per_mtok:
+          type: number
+        fast_long_cached_input_per_mtok:
+          type: number
+        fast_long_cache_write_per_mtok:
+          type: number
+        fast_long_output_per_mtok:
           type: number
         fast_cached_input_per_mtok:
           type: number
@@ -1798,6 +1902,8 @@ components:
               type: array
               items:
                 type: string
+        snapshots:
+          $ref: '#/components/schemas/SettingsSnapshotStorage'
     ClearDataResponse:
       type: object
       required:
@@ -1952,6 +2058,7 @@ components:
         - ok
         - provider
         - pricing
+        - cursor_pricing
         - gpt_pricing
       properties:
         ok:
@@ -1962,12 +2069,17 @@ components:
           type: string
           enum:
             - claude
+            - cursor
             - codex
             - both
         pricing:
           type: array
           items:
             $ref: '#/components/schemas/PricingRule'
+        cursor_pricing:
+          type: array
+          items:
+            $ref: '#/components/schemas/CursorPricingRule'
         gpt_pricing:
           type: array
           items:
@@ -1983,6 +2095,7 @@ components:
         - events
         - token_usage
         - model_pricing
+        - cursor_model_pricing
         - gpt_model_pricing
       properties:
         format:
@@ -1992,7 +2105,7 @@ components:
         version:
           type: integer
           description: Bundle schema version.
-          example: 2
+          example: 3
         exported_at:
           type: string
           format: date-time
@@ -2032,6 +2145,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PricingRule'
+        cursor_model_pricing:
+          type: array
+          items:
+            $ref: '#/components/schemas/CursorPricingRule'
         gpt_model_pricing:
           type: array
           items:
@@ -2049,6 +2166,7 @@ components:
         - dashboard_runs
         - alert_rules
         - model_pricing
+        - cursor_model_pricing
         - gpt_model_pricing
         - errors
       description: Per-table counts from restoring an export bundle. Session-scoped counts are rows newly inserted; sessions_skipped counts sessions already present (skipped whole to stay idempotent).
@@ -2079,6 +2197,8 @@ components:
         alert_rules:
           type: integer
         model_pricing:
+          type: integer
+        cursor_model_pricing:
           type: integer
         gpt_model_pricing:
           type: integer
@@ -2116,6 +2236,12 @@ components:
           type: integer
         purged_agents:
           type: integer
+        purged_snapshot_files:
+          type: integer
+          description: Transcript snapshot files deleted with the purged sessions.
+        purged_snapshot_bytes:
+          type: integer
+          description: Bytes reclaimed from the purged sessions' transcript snapshots.
     CcConfigScope:
       type: string
       enum:
@@ -4096,6 +4222,265 @@ components:
           minimum: 0
           description: Count of Web Push sends that were rejected. Subscriptions rejected with HTTP 410 (Gone) are deleted from `push_subscriptions` as part of this request.
           example: 1
+    SettingsSnapshotStorage:
+      type: object
+      description: 'Durable transcript snapshot storage (issue #358): the copies under the dashboard data dir that keep the Conversation tab working after Claude Code, Codex, and Cursor delete their own transcripts.'
+      required:
+        - total_bytes
+        - total_files
+        - roots
+        - policy
+      properties:
+        total_bytes:
+          type: integer
+        total_files:
+          type: integer
+        roots:
+          type: object
+          required:
+            - claude
+            - codex
+            - cursor
+          properties:
+            claude:
+              type: object
+              required:
+                - path
+                - files
+                - bytes
+                - compressed_files
+                - compressed_bytes
+                - sessions
+              properties:
+                path:
+                  type: string
+                  description: Absolute snapshot directory.
+                files:
+                  type: integer
+                bytes:
+                  type: integer
+                compressed_files:
+                  type: integer
+                  description: Files stored as verified `.jsonl.gz` (original transcript gone).
+                compressed_bytes:
+                  type: integer
+                sessions:
+                  type: integer
+            codex:
+              type: object
+              required:
+                - path
+                - files
+                - bytes
+                - compressed_files
+                - compressed_bytes
+                - sessions
+              properties:
+                path:
+                  type: string
+                  description: Absolute snapshot directory.
+                files:
+                  type: integer
+                bytes:
+                  type: integer
+                compressed_files:
+                  type: integer
+                  description: Files stored as verified `.jsonl.gz` (original transcript gone).
+                compressed_bytes:
+                  type: integer
+                sessions:
+                  type: integer
+            cursor:
+              type: object
+              required:
+                - path
+                - files
+                - bytes
+                - compressed_files
+                - compressed_bytes
+                - sessions
+              properties:
+                path:
+                  type: string
+                  description: Absolute snapshot directory.
+                files:
+                  type: integer
+                bytes:
+                  type: integer
+                compressed_files:
+                  type: integer
+                  description: Files stored as verified `.jsonl.gz` (original transcript gone).
+                compressed_bytes:
+                  type: integer
+                sessions:
+                  type: integer
+        policy:
+          type: object
+          description: Effective policy from DASHBOARD_SNAPSHOT_COMPRESS / DASHBOARD_SNAPSHOT_MAX_AGE_DAYS / DASHBOARD_SNAPSHOT_MAX_BYTES. Caps are null (unlimited) by default.
+          required:
+            - compress
+            - max_age_days
+            - max_bytes
+          properties:
+            compress:
+              type: boolean
+            max_age_days:
+              type: number
+              nullable: true
+            max_bytes:
+              type: integer
+              nullable: true
+    SettingsSnapshotCompressResponse:
+      type: object
+      required:
+        - ok
+        - compressed
+        - bytes_before
+        - bytes_after
+        - failed
+        - skipped_roots
+      properties:
+        ok:
+          type: boolean
+          enum:
+            - true
+        compressed:
+          type: integer
+        bytes_before:
+          type: integer
+        bytes_after:
+          type: integer
+        failed:
+          type: integer
+        skipped_roots:
+          type: array
+          items:
+            type: string
+            enum:
+              - claude
+              - cursor
+          description: Providers skipped because their source tree was missing or unreadable — nothing is treated as deleted in that case.
+        storage:
+          $ref: '#/components/schemas/SettingsSnapshotStorage'
+    SettingsSnapshotPruneRequest:
+      type: object
+      description: At least one of max_age_days, max_bytes, or orphans:true. Dry run unless dry_run:false AND confirm:"PRUNE_SNAPSHOTS".
+      properties:
+        max_age_days:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 36500
+          description: Prune finished sessions whose last activity is older than this.
+        max_bytes:
+          oneOf:
+            - type: integer
+              minimum: 1
+            - type: string
+              example: 5GB
+          description: Then prune finished sessions oldest-first until the total is under this size (bytes, or a size with a binary unit).
+        orphans:
+          type: boolean
+          description: Also prune snapshots whose session row no longer exists.
+        dry_run:
+          type: boolean
+          default: true
+        confirm:
+          type: string
+          enum:
+            - PRUNE_SNAPSHOTS
+    SettingsSnapshotPruneResponse:
+      type: object
+      required:
+        - ok
+        - dry_run
+        - criteria
+        - total_bytes
+        - candidate_sessions
+        - candidate_files
+        - candidate_bytes
+        - remaining_bytes
+        - over_cap_bytes
+        - candidates
+        - truncated
+        - removed_files
+        - removed_bytes
+        - failed_files
+      properties:
+        ok:
+          type: boolean
+          enum:
+            - true
+        dry_run:
+          type: boolean
+        criteria:
+          type: object
+          properties:
+            max_age_days:
+              type: number
+              nullable: true
+            max_bytes:
+              type: integer
+              nullable: true
+            orphans:
+              type: boolean
+        total_bytes:
+          type: integer
+        candidate_sessions:
+          type: integer
+        candidate_files:
+          type: integer
+        candidate_bytes:
+          type: integer
+        remaining_bytes:
+          type: integer
+        over_cap_bytes:
+          type: integer
+          description: Bytes still over max_bytes after pruning every eligible session.
+        candidates:
+          type: array
+          description: Up to 500 selected sessions, oldest first.
+          items:
+            type: object
+            required:
+              - kind
+              - session_id
+              - reason
+              - files
+              - bytes
+              - last_activity
+            properties:
+              kind:
+                type: string
+                enum:
+                  - claude
+                  - codex
+                  - cursor
+              session_id:
+                type: string
+              reason:
+                type: string
+                enum:
+                  - max_age
+                  - max_bytes
+                  - orphan
+              files:
+                type: integer
+              bytes:
+                type: integer
+              last_activity:
+                type: string
+                format: date-time
+                nullable: true
+        truncated:
+          type: boolean
+        removed_files:
+          type: integer
+        removed_bytes:
+          type: integer
+        failed_files:
+          type: integer
+          description: Files left in place because they were locked; retried by a later pass.
     SessionsFacetsResponse:
       type: object
       description: 'Facet values for the Sessions page filter UI: the distinct working directories (cwd) and the distinct data-source ids seen across all sessions.'
@@ -4672,7 +5057,7 @@ paths:
       tags:
         - Sessions
       summary: List sessions
-      description: Returns a paginated list of durable sessions, newest real activity first, each enriched with agent count, durable last activity, prompt preview, and calculated cost. Set `include_task_progress=true` to attach a nullable owner-aware `todo_summary` derived from Claude Task*/TodoWrite or Codex update_plan state for the latest top-level work item, with up to five preview items. A new Claude human turn or Codex task with no tracker clears older state; a completed or aborted turn drops unfinished tracker state while retaining fully completed history. Task progress is computed for at most the first 100 returned rows, and each transcript read scans only its newest 32 MiB. The opt-in keeps high-volume Dashboard/Kanban calls from parsing transcripts. The persisted `status`, `q`, and repeatable `cwd` filters compose. `total` remains independent of `limit`/`offset`.
+      description: Returns a paginated list of durable sessions, newest real activity first, each enriched with agent count, durable last activity, prompt preview, and calculated cost. Set `include_task_progress=true` to attach a nullable owner-aware `todo_summary` derived from Claude Task*/TodoWrite or Codex update_plan state for the latest top-level work item, with up to five preview items. A new Claude human turn or Codex task with no tracker clears older state; a completed or aborted turn drops unfinished tracker state while retaining fully completed history. Task progress is computed for at most the first 100 returned rows, and each transcript is read incrementally after a first 32 MiB scan, retaining state from its newest 32 MiB. The opt-in keeps high-volume Dashboard/Kanban calls from parsing transcripts. The persisted `status`, `q`, and repeatable `cwd` filters compose. `total` remains independent of `limit`/`offset`.
       operationId: listSessions
       parameters:
         - $ref: '#/components/parameters/SessionStatusQuery'
@@ -4727,7 +5112,7 @@ paths:
           schema:
             type: boolean
             default: false
-          description: Attach owner-aware `todo_summary` objects for the latest top-level work item to at most the first 100 returned rows. A newer work item with no tracker, or a finished/aborted turn with unfinished tracker state, returns null; fully completed history remains available. Each transcript scan reads only the newest 32 MiB. Intended for the Sessions table; omitted by high-volume Dashboard/Kanban calls.
+          description: Attach owner-aware `todo_summary` objects for the latest top-level work item to at most the first 100 returned rows. A newer work item with no tracker, or a finished/aborted turn with unfinished tracker state, returns null; fully completed history remains available. Each transcript is read incrementally after a first 32 MiB scan, retaining state from its newest 32 MiB. Intended for the Sessions table; omitted by high-volume Dashboard/Kanban calls.
           example: true
         - $ref: '#/components/parameters/LimitQuery'
           example: 50
@@ -4886,7 +5271,7 @@ paths:
       tags:
         - Sessions
       summary: Get session details
-      description: Returns a single session together with its agents, persisted events, workflow runs, and a nullable full `todo_snapshot`. Task state is reduced from Claude TaskCreate/TaskGet/TaskUpdate/TaskList and lifecycle events, legacy TodoWrite snapshots, or Codex update_plan snapshots; subagent ownership remains visible on items and owner summaries. Real top-level Claude human turns and Codex task_started records clear every older owner snapshot, while a subagent's next turn clears only that owner. Claude turn-end records and Codex task_complete/turn_aborted drop owner snapshots with unfinished work but retain fully completed/cancelled history, so stale in-progress state returns null. Persisted Claude prompt/terminal events apply the same boundary before a matching transcript marker flushes. Transcript parsing scans only the newest 32 MiB and the snapshot contains at most 200 tasks. Read-only, no side effects. Returns 404 with code `NOT_FOUND` when no session matches the path `id`.
+      description: Returns a single session together with its agents, persisted events, workflow runs, and a nullable full `todo_snapshot`. Task state is reduced from Claude TaskCreate/TaskGet/TaskUpdate/TaskList and lifecycle events, legacy TodoWrite snapshots, or Codex update_plan snapshots; subagent ownership remains visible on items and owner summaries. Real top-level Claude human turns and Codex task_started records clear every older owner snapshot, while a subagent's next turn clears only that owner. Claude turn-end records and Codex task_complete/turn_aborted drop owner snapshots with unfinished work but retain fully completed/cancelled history, so stale in-progress state returns null. Persisted Claude prompt/terminal events apply the same boundary before a matching transcript marker flushes. Transcript parsing is incremental after a first 32 MiB scan and reduces state from the newest 32 MiB; the snapshot contains at most 200 tasks. Read-only, no side effects. Returns 404 with code `NOT_FOUND` when no session matches the path `id`.
       operationId: getSession
       parameters:
         - $ref: '#/components/parameters/SessionIdPath'
@@ -5175,7 +5560,7 @@ paths:
       tags:
         - Sessions
       summary: Stream messages from a specific transcript
-      description: 'Returns parsed, renderable messages from a JSONL transcript with cursor-based pagination, reading the live file under ~/.claude/projects and falling back to the durable import-time snapshot. Pass `agent_id` to select a specific subagent or compaction transcript (default is the session''s main transcript). Pagination cursors are mutually exclusive: `after` returns messages strictly newer than a JSONL line number (incremental live updates on `new_event`), `before` returns messages strictly older than a line (load-on-scroll-up), and `offset` is legacy start-offset paging. `last_line`/`first_line` are the JSONL line numbers of the newest/oldest returned message — feed them back as `after`/`before`. When the session, transcript file, or path cannot be found the endpoint degrades gracefully to an empty result (`messages: []`, `total: 0`, `has_more: false`) rather than erroring. Read-only, no side effects.'
+      description: 'Returns parsed, renderable messages from a provider transcript with cursor-based pagination, reading the live file and falling back to the durable import-time snapshot. Cursor main sessions additionally expose prompt history before JSONL exists; an incremental response with `refresh: true` is a latest window whose stable message ids should be merged in place during prompt-to-transcript hand-off. Pass `agent_id` to select a specific subagent or compaction transcript (default is the session''s main transcript). Pagination cursors are mutually exclusive: `after` reads live updates, `before` returns messages older than a line (load-on-scroll-up), and `offset` is legacy start-offset paging. `last_line`/`first_line` are the newest/oldest returned cursors. When the session, transcript file, or path cannot be found the endpoint degrades gracefully to an empty result (`messages: []`, `total: 0`, `has_more: false`) rather than erroring. Read-only, no side effects.'
       operationId: getSessionTranscript
       parameters:
         - $ref: '#/components/parameters/SessionIdPath'
@@ -5819,6 +6204,8 @@ paths:
         On success the response is `{ ok: true, event: { ... } }`, where `event` echoes the normalized row that was just inserted (`session_id`, `agent_id`, `event_type`, `tool_name`, `summary`, `created_at`). Ingestion is designed to be fail-safe and non-blocking for the hook caller.
 
         Validation failures return HTTP 400 with an `ErrorResponse` body (`{ error: { code, message } }`): `INVALID_INPUT` when `hook_type` or `data` is missing, and `MISSING_SESSION` when `data.session_id` is absent.
+
+        Optional remote-origin proof: a hook forwarded from another machine may send REMOTE_PUSH_TOKEN as `Authorization: Bearer` or `X-Dashboard-Token` (header only). When it matches, a session this event CREATES is owned by `remote_push` (optionally tagged with a supported `data.provider`), so the same collector's POST /api/hooks/ingest-batch can add tokens and tool events to it. A missing or non-matching token keeps the default local behaviour; existing sessions are never relabelled. When DASHBOARD_HOOK_TOKEN is also configured, `hookGuard` still authenticates this route first: send the hook credential as `X-CCAM-Hook-Token` and the remote-push token as `Authorization: Bearer` (the two tokens travel in separate headers).
       requestBody:
         required: true
         content:
@@ -5883,13 +6270,17 @@ paths:
                   description: Codex lifecycle hook (SessionStart, UserPromptSubmit, PostToolUse, Stop, or SessionEnd)
                 data:
                   type: object
+                  description: Codex hook payload. A rollout path is optional — the session/thread id alone identifies the session, which is how `codex exec --ephemeral` runs (no rollout is ever written) are tracked.
                   properties:
                     transcript_path:
+                      type: string
+                      nullable: true
+                    session_id:
                       type: string
                   additionalProperties: true
       responses:
         '202':
-          description: Hook acknowledged; rollout parsing continues asynchronously
+          description: Hook acknowledged; ingestion continues asynchronously. `queued` is false only when the payload carries neither a rollout path nor a session id, in which case `reason` explains the no-op.
           content:
             application/json:
               schema:
@@ -5902,6 +6293,187 @@ paths:
                     type: boolean
                   queued:
                     type: boolean
+                  reason:
+                    type: string
+  /api/hooks/ingest-batch:
+    post:
+      tags:
+        - Hooks
+      summary: Push a batch of session data from a roaming/NAT'd machine
+      description: 'Third session-data ingestion path, alongside the local hook routes above and the SSH-pull remote-sync path (see /api/remote-sources). For a machine the dashboard can never reach to pull FROM, it pushes its own session data over HTTPS instead. Reachable from the public internet and disabled by default -- gated by its own REMOTE_PUSH_TOKEN, deliberately independent of DASHBOARD_HOOK_TOKEN (which protects the loopback-only routes above; setting that one must not also open this route as a side effect). Send the token as `Authorization: Bearer <token>` or `X-Dashboard-Token` -- deliberately not `?token=`, which would end up in access/proxy logs on a public-internet route.'
+      operationId: ingestRemotePushBatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - session_id
+                - provider
+              properties:
+                schema_version:
+                  type: integer
+                  description: Must equal this server's current wire-format version (1) when present. A mismatch is a whole-request 409, not a per-item soft-fail.
+                session_id:
+                  type: string
+                provider:
+                  type: string
+                  enum:
+                    - claude
+                    - codex
+                session_name:
+                  type: string
+                  description: Defaults to 'Session <first 8 chars of session_id>' for a brand-new session.
+                cwd:
+                  type: string
+                repo_remote_url:
+                  type: string
+                  description: Optional Git remote URL. Userinfo is removed, then the authenticated collector's first non-empty value is retained for cross-machine repository matching.
+                model:
+                  type: string
+                tokens:
+                  type: array
+                  description: Each entry is a bucket's FULL current total (like a transcript re-parse), not a delta.
+                  items:
+                    type: object
+                    required:
+                      - model
+                    properties:
+                      model:
+                        type: string
+                      speed:
+                        type: string
+                      inference_geo:
+                        type: string
+                      service_tier:
+                        type: string
+                      input:
+                        type: integer
+                        minimum: 0
+                      output:
+                        type: integer
+                        minimum: 0
+                      cacheRead:
+                        type: integer
+                        minimum: 0
+                      cacheWrite:
+                        type: integer
+                        minimum: 0
+                      cacheWrite1h:
+                        type: integer
+                        minimum: 0
+                        description: Must be <= cacheWrite.
+                      webSearch:
+                        type: integer
+                        minimum: 0
+                      webFetch:
+                        type: integer
+                        minimum: 0
+                      codeExec:
+                        type: integer
+                        minimum: 0
+                tool_events:
+                  type: array
+                  description: Deduped by (session_id, event_type, uuid), across requests and within one batch.
+                  items:
+                    type: object
+                    required:
+                      - uuid
+                    properties:
+                      uuid:
+                        type: string
+                      agent_id:
+                        type: string
+                        description: Defaults to this session's main agent.
+                      tool_name:
+                        type: string
+                      status:
+                        type: string
+                      timestamp:
+                        type: string
+                        format: date-time
+                        description: Defaults to server 'now'.
+                turns:
+                  type: array
+                  description: Deduped the same way as tool_events.
+                  items:
+                    type: object
+                    required:
+                      - uuid
+                    properties:
+                      uuid:
+                        type: string
+                      agent_id:
+                        type: string
+                      duration_ms:
+                        type: integer
+                        minimum: 0
+                      timestamp:
+                        type: string
+                        format: date-time
+      responses:
+        '200':
+          description: Batch processed (even when individual items were skipped/rejected -- see errors[]/skipped for partial-failure detail; the request itself still succeeds).
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ok
+                  - written
+                  - skipped
+                  - errors
+                properties:
+                  ok:
+                    type: boolean
+                  written:
+                    type: integer
+                  skipped:
+                    type: integer
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        item:
+                          type: string
+                        code:
+                          type: string
+                        message:
+                          type: string
+        '400':
+          description: Missing session_id, invalid provider, or a per-item validation failure surfaced at the request level
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: REMOTE_PUSH_TOKEN is configured but the request's token is missing or wrong
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Host header not allowed (see hostGuard)
+        '409':
+          description: schema_version in the request doesn't match this server's
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '413':
+          description: tokens.length + tool_events.length + turns.length exceeds 1000
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: REMOTE_PUSH_TOKEN is not configured at all -- the route is disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/pricing:
     get:
       tags:
@@ -6022,6 +6594,64 @@ paths:
                 $ref: '#/components/schemas/GptPricingUpsertResponse'
         '400':
           description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/pricing/cursor:
+    get:
+      tags:
+        - Pricing
+      summary: List Cursor pricing rules
+      operationId: listCursorPricingRules
+      responses:
+        '200':
+          description: Cursor pricing rules
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CursorPricingListResponse'
+    put:
+      tags:
+        - Pricing
+      summary: Create or update a Cursor pricing rule
+      operationId: upsertCursorPricingRule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CursorPricingUpsertRequest'
+      responses:
+        '200':
+          description: Cursor pricing rule stored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CursorPricingUpsertResponse'
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/pricing/cursor/{pattern}:
+    delete:
+      tags:
+        - Pricing
+      summary: Delete a Cursor pricing rule
+      operationId: deleteCursorPricingRule
+      parameters:
+        - $ref: '#/components/parameters/PatternPath'
+      responses:
+        '200':
+          description: Rule deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteOkResponse'
+        '404':
+          description: Rule not found
           content:
             application/json:
               schema:
@@ -6494,7 +7124,7 @@ paths:
       tags:
         - Settings
       summary: Get system/database/hook diagnostics
-      description: 'Returns a diagnostics snapshot used by the Settings page: `db` (database file path, on-disk size in bytes, per-table row counts, SQLite pragmas, and recent event load over the last 5/15/60 minutes), `hooks` (whether the Claude Code hook-handler is installed in `settings.json`, the settings path, and a per-hook-type installed map), `server` (process uptime, Node version, platform, live WebSocket connection count, memory/CPU/host stats), and `transcript_cache` (number of cached transcript entries and the cached paths). Read-only and cheap to poll.'
+      description: 'Returns a diagnostics snapshot used by the Settings page: `db` (database file path, on-disk size in bytes, per-table row counts, SQLite pragmas, and recent event load over the last 5/15/60 minutes), `hooks` (whether the Claude Code hook-handler is installed in `settings.json`, the settings path, and a per-hook-type installed map), `server` (process uptime, Node version, platform, live WebSocket connection count, memory/CPU/host stats), `transcript_cache` (number of cached transcript entries and the cached paths), and `snapshots` (durable transcript snapshot storage per provider plus the retention policy; cached for 5 min). Read-only and cheap to poll.'
       operationId: getSettingsInfo
       responses:
         '200':
@@ -6559,6 +7189,35 @@ paths:
                   paths:
                     - /Users/son/.claude/projects/-Users-son-code-foo/abc123.jsonl
                     - /Users/son/.claude/projects/-Users-son-code-bar/def456.jsonl
+                snapshots:
+                  total_bytes: 734003200
+                  total_files: 1840
+                  roots:
+                    claude:
+                      path: /Users/son/.claude/agent-dashboard/transcripts
+                      files: 1702
+                      bytes: 692060160
+                      compressed_files: 1210
+                      compressed_bytes: 211812352
+                      sessions: 512
+                    codex:
+                      path: /Users/son/.claude/agent-dashboard/codex-transcripts
+                      files: 96
+                      bytes: 31457280
+                      compressed_files: 0
+                      compressed_bytes: 0
+                      sessions: 96
+                    cursor:
+                      path: /Users/son/.claude/agent-dashboard/cursor-transcripts
+                      files: 42
+                      bytes: 10485760
+                      compressed_files: 18
+                      compressed_bytes: 2097152
+                      sessions: 21
+                  policy:
+                    compress: true
+                    max_age_days: null
+                    max_bytes: null
   /api/settings/clear-data:
     post:
       tags:
@@ -6859,7 +7518,7 @@ paths:
       tags:
         - Settings
       summary: Abandon stale sessions and optionally purge old history
-      description: 'Two-phase maintenance. Phase 1 (`abandon_hours`, non-destructive): marks any still-`active` session with no events newer than that many hours as `abandoned`, and completes its lingering agents — a tidy-up of crashed/orphaned sessions. Phase 2 (`purge_days`) is ⚠ DESTRUCTIVE and IRREVERSIBLE: it permanently DELETES completed/error/abandoned sessions (and their events, agents, and token_usage) whose `started_at` is older than that many days. Active sessions are NEVER purged. Both fields are optional and independent — send only `abandon_hours` for a safe tidy-up, or include `purge_days` to also reclaim disk. Export first if the purged history matters. The response reports counts for each phase.'
+      description: 'Two-phase maintenance. Phase 1 (`abandon_hours`, non-destructive): marks any still-`active` session with no events newer than that many hours as `abandoned`, and completes its lingering agents — a tidy-up of crashed/orphaned sessions. Phase 2 (`purge_days`) is ⚠ DESTRUCTIVE and IRREVERSIBLE: it permanently DELETES completed/error/abandoned sessions (and their events, agents, and token_usage) whose `started_at` is older than that many days. Active sessions are NEVER purged. Purged sessions'' transcript snapshots (all three provider snapshot dirs) are deleted with them and reported as `purged_snapshot_files` / `purged_snapshot_bytes`. Both fields are optional and independent — send only `abandon_hours` for a safe tidy-up, or include `purge_days` to also reclaim disk. Export first if the purged history matters. The response reports counts for each phase.'
       operationId: cleanupData
       requestBody:
         required: true
@@ -6890,6 +7549,8 @@ paths:
                 purged_sessions: 57
                 purged_events: 14820
                 purged_agents: 241
+                purged_snapshot_files: 212
+                purged_snapshot_bytes: 48234496
   /api/import/guide:
     get:
       tags:
@@ -9933,6 +10594,71 @@ paths:
               example:
                 error:
                   message: Push service unavailable
+  /api/settings/snapshots:
+    get:
+      tags:
+        - Settings
+      summary: Transcript snapshot storage and retention policy
+      description: Per-provider size of the durable transcript snapshot directories (`transcripts`, `codex-transcripts`, `cursor-transcripts` under the dashboard data dir), how much is already compressed, and the env-configured retention policy. Uncached; `/api/settings/info.snapshots` carries the same report cached for 5 min.
+      operationId: getSnapshotStorage
+      responses:
+        '200':
+          description: Snapshot storage report
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsSnapshotStorage'
+  /api/settings/snapshots/compress:
+    post:
+      tags:
+        - Settings
+      summary: Compress snapshots whose original transcript is gone (lossless)
+      description: Gzips every Claude Code / Cursor snapshot whose original transcript no longer exists and that has been idle for 24 h — the same pass background maintenance runs every 6 h. Each archive is decompressed and matched (SHA-256 + length) before the plain file is removed. A provider whose source tree is missing or unreadable is skipped entirely. Codex snapshots are never compressed (they are the byte-offset ingest source of imported Codex sessions).
+      operationId: compressSnapshots
+      responses:
+        '200':
+          description: Compression result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsSnapshotCompressResponse'
+  /api/settings/snapshots/prune:
+    post:
+      tags:
+        - Settings
+      summary: Plan or apply a transcript snapshot prune
+      description: 'Selects whole finished sessions (completed/error/abandoned; never active, and the size cap also spares sessions active in the last 24 h) whose snapshots to remove: those idle longer than `max_age_days`, then oldest-first until the total is under `max_bytes`, plus — only with `orphans: true` — snapshots whose session row no longer exists. DRY RUN BY DEFAULT: nothing is deleted unless `dry_run: false` and `confirm: "PRUNE_SNAPSHOTS"` are both sent. ⚠ Applying is IRREVERSIBLE — once Claude Code/Codex/Cursor deleted the original, the snapshot is the only copy of that conversation. Cap-driven removals are tombstoned so a re-import does not recreate them (a session that later resumes is protected again).'
+      operationId: pruneSnapshots
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettingsSnapshotPruneRequest'
+            examples:
+              preview:
+                summary: 'Dry run: what would a 90-day cap remove?'
+                value:
+                  max_age_days: 90
+              apply:
+                summary: 'Apply: keep the snapshot dirs under 5 GB'
+                value:
+                  max_bytes: 5GB
+                  dry_run: false
+                  confirm: PRUNE_SNAPSHOTS
+      responses:
+        '200':
+          description: Prune plan (dry run) or result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsSnapshotPruneResponse'
+        '400':
+          description: INVALID_PRUNE_REQUEST — no criteria, invalid values, or applying without the confirm token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/sessions/facets:
     get:
       tags:
@@ -10165,7 +10891,7 @@ paths:
       tags:
         - Remote Sources
       summary: Delete a remote data source
-      description: Deletes a remote source. By default its imported sessions are DETACHED — reassigned to the built-in `local` source — so history is preserved. Pass `?purge=true` to instead permanently DELETE that source's imported sessions along with the source. The response reports whether a purge occurred.
+      description: Deletes a remote source. By default its imported sessions are DETACHED — reassigned to the built-in `local` source — so history is preserved. Pass `?purge=true` to instead permanently DELETE that source's imported sessions (and their transcript snapshots) along with the source. The response reports whether a purge occurred.
       operationId: deleteRemoteSource
       parameters:
         - name: id

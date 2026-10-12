@@ -10,9 +10,29 @@
     "enable": "显示 Tabby",
     "enableDesc": "在整个仪表板的角落显示伙伴（按 ⌘B 打开）"
   },
+  "sound": {
+    "title": "声音",
+    "description": "为实时会话活动播放简短、轻柔的提示音。完全在浏览器中合成——无需下载，不做追踪。",
+    "enable": "启用声音提示",
+    "enableDesc": "会话开始、结束或出错时播放轻柔提示音",
+    "volume": "音量",
+    "playWhen": "在以下情况播放提示音…",
+    "newSession": "会话开始时",
+    "sessionComplete": "会话回复完成时",
+    "sessionError": "会话出错时",
+    "subagentSpawned": "子代理启动时",
+    "notification": "Claude Code 发送通知时",
+    "connection": "实时连接断开或恢复时",
+    "interaction": "点击按钮和链接时",
+    "interactionDesc": "每次按下时发出极轻微的滴答声",
+    "preview": "试听",
+    "throttleInfo": "提示音已限流，活动激增时不会变成连续的提示音。",
+    "disabledInfo": "声音提示已关闭——仪表板将保持完全静音"
+  },
   "pricing": {
     "title": "Anthropic Claude 模型定价",
     "navClaude": "Claude 定价",
+    "navCursor": "Cursor 定价",
     "navGpt": "Codex 定价",
     "description": "每百万 Token 的 Anthropic API 费率（美元）。在模式中使用 % 作为通配符。部分模型有限时优惠费率（以紫色显示）；在截止日期当天及之前的用量按该费率计费，之后按标准费率计费。",
     "introNote": "优惠 ${{input}}/${{output}}，截止 {{until}}",
@@ -44,13 +64,36 @@
     "cacheWrite1h": "缓存写入 (1h)",
     "fastInput": "快速输入",
     "fastOutput": "快速输出",
+    "cursor": {
+      "title": "Cursor 模型定价",
+      "description": "Cursor 官方公布的原生及第三方路由模型价格。单位为美元/百万 Token，优先匹配最具体的规则。",
+      "source": "查看 Cursor 模型与定价 ↗",
+      "planNote": "估算基于 Cursor 的按 Token 价目表。套餐内用量池、额度、Auto 路由和团队 Token 计费可能使实际订阅费用不同。",
+      "name": "名称",
+      "input": "输入",
+      "write": "缓存写入",
+      "cached": "缓存读取",
+      "output": "输出",
+      "deleteConfirm": "删除此 Cursor 定价规则？",
+      "tooltip": {
+        "title": "Cursor 定价方式",
+        "howItWorks": "工作方式",
+        "howItWorksBody": "Cursor 会话用量仅按此 Cursor 价目表计算。输入、缓存写入、缓存读取和输出 Token 分别按美元/百万 Token 计价。",
+        "patternsTitle": "模式语法",
+        "patternsBody": "模式使用 SQL 风格的 % 通配符。更具体的模式优先，因此快速版或特定版本模型可安全覆盖更宽泛的系列规则。",
+        "manualUpdates": "价格需手动更新",
+        "manualUpdatesBody": "Cursor 在官网发布模型价格变更，但没有实时数据源。当模型名称或价格变化时，请新增或编辑规则。",
+        "apiPricing": "套餐账单可能不同",
+        "apiPricingBody": "价目表用于估算 Token 价值。仪表板不会还原月度包含用量、额外用量、Auto 路由或团队与企业计费规则。"
+      }
+    },
     "gpt": {
       "title": "OpenAI GPT 模型定价",
-      "description": "用于 Codex 的公开 OpenAI API 费率。标准请求在输入令牌不超过 272K 时使用短上下文费率，超过 272K 时使用长上下文费率；快速模式使用单独的费率表。每 100 万 Token（美元）。",
+      "description": "用于 Codex 的公开 OpenAI API 费率。标准请求在输入令牌不超过 272K 时使用短上下文费率，超过 272K 时使用长上下文费率；快速模式分别提供短上下文和长上下文费率。每 100 万 Token（美元）。",
       "tooltip": {
         "title": "GPT 定价的工作原理",
         "howItWorks": "工作原理",
-        "howItWorksBody": "所有金额均为每 100 万 Token 的美元。Codex 标准请求在输入 Token 不超过 272K 时使用短上下文费率，超过 272K 时使用长上下文费率。快速模式使用独立费率表。新输入、缓存输入、缓存写入和输出分别计价。",
+        "howItWorksBody": "所有金额均为每 100 万 Token 的美元。Codex 标准请求在输入 Token 不超过 272K 时使用短上下文费率，超过 272K 时使用长上下文费率。快速模式分别提供短上下文和长上下文费率。新输入、缓存输入、缓存写入和输出分别计价。",
         "patternsTitle": "模式语法",
         "patternsBody": "模式使用 SQL 风格的 % 通配符。仪表盘会先评估最具体的模型模式，并使用第一个与上报 model id 匹配的规则。",
         "manualUpdates": "价格必须手动更新",
@@ -61,7 +104,8 @@
       "name": "名称",
       "short": "标准 · 短上下文 ≤272K",
       "long": "标准 · 长上下文 >272K",
-      "fast": "快速模式",
+      "fast": "快速 · 短上下文 ≤272K",
+      "fastLong": "快速 · 长上下文 >272K",
       "input": "输入",
       "cached": "缓存输入",
       "write": "缓存写入",
@@ -97,9 +141,9 @@
     "claude": "Claude Code",
     "codex": "Codex",
     "both": "两者",
-    "claudeDescription": "仅显示 Claude Code 数据。",
+    "claudeDescription": "显示 Claude Code 和 Cursor 数据。",
     "codexDescription": "仅显示 Codex 数据。",
-    "bothDescription": "合并 Claude Code 和 Codex 数据。",
+    "bothDescription": "合并 Claude Code、Cursor 和 Codex 数据。",
     "beta": "测试版"
   },
   "hooks": {
@@ -271,7 +315,47 @@
     "runCleanup": "执行清理",
     "nothingToClean": "无需清理",
     "abandonedResult": " 个会话已废弃",
-    "purgedResult": " 个会话已清除（{{events}} 个事件，{{agents}} 个Agent）"
+    "purgedResult": " 个会话已清除（{{events}} 个事件，{{agents}} 个Agent）",
+    "purgedSnapshots": "已删除 {{size}} 的对话记录快照"
+  },
+  "snapshots": {
+    "title": "对话记录快照",
+    "description": "持久保存的副本，在 Claude Code、Codex 和 Cursor 删除自身的对话记录后，仍可查看对话内容。",
+    "loading": "正在加载快照存储信息...",
+    "total": "总计",
+    "files_one": "{{formatted}} 个文件",
+    "files_other": "{{formatted}} 个文件",
+    "compressedShare": "{{total}} 个文件中已压缩 {{compressed}} 个",
+    "policy": "压缩：{{compression}} · 保留期限：{{age}} · 容量上限：{{size}}（通过 DASHBOARD_SNAPSHOT_* 环境变量设置）",
+    "on": "开启",
+    "off": "关闭",
+    "unlimited": "无",
+    "days_one": "{{count}} 天",
+    "days_other": "{{count}} 天",
+    "compressNow": "立即压缩",
+    "compressHint": "无损：仅压缩原始文件已不存在的快照，并在删除未压缩副本前进行校验。",
+    "compressNone": "没有可压缩的内容。所有快照的原始文件仍在磁盘上，或最近仍有活动。",
+    "compressResult_one": "已压缩 {{count}} 个快照（{{before}} → {{after}}）",
+    "compressResult_other": "已压缩 {{count}} 个快照（{{before}} → {{after}}）",
+    "compressFailed_one": "{{count}} 个快照无法压缩，已保持原样。",
+    "compressFailed_other": "{{count}} 个快照无法压缩，已保持原样。",
+    "compressSkipped": "已跳过 {{providers}}：源目录缺失或不可读，因此其中的内容不会被视为已删除。",
+    "pruneTitle": "清理旧快照",
+    "pruneDesc": "按会话整体删除已结束会话的快照，从最旧的开始。请先预览：被清理的快照可能是某段对话仅存的副本。",
+    "olderThan": "早于",
+    "keepUnder": "总容量保持在以下",
+    "includeOrphans": "同时删除数据库中已不存在的会话的快照",
+    "preview": "预览",
+    "previewFirst": "请先用这些设置预览",
+    "prune": "清理",
+    "confirmPrune": "确认清理",
+    "previewNone": "没有匹配项，不会删除任何快照。",
+    "previewResult_one": "将删除 {{count}} 个会话（{{files}} 个文件，{{size}}）；剩余 {{remaining}}。",
+    "previewResult_other": "将删除 {{count}} 个会话（{{files}} 个文件，{{size}}）；剩余 {{remaining}}。",
+    "overCap": "仍超出容量上限 {{size}}。活跃会话和最近 24 小时内有活动的会话永远不会被清理。",
+    "pruneWarning": "此操作将永久删除这些快照。原始文件已被删除的会话将丢失其对话内容。",
+    "pruneResult_one": "已清理 {{count}} 个会话的快照（{{size}}）",
+    "pruneResult_other": "已清理 {{count}} 个会话的快照（{{size}}）"
   },
   "danger": {
     "title": "危险操作",
@@ -297,7 +381,8 @@
     "agents": "个Agent",
     "events": "个事件",
     "sessionsWithCost": "个有费用的会话",
-    "pricingRules": "条定价规则"
+    "pricingRules": "条定价规则",
+    "cursorPricingRules": "条 Cursor 定价规则"
   },
   "messages": {
     "failedLoad": "加载失败",
@@ -548,5 +633,5 @@
     "removeKeep": "移除（保留数据）",
     "remoteSourceBadgeTitle": "从远程机器收集"
   },
-  "cursorPathsNote": "仅供参考：Cursor 会话也会计入——Cursor 与 Claude Code 使用相同的 ~/.claude 路径（本机及已同步的远程机器）。"
+  "cursorPathsNote": "Cursor 已包含在 Claude Code 仪表板范围内。本地历史会自动从 ~/.cursor 发现并创建快照；仅同步 Claude 的 SSH 导入不会同步远程 Cursor 文件夹。"
 }

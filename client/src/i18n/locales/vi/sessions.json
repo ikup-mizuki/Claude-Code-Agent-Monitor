@@ -21,8 +21,8 @@
   "filterCompleted": "Hoàn tất",
   "filterError": "Lỗi",
   "filterAbandoned": "Bị bỏ dở",
-  "sessionCount": "Đã ghi nhận {{count}} phiên",
-  "sessionCount_plural": "Đã ghi nhận {{count}} phiên",
+  "sessionCount_one": "Đã ghi nhận {{count}} phiên",
+  "sessionCount_other": "Đã ghi nhận {{count}} phiên",
   "noSessions": "Không tìm thấy phiên",
   "noSessionsDesc": "Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc.",
   "noSessionsHint": "Bắt đầu một phiên Agent được theo dõi với hooks đã cài để bắt đầu theo dõi.",
@@ -80,6 +80,7 @@
     "conversation": "Hội thoại",
     "timeline": "Dòng thời gian ({{shown}}/{{total}})",
     "transcriptNotFound": "Không tìm thấy bản ghi hội thoại cho agent này. Tệp transcript có thể bị thiếu hoặc chưa được liên kết.",
+    "hookOnlySession": "Phiên Codex này chạy mà không ghi rollout xuống đĩa (như với `codex exec --ephemeral`), nên lịch sử được tái dựng từ các hook vòng đời. Prompt, lệnh gọi công cụ và phản hồi đều được ghi lại, nhưng không có transcript đầy đủ để mở.",
     "transcript": {
       "loadOlder": "↑ Tải các tin nhắn cũ hơn"
     }

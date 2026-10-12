@@ -47,10 +47,10 @@ function createOpenApiSpec() {
   const spec = {
     openapi: "3.0.3",
     info: {
-      title: "Agent Dashboard for Claude Code API",
+      title: "Agent Dashboard for Claude Code, Cursor, and Codex API",
       version: pkg.version || "1.0.0",
       description:
-        "HTTP API for real-time Claude Code session monitoring, agent lifecycle tracking, analytics, pricing, hooks ingestion, and workflow intelligence.",
+        "HTTP API for real-time Claude Code, Cursor, and Codex session monitoring, agent lifecycle tracking, analytics, provider-specific pricing, hooks ingestion, and workflow intelligence.",
       contact: {
         name: "Son Nguyen",
         email: "hoangson091104@gmail.com",
@@ -80,7 +80,7 @@ function createOpenApiSpec() {
     tags: [
       { name: "Health", description: "Service liveness checks" },
       { name: "Metrics", description: "Prometheus / OpenMetrics scrape endpoint" },
-      { name: "Sessions", description: "Claude Code and Codex session lifecycle" },
+      { name: "Sessions", description: "Claude Code, Cursor, and Codex session lifecycle" },
       { name: "Agents", description: "Main/subagent records and status" },
       { name: "Events", description: "Event stream persistence" },
       { name: "Stats", description: "High-level dashboard counters" },
@@ -198,7 +198,7 @@ function createOpenApiSpec() {
           required: false,
           schema: { type: "string", example: "claude,codex" },
           description:
-            "Comma-separated product providers to include: `claude`, `codex`, or both. Omit to include every provider.",
+            "Comma-separated stored providers to include: `claude`, `cursor`, and/or `codex`. Requesting `claude` also includes Cursor because the product scope groups their local workflows. Omit to include every provider.",
         },
       },
       schemas: {
@@ -353,7 +353,14 @@ function createOpenApiSpec() {
               enum: ["active", "completed", "error", "abandoned"],
             },
             cwd: { type: "string", nullable: true },
+            repo_remote_url: {
+              type: "string",
+              nullable: true,
+              description:
+                "Credential-free Git remote URL first observed by an authenticated collector. Consumers may canonicalize it to match a repository across machine-local working-directory paths.",
+            },
             model: { type: "string", nullable: true },
+            provider: { type: "string", enum: ["claude", "cursor", "codex"] },
             started_at: { type: "string", format: "date-time" },
             ended_at: { type: "string", format: "date-time", nullable: true },
             metadata: {
@@ -377,6 +384,12 @@ function createOpenApiSpec() {
                 "Timestamp of the latest durable session event, falling back to lifecycle timestamps only for eventless historical rows. Unlike updated_at, metadata bookkeeping does not change this value.",
             },
             cost: { type: "number", nullable: true },
+            has_token_usage: {
+              type: "boolean",
+              nullable: true,
+              description:
+                "True when durable token-usage buckets exist for this session. It is independent of cost, which may be zero for genuinely empty or unpriced usage.",
+            },
             awaiting_input_since: {
               type: "string",
               format: "date-time",
@@ -478,7 +491,7 @@ function createOpenApiSpec() {
             version: {
               type: "string",
               description: "Dashboard release version from package.json",
-              example: "2.0.8",
+              example: "2.3.0",
             },
             timestamp: { type: "string", format: "date-time" },
           },
@@ -594,6 +607,11 @@ function createOpenApiSpec() {
           type: "object",
           required: ["type", "content"],
           properties: {
+            id: {
+              type: "string",
+              description:
+                "Stable provider-local message identity when available. Cursor uses it while prompt history hands off to canonical JSONL.",
+            },
             type: {
               type: "string",
               enum: ["user", "assistant", "session_event"],
@@ -665,6 +683,11 @@ function createOpenApiSpec() {
               minimum: 0,
               description:
                 "JSONL line number of the oldest returned message — pass back as `before` to page backwards.",
+            },
+            refresh: {
+              type: "boolean",
+              description:
+                "When true, messages are a latest-window refresh to merge by message id rather than a strict append-only page.",
             },
           },
         },
@@ -1069,11 +1092,59 @@ function createOpenApiSpec() {
           required: ["pricing"],
           properties: { pricing: { $ref: "#/components/schemas/PricingRule" } },
         },
+        CursorPricingRule: {
+          type: "object",
+          required: [
+            "model_pattern",
+            "display_name",
+            "input_per_mtok",
+            "cache_write_per_mtok",
+            "cache_read_per_mtok",
+            "output_per_mtok",
+            "updated_at",
+          ],
+          properties: {
+            model_pattern: { type: "string" },
+            display_name: { type: "string" },
+            input_per_mtok: { type: "number", minimum: 0 },
+            cache_write_per_mtok: { type: "number", minimum: 0 },
+            cache_read_per_mtok: { type: "number", minimum: 0 },
+            output_per_mtok: { type: "number", minimum: 0 },
+            updated_at: { type: "string", format: "date-time" },
+          },
+        },
+        CursorPricingUpsertRequest: {
+          type: "object",
+          required: ["model_pattern", "display_name"],
+          properties: {
+            model_pattern: { type: "string" },
+            display_name: { type: "string" },
+            input_per_mtok: { type: "number", minimum: 0 },
+            cache_write_per_mtok: { type: "number", minimum: 0 },
+            cache_read_per_mtok: { type: "number", minimum: 0 },
+            output_per_mtok: { type: "number", minimum: 0 },
+          },
+        },
+        CursorPricingListResponse: {
+          type: "object",
+          required: ["pricing"],
+          properties: {
+            pricing: {
+              type: "array",
+              items: { $ref: "#/components/schemas/CursorPricingRule" },
+            },
+          },
+        },
+        CursorPricingUpsertResponse: {
+          type: "object",
+          required: ["pricing"],
+          properties: { pricing: { $ref: "#/components/schemas/CursorPricingRule" } },
+        },
         GptPricingRule: {
           type: "object",
           required: ["model_pattern", "display_name", "updated_at"],
           description:
-            "OpenAI/Codex token pricing. Standard requests use short rates at or below 272K input tokens and long rates above that; Fast requests use the explicit fast rate card.",
+            "OpenAI/Codex token pricing. Standard requests use short rates at or below 272K input tokens and long rates above that; Fast requests use fast_* short rates or fast_long_* long rates at the same boundary.",
           properties: {
             model_pattern: { type: "string" },
             display_name: { type: "string" },
@@ -1086,6 +1157,10 @@ function createOpenApiSpec() {
             long_cache_write_per_mtok: { type: "number" },
             long_output_per_mtok: { type: "number" },
             fast_input_per_mtok: { type: "number" },
+            fast_long_input_per_mtok: { type: "number" },
+            fast_long_cached_input_per_mtok: { type: "number" },
+            fast_long_cache_write_per_mtok: { type: "number" },
+            fast_long_output_per_mtok: { type: "number" },
             fast_cached_input_per_mtok: { type: "number" },
             fast_cache_write_per_mtok: { type: "number" },
             fast_output_per_mtok: { type: "number" },
@@ -1107,6 +1182,10 @@ function createOpenApiSpec() {
             long_cache_write_per_mtok: { type: "number" },
             long_output_per_mtok: { type: "number" },
             fast_input_per_mtok: { type: "number" },
+            fast_long_input_per_mtok: { type: "number" },
+            fast_long_cached_input_per_mtok: { type: "number" },
+            fast_long_cache_write_per_mtok: { type: "number" },
+            fast_long_output_per_mtok: { type: "number" },
             fast_cached_input_per_mtok: { type: "number" },
             fast_cache_write_per_mtok: { type: "number" },
             fast_output_per_mtok: { type: "number" },
@@ -1374,6 +1453,7 @@ function createOpenApiSpec() {
                 paths: { type: "array", items: { type: "string" } },
               },
             },
+            snapshots: { $ref: "#/components/schemas/SettingsSnapshotStorage" },
           },
         },
         ClearDataResponse: {
@@ -1470,11 +1550,15 @@ function createOpenApiSpec() {
         },
         ResetPricingResponse: {
           type: "object",
-          required: ["ok", "provider", "pricing", "gpt_pricing"],
+          required: ["ok", "provider", "pricing", "cursor_pricing", "gpt_pricing"],
           properties: {
             ok: { type: "boolean", enum: [true] },
-            provider: { type: "string", enum: ["claude", "codex", "both"] },
+            provider: { type: "string", enum: ["claude", "cursor", "codex", "both"] },
             pricing: { type: "array", items: { $ref: "#/components/schemas/PricingRule" } },
+            cursor_pricing: {
+              type: "array",
+              items: { $ref: "#/components/schemas/CursorPricingRule" },
+            },
             gpt_pricing: {
               type: "array",
               items: { $ref: "#/components/schemas/GptPricingRule" },
@@ -1492,6 +1576,7 @@ function createOpenApiSpec() {
             "events",
             "token_usage",
             "model_pricing",
+            "cursor_model_pricing",
             "gpt_model_pricing",
           ],
           properties: {
@@ -1501,7 +1586,7 @@ function createOpenApiSpec() {
                 'Bundle format marker (always "ccam-export" for exports from this version).',
               example: "ccam-export",
             },
-            version: { type: "integer", description: "Bundle schema version.", example: 2 },
+            version: { type: "integer", description: "Bundle schema version.", example: 3 },
             exported_at: { type: "string", format: "date-time" },
             sessions: { type: "array", items: { $ref: "#/components/schemas/Session" } },
             agents: { type: "array", items: { $ref: "#/components/schemas/Agent" } },
@@ -1520,6 +1605,10 @@ function createOpenApiSpec() {
             },
             alert_rules: { type: "array", items: { type: "object", additionalProperties: true } },
             model_pricing: { type: "array", items: { $ref: "#/components/schemas/PricingRule" } },
+            cursor_model_pricing: {
+              type: "array",
+              items: { $ref: "#/components/schemas/CursorPricingRule" },
+            },
             gpt_model_pricing: {
               type: "array",
               items: { $ref: "#/components/schemas/GptPricingRule" },
@@ -1539,6 +1628,7 @@ function createOpenApiSpec() {
             "dashboard_runs",
             "alert_rules",
             "model_pricing",
+            "cursor_model_pricing",
             "gpt_model_pricing",
             "errors",
           ],
@@ -1561,6 +1651,7 @@ function createOpenApiSpec() {
             dashboard_runs: { type: "integer" },
             alert_rules: { type: "integer" },
             model_pricing: { type: "integer" },
+            cursor_model_pricing: { type: "integer" },
             gpt_model_pricing: { type: "integer" },
             errors: { type: "integer" },
           },
@@ -1590,6 +1681,14 @@ function createOpenApiSpec() {
             purged_sessions: { type: "integer" },
             purged_events: { type: "integer" },
             purged_agents: { type: "integer" },
+            purged_snapshot_files: {
+              type: "integer",
+              description: "Transcript snapshot files deleted with the purged sessions.",
+            },
+            purged_snapshot_bytes: {
+              type: "integer",
+              description: "Bytes reclaimed from the purged sessions' transcript snapshots.",
+            },
           },
         },
       },
@@ -2220,7 +2319,12 @@ function createOpenApiSpec() {
                     },
                     data: {
                       type: "object",
-                      properties: { transcript_path: { type: "string" } },
+                      description:
+                        "Codex hook payload. A rollout path is optional — the session/thread id alone identifies the session, which is how `codex exec --ephemeral` runs (no rollout is ever written) are tracked.",
+                      properties: {
+                        transcript_path: { type: "string", nullable: true },
+                        session_id: { type: "string" },
+                      },
                       additionalProperties: true,
                     },
                   },
@@ -2230,15 +2334,188 @@ function createOpenApiSpec() {
           },
           responses: {
             202: {
-              description: "Hook acknowledged; rollout parsing continues asynchronously",
+              description:
+                "Hook acknowledged; ingestion continues asynchronously. `queued` is false only when the payload carries neither a rollout path nor a session id, in which case `reason` explains the no-op.",
               content: {
                 "application/json": {
                   schema: {
                     type: "object",
                     required: ["ok", "queued"],
-                    properties: { ok: { type: "boolean" }, queued: { type: "boolean" } },
+                    properties: {
+                      ok: { type: "boolean" },
+                      queued: { type: "boolean" },
+                      reason: { type: "string" },
+                    },
                   },
                 },
+              },
+            },
+          },
+        },
+      },
+      "/api/hooks/ingest-batch": {
+        post: {
+          tags: ["Hooks"],
+          summary: "Push a batch of session data from a roaming/NAT'd machine",
+          description:
+            "Third session-data ingestion path, alongside the local hook routes above and the SSH-pull remote-sync path (see /api/remote-sources). For a machine the dashboard can never reach to pull FROM, it pushes its own session data over HTTPS instead. Reachable from the public internet and disabled by default -- gated by its own REMOTE_PUSH_TOKEN, deliberately independent of DASHBOARD_HOOK_TOKEN (which protects the loopback-only routes above; setting that one must not also open this route as a side effect). Send the token as `Authorization: Bearer <token>` or `X-Dashboard-Token` -- deliberately not `?token=`, which would end up in access/proxy logs on a public-internet route.",
+          operationId: "ingestRemotePushBatch",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["session_id", "provider"],
+                  properties: {
+                    schema_version: {
+                      type: "integer",
+                      description:
+                        "Must equal this server's current wire-format version (1) when present. A mismatch is a whole-request 409, not a per-item soft-fail.",
+                    },
+                    session_id: { type: "string" },
+                    provider: { type: "string", enum: ["claude", "codex"] },
+                    session_name: {
+                      type: "string",
+                      description:
+                        "Defaults to 'Session <first 8 chars of session_id>' for a brand-new session.",
+                    },
+                    cwd: { type: "string" },
+                    repo_remote_url: {
+                      type: "string",
+                      description:
+                        "Optional Git remote URL. Userinfo is removed, then the authenticated collector's first non-empty value is retained for cross-machine repository matching.",
+                    },
+                    model: { type: "string" },
+                    tokens: {
+                      type: "array",
+                      description:
+                        "Each entry is a bucket's FULL current total (like a transcript re-parse), not a delta.",
+                      items: {
+                        type: "object",
+                        required: ["model"],
+                        properties: {
+                          model: { type: "string" },
+                          speed: { type: "string" },
+                          inference_geo: { type: "string" },
+                          service_tier: { type: "string" },
+                          input: { type: "integer", minimum: 0 },
+                          output: { type: "integer", minimum: 0 },
+                          cacheRead: { type: "integer", minimum: 0 },
+                          cacheWrite: { type: "integer", minimum: 0 },
+                          cacheWrite1h: {
+                            type: "integer",
+                            minimum: 0,
+                            description: "Must be <= cacheWrite.",
+                          },
+                          webSearch: { type: "integer", minimum: 0 },
+                          webFetch: { type: "integer", minimum: 0 },
+                          codeExec: { type: "integer", minimum: 0 },
+                        },
+                      },
+                    },
+                    tool_events: {
+                      type: "array",
+                      description:
+                        "Deduped by (session_id, event_type, uuid), across requests and within one batch.",
+                      items: {
+                        type: "object",
+                        required: ["uuid"],
+                        properties: {
+                          uuid: { type: "string" },
+                          agent_id: {
+                            type: "string",
+                            description: "Defaults to this session's main agent.",
+                          },
+                          tool_name: { type: "string" },
+                          status: { type: "string" },
+                          timestamp: {
+                            type: "string",
+                            format: "date-time",
+                            description: "Defaults to server 'now'.",
+                          },
+                        },
+                      },
+                    },
+                    turns: {
+                      type: "array",
+                      description: "Deduped the same way as tool_events.",
+                      items: {
+                        type: "object",
+                        required: ["uuid"],
+                        properties: {
+                          uuid: { type: "string" },
+                          agent_id: { type: "string" },
+                          duration_ms: { type: "integer", minimum: 0 },
+                          timestamp: { type: "string", format: "date-time" },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description:
+                "Batch processed (even when individual items were skipped/rejected -- see errors[]/skipped for partial-failure detail; the request itself still succeeds).",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    required: ["ok", "written", "skipped", "errors"],
+                    properties: {
+                      ok: { type: "boolean" },
+                      written: { type: "integer" },
+                      skipped: { type: "integer" },
+                      errors: {
+                        type: "array",
+                        items: {
+                          type: "object",
+                          properties: {
+                            item: { type: "string" },
+                            code: { type: "string" },
+                            message: { type: "string" },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            400: {
+              description:
+                "Missing session_id, invalid provider, or a per-item validation failure surfaced at the request level",
+              content: {
+                "application/json": { schema: { $ref: "#/components/schemas/ErrorResponse" } },
+              },
+            },
+            401: {
+              description:
+                "REMOTE_PUSH_TOKEN is configured but the request's token is missing or wrong",
+              content: {
+                "application/json": { schema: { $ref: "#/components/schemas/ErrorResponse" } },
+              },
+            },
+            403: { description: "Host header not allowed (see hostGuard)" },
+            409: {
+              description: "schema_version in the request doesn't match this server's",
+              content: {
+                "application/json": { schema: { $ref: "#/components/schemas/ErrorResponse" } },
+              },
+            },
+            413: {
+              description: "tokens.length + tool_events.length + turns.length exceeds 1000",
+              content: {
+                "application/json": { schema: { $ref: "#/components/schemas/ErrorResponse" } },
+              },
+            },
+            503: {
+              description: "REMOTE_PUSH_TOKEN is not configured at all -- the route is disabled",
+              content: {
+                "application/json": { schema: { $ref: "#/components/schemas/ErrorResponse" } },
               },
             },
           },
@@ -2331,6 +2608,74 @@ function createOpenApiSpec() {
             },
             400: {
               description: "Invalid request body",
+              content: {
+                "application/json": { schema: { $ref: "#/components/schemas/ErrorResponse" } },
+              },
+            },
+          },
+        },
+      },
+      "/api/pricing/cursor": {
+        get: {
+          tags: ["Pricing"],
+          summary: "List Cursor pricing rules",
+          operationId: "listCursorPricingRules",
+          responses: {
+            200: {
+              description: "Cursor pricing rules",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/CursorPricingListResponse" },
+                },
+              },
+            },
+          },
+        },
+        put: {
+          tags: ["Pricing"],
+          summary: "Create or update a Cursor pricing rule",
+          operationId: "upsertCursorPricingRule",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/CursorPricingUpsertRequest" },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: "Cursor pricing rule stored",
+              content: {
+                "application/json": {
+                  schema: { $ref: "#/components/schemas/CursorPricingUpsertResponse" },
+                },
+              },
+            },
+            400: {
+              description: "Invalid request body",
+              content: {
+                "application/json": { schema: { $ref: "#/components/schemas/ErrorResponse" } },
+              },
+            },
+          },
+        },
+      },
+      "/api/pricing/cursor/{pattern}": {
+        delete: {
+          tags: ["Pricing"],
+          summary: "Delete a Cursor pricing rule",
+          operationId: "deleteCursorPricingRule",
+          parameters: [{ $ref: "#/components/parameters/PatternPath" }],
+          responses: {
+            200: {
+              description: "Rule deleted",
+              content: {
+                "application/json": { schema: { $ref: "#/components/schemas/DeleteOkResponse" } },
+              },
+            },
+            404: {
+              description: "Rule not found",
               content: {
                 "application/json": { schema: { $ref: "#/components/schemas/ErrorResponse" } },
               },
@@ -2642,7 +2987,7 @@ function createOpenApiSpec() {
                 schema: {
                   type: "object",
                   properties: {
-                    provider: { type: "string", enum: ["claude", "codex"] },
+                    provider: { type: "string", enum: ["claude", "cursor", "codex"] },
                   },
                 },
               },

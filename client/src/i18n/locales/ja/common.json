@@ -49,11 +49,11 @@
   "awaitingReason": {
     "notification": {
       "label": "入力待ち",
-      "desc": "許可プロンプトまたは入力要求で停止中 — 応答するまでClaudeは続行できません。"
+      "desc": "許可プロンプトまたは入力要求で停止中 — 応答するまで{{provider}}は続行できません。"
     },
     "stop": {
       "label": "応答完了",
-      "desc": "Claudeの応答が完了しました。次のプロンプトを送るまでセッションはアイドル状態です。"
+      "desc": "{{provider}}の応答が完了しました。次のプロンプトを送るまでセッションはアイドル状態です。"
     },
     "session_start": {
       "label": "プロンプト待機中",
@@ -61,7 +61,7 @@
     },
     "interrupted": {
       "label": "中断",
-      "desc": "直前のターンが中断されました(Escまたはフックからの復帰)— Claudeは指示待ちです。"
+      "desc": "直前のターンが中断されました(Escまたはフックからの復帰)— {{provider}}は指示待ちです。"
     }
   },
   "time": {
@@ -172,10 +172,9 @@
       "statusesTitle": "ステータスバッジ",
       "statusesIntro": "ステータスはevent_typeから派生します。各行に表示されるものです。",
       "statusWorkingDesc": "エージェントがツール呼び出しを開始しました (PreToolUse)。ツールが実行されようとしています。",
-      "statusConnectedDesc": "ツール呼び出しが完了し、結果を返しました (PostToolUse)。",
+      "statusWaitingDesc": "ツールが結果を返してターンが続いている場合、またはイベントがライフサイクル／メタデータで、確かな進捗の意味を持たない場合（PostToolUse、codex_*_end のツール結果、SessionStart、Notification、TurnDuration、codex_turn_aborted）に表示されます。メタデータイベントは「待機中」バッジを維持しますが、「待機中」フィルタープリセットからは意図的に除外されており、一致するのはツール結果のみです。",
       "statusCompletedDesc": "ターンまたはライフサイクルの境界 (Stop, SubagentStop, Compaction)。",
       "statusErrorDesc": "エラーが記録されました (error, APIError)。",
-      "statusIdleDesc": "ライフサイクルまたはメタデータ (Notification, TurnDuration, SessionStart, SessionEnd)。",
       "lifecycleTitle": "イベントのライフサイクル",
       "lifecycleDesc": "一般的なツール呼び出しでは、同じtool_use_idを共有する2つのイベントが発行されます:",
       "lifecycleFlow": "PreToolUse (作業中) → PostToolUse (接続済み) → ... → Stop (完了)",

@@ -21,8 +21,8 @@
   "filterCompleted": "已完成",
   "filterError": "错误",
   "filterAbandoned": "已废弃",
-  "sessionCount": "已记录 {{count}} 个会话",
-  "sessionCount_plural": "已记录 {{count}} 个会话",
+  "sessionCount_one": "已记录 {{count}} 个会话",
+  "sessionCount_other": "已记录 {{count}} 个会话",
   "noSessions": "未找到会话",
   "noSessionsDesc": "请尝试调整搜索条件或筛选器。",
   "noSessionsHint": "启动已安装 hooks 的受监控 Agent 会话即可开始追踪。",
@@ -80,6 +80,7 @@
     "conversation": "对话",
     "timeline": "时间线 ({{shown}}/{{total}})",
     "transcriptNotFound": "未找到此 Agent 的对话记录。Transcript 文件可能缺失或尚未关联。",
+    "hookOnlySession": "此 Codex 会话运行时未将 rollout 写入磁盘（例如 `codex exec --ephemeral`），因此其历史记录由生命周期 hook 重建。提示词、工具调用和回复均已捕获，但没有完整的 transcript 可供打开。",
     "transcript": {
       "loadOlder": "↑ 加载更早的消息"
     }

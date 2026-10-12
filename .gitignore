@@ -76,7 +76,7 @@ scripts/remote-test-commands.txt
 .playwright-mcp/
 __pycache__/
 
-# ja fork: this is a private repo pushed via OAuth (Git Credential Manager)
+# ja fork: this repo is pushed via OAuth (Git Credential Manager)
 # without the "workflow" scope. GitHub refuses any push that creates/updates
 # .github/workflows/*, so upstream's workflow files are excluded here.
 # scripts/update-ja.ps1 also strips this path after every merge, since a git
@@ -84,3 +84,5 @@ __pycache__/
 # untracked-file discovery, not what a merge brings in for already-tracked
 # paths on the other side).
 .github/workflows/
+# Git worktrees created for parallel agent work (never part of a commit)
+.worktrees/

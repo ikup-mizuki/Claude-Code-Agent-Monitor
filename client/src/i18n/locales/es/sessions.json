@@ -21,8 +21,8 @@
   "filterCompleted": "Completadas",
   "filterError": "Error",
   "filterAbandoned": "Abandonadas",
-  "sessionCount": "{{count}} sesión registrada",
-  "sessionCount_plural": "{{count}} sesiones registradas",
+  "sessionCount_one": "{{count}} sesión registrada",
+  "sessionCount_other": "{{count}} sesiones registradas",
   "noSessions": "No se encontraron sesiones",
   "noSessionsDesc": "Intenta ajustar tu búsqueda o los filtros.",
   "noSessionsHint": "Inicia una sesión de agente supervisada con los hooks instalados para comenzar el seguimiento.",
@@ -79,6 +79,7 @@
     "conversation": "Conversación",
     "timeline": "Línea de tiempo ({{shown}}/{{total}})",
     "transcriptNotFound": "No se encontró la transcripción de la conversación para este agente. El archivo de transcripción puede estar ausente o aún no vinculado.",
+    "hookOnlySession": "Esta sesión de Codex se ejecutó sin escribir un rollout en disco (como con `codex exec --ephemeral`), por lo que su historial se reconstruyó a partir de los hooks del ciclo de vida. Se capturan los prompts, las llamadas a herramientas y las respuestas, pero no hay una transcripción completa que abrir.",
     "transcript": {
       "loadOlder": "↑ Cargar mensajes anteriores"
     }

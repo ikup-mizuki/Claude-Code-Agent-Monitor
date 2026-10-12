@@ -21,8 +21,8 @@
   "filterCompleted": "Completed",
   "filterError": "Error",
   "filterAbandoned": "Abandoned",
-  "sessionCount": "{{count}} session recorded",
-  "sessionCount_plural": "{{count}} sessions recorded",
+  "sessionCount_one": "{{count}} session recorded",
+  "sessionCount_other": "{{count}} sessions recorded",
   "noSessions": "No sessions found",
   "noSessionsDesc": "Try adjusting your search or filters.",
   "noSessionsHint": "Start a monitored agent session with hooks installed to begin tracking.",
@@ -79,6 +79,7 @@
     "conversation": "Conversation",
     "timeline": "Timeline ({{shown}}/{{total}})",
     "transcriptNotFound": "Conversation transcript not found for this agent. The transcript file may be missing or not yet linked.",
+    "hookOnlySession": "This Codex session ran without writing a rollout to disk (as with `codex exec --ephemeral`), so its history was reconstructed from lifecycle hooks. Prompts, tool calls, and replies are captured, but there is no full transcript to open.",
     "transcript": {
       "loadOlder": "↑ Load older messages"
     }

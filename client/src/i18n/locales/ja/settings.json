@@ -16,8 +16,30 @@
     "enable": "Tabby を表示",
     "enableDesc": "ダッシュボード全体にコーナーコンパニオンを表示します (⌘Bで開く)"
   },
+  "sound": {
+    "title": "効果音",
+    "description": "ライブのセッション活動に対する短く控えめなチャイム音。ブラウザ内で生成され、ダウンロードも追跡も行いません。",
+    "enable": "効果音を有効にする",
+    "enableDesc": "セッションの開始・完了・エラー時に控えめなトーンを鳴らします",
+    "volume": "音量",
+    "playWhen": "次の場合に効果音を鳴らす...",
+    "newSession": "セッションが開始したとき",
+    "sessionComplete": "セッションの応答が完了したとき",
+    "sessionError": "セッションでエラーが発生したとき",
+    "subagentSpawned": "サブエージェントが起動したとき",
+    "notification": "Claude Code が通知を送信したとき",
+    "connection": "ライブ接続が切断または復帰したとき",
+    "interaction": "ボタンやリンクをクリックしたとき",
+    "interactionDesc": "押すたびにかすかな操作音を鳴らします",
+    "preview": "効果音を試聴",
+    "throttleInfo": "効果音は発生頻度が制限されるため、活動が集中しても音が連続して鳴り続けることはありません。",
+    "disabledInfo": "効果音はオフです。ダッシュボードは完全に無音のままです"
+  },
   "pricing": {
     "title": "モデル価格",
+    "navClaude": "Claudeの料金",
+    "navCursor": "Cursorの料金",
+    "navGpt": "Codexの料金",
     "description": "100万トークンあたりのレート (USD)。パターン内のワイルドカードには % を使用します。一部のモデルには期間限定の導入レート (紫色で表示) があります。期限までの使用分はそのレートで、期限後の使用分は標準レートで請求されます。",
     "introNote": "導入価格 ${{input}}/${{output}} ({{until}} まで)",
     "introRatesTitle": "導入価格",
@@ -48,17 +70,48 @@
     "cacheWrite1h": "キャッシュ書き込み (1時間)",
     "fastInput": "高速入力",
     "fastOutput": "高速出力",
-    "navClaude": "Claudeの料金",
-    "navGpt": "Codexの料金",
+    "cursor": {
+      "title": "Cursorモデルの料金",
+      "description": "Cursor ネイティブおよびルーティングされたサードパーティモデルに対する Cursor の公開レート。100万トークンあたりの USD。最も具体的に一致するパターンが優先されます。",
+      "source": "Cursorのモデルと料金を見る ↗",
+      "planNote": "見積もりは Cursor のトークン単価表に基づきます。含まれる利用枠、プランの上限、Auto ルーティング、チームのトークンレート課金により、実際のサブスクリプション請求額は異なる場合があります。",
+      "name": "名前",
+      "input": "入力",
+      "write": "キャッシュ書き込み",
+      "cached": "キャッシュ読み取り",
+      "output": "出力",
+      "deleteConfirm": "この Cursor の価格ルールを削除しますか？",
+      "tooltip": {
+        "title": "Cursor の価格の仕組み",
+        "howItWorks": "仕組み",
+        "howItWorksBody": "Cursor セッションの使用量は、この Cursor のレートカードに対してのみ計算されます。入力、キャッシュ書き込み、キャッシュ読み取り、出力の各トークンは、100万トークンあたりの USD で個別に計算されます。",
+        "patternsTitle": "パターンの構文",
+        "patternsBody": "パターンは SQL スタイルの % ワイルドカードを使用します。より具体的なパターンが優先されるため、Fast やバージョン付きモデルを、より広いファミリーのルールより安全に上書きできます。",
+        "manualUpdates": "価格は手動で更新する必要があります",
+        "manualUpdatesBody": "Cursor はモデル価格の変更をウェブサイトで公開しており、ライブフィードはありません。Cursor がモデル名やレートを変更したときは、ルールを追加または編集してください。",
+        "apiPricing": "プランの請求は異なる場合があります",
+        "apiPricingBody": "レートカードはトークンの価値を見積もるものです。月額の含有プール、追加使用量、Auto ルーティング、Teams や Enterprise の請求ルールは、ダッシュボードでは再現されません。"
+      }
+    },
     "gpt": {
       "title": "OpenAI GPTモデルの料金",
       "description": "Codexの使用に対する公開されているOpenAI APIレート。標準リクエストは272K入力トークン以下でShortレート、272Kより多い場合はLongレートを使用します。Fastモードは独自のレートカードを使用します。",
-      "unit": "USD / 1M トークン",
-      "unavailableNote": "すべての金額は 1M トークンあたりのUSDです。ダッシュ（—）は、OpenAIがそのコンテキストまたはFastモードのレートを公開していないことを意味し、ダッシュボードは一致する使用量を推測せずに未価格としてマークします。",
+      "tooltip": {
+        "title": "GPT の価格の仕組み",
+        "howItWorks": "仕組み",
+        "howItWorksBody": "すべての金額は100万トークンあたりの USD です。標準の Codex リクエストは、272K 以下の入力トークンでは Short レート、272K を超えると Long レートを使用します。Fast モードには別の Short・Long レートがあります。新規入力、キャッシュ済み入力、キャッシュ書き込み、出力はそれぞれ個別に価格設定されます。",
+        "patternsTitle": "パターンの構文",
+        "patternsBody": "パターンは SQL スタイルの % ワイルドカードを使用します。ダッシュボードは最も具体的なモデルパターンから順に評価し、報告されたモデル ID に最初に一致したルールを使用します。",
+        "manualUpdates": "価格は手動で更新する必要があります",
+        "manualUpdatesBody": "OpenAI は API 価格の変更をウェブサイトで公開しており、ライブフィードはありません。モデルやレートが変わったら、新しく記録される使用量が正しく価格設定されるよう、一致するルールを更新または追加してください。",
+        "apiPricing": "未公開のレートは価格未設定のままです",
+        "apiPricingBody": "ダッシュ（—）は、OpenAI がその文脈または Fast モードのレートを公開していないことを示します。一致する使用量は見積もられず、価格未設定としてマークされます。これらは参考用の従量課金 API レートであり、サブスクリプションプランの請求ではありません。"
+      },
       "name": "名前",
       "short": "標準 · Short ≤272K",
       "long": "標準 · Long >272K",
       "fast": "Fastモード",
+      "fastLong": "Fast · Long >272K",
       "input": "入力",
       "cached": "キャッシュ済み",
       "write": "キャッシュ書き込み",
@@ -75,16 +128,40 @@
     "placeholder": "/path/to/claude-home",
     "saveFailed": "CLAUDE_HOME の更新に失敗しました"
   },
+  "codexHome": {
+    "title": "Codexホーム",
+    "description": "Codexのロールアウトセッションとフックのルートディレクトリ。新しい場所を保存すると、ライブモニタリングが再有効化され、すぐにそのセッションがスキャンされます。",
+    "save": "保存",
+    "saving": "保存中...",
+    "current": "現在:",
+    "placeholder": "/path/to/codex-home",
+    "saveFailed": "Codexホームの更新に失敗しました"
+  },
+  "homes": {
+    "title": "セッションデータの場所",
+    "description": "ダッシュボードが読み取るローカルのClaude CodeとCodexのディレクトリを設定します。保存された各場所は、アプリを再起動することなく適用されます。"
+  },
+  "display": {
+    "title": "ダッシュボードデータ",
+    "description": "アプリ全体に表示される製品のセッション、トークン、コスト、アクティビティを選択します。変更はすぐに適用され、マシンのデータソースフィルターとは独立して維持されます。",
+    "claude": "Claude Code",
+    "codex": "Codex",
+    "both": "両方",
+    "claudeDescription": "Claude Codeのデータのみを表示します。",
+    "codexDescription": "Codexのデータのみを表示します。",
+    "bothDescription": "Claude CodeとCodexのデータを統合します。",
+    "beta": "BETA"
+  },
   "hooks": {
     "title": "フック設定",
     "description": "Claude Codeのフックはイベントをダッシュボードにリアルタイムで転送します。",
     "allInstalled": "すべてのフックがインストールされています",
+    "someInstalled": "フック設定済み",
     "incomplete": "フックが不完全です",
     "reinstall": "フックを再インストール",
+    "configure": "フックを設定",
     "success": "フックが正常にインストールされました",
     "failed": "フックのインストールに失敗しました",
-    "someInstalled": "フック設定済み",
-    "configure": "フックを設定",
     "display": {
       "title": "ダッシュボードデータ",
       "description": "すべてのダッシュボードビューを直ちに特定の製品にフィルタリングします。マシンのデータソースフィルタリングは独立して維持されます。",
@@ -121,7 +198,13 @@
   },
   "import": {
     "title": "履歴のインポート",
+    "providerLabel": "インポート元プロバイダー",
+    "providerHint": "このダッシュボードに取り込みたいローカルエージェントの履歴を選択してください。",
+    "providerClaude": "Claude Code",
+    "providerCodex": "Codex",
+    "backupProviderNote": "ダッシュボードのエクスポートには、Claude CodeとCodexの両方のデータを含めることができます。復元を行うと、エクスポートに含まれるすべてのプロバイダーがマージされます。",
     "description": "既存のClaude Codeセッションをダッシュボードに取り込みます。トークン数、モデルごとのコスト、圧縮、サブエージェント、ツール使用、およびターンの期間は元のJSONLトランスクリプトから再構築され、ライブセッションのキャプチャと同一のものになります。",
+    "scopeNote": "このインポートはClaude Codeのトランスクリプトのみを処理します。Codexの履歴や、どちらのCLI設定も決して変更しません。",
     "accuracyNote": "再実行は安全です。セッションはセッションIDによって重複排除され、圧縮のベースラインによってトークンの合計が二重にカウントされることはありません。",
     "supportedFiles": "サポートされる入力: .jsonl, .meta.json, .zip, .tar, .tar.gz, .tgz, .gz",
     "instructions": "履歴の収集方法",
@@ -144,6 +227,19 @@
     "modeFolderDesc": "このマシンの任意のディレクトリにあるJSONLトランスクリプトをスキャンします (サブフォルダも探索します)。",
     "modeUpload": "ファイルをアップロード",
     "modeUploadDesc": "JSONLファイルまたはアーカイブ (.zip / .tar.gz) を直接ブラウザにドロップします。",
+    "modeBackup": "バックアップを復元",
+    "modeBackupDesc": "設定上部の「データをエクスポート」からダッシュボードのエクスポート(.json)をインポートし、別のマシンの履歴をマージします。",
+    "backupHint": "ここにエクスポートの.jsonをドロップするか、クリックして選択",
+    "backupSub": "「データをエクスポート」ボタンで生成されたファイル",
+    "runRestore": "復元",
+    "backupResult": {
+      "title": "復元が完了しました",
+      "sessionsImported": "追加されたセッション: {{count}}",
+      "sessionsSkipped": "すでに存在: {{count}}",
+      "events": "イベント: {{count}}",
+      "pricing": "料金ルール: {{count}}",
+      "detail": "{{agents}} エージェント · {{workflows}} ワークフロー · {{runs}} 実行 · {{rules}} アラートルール"
+    },
     "folderPlaceholder": "/absolute/path/to/claude-history",
     "folderHelper": "絶対パス。チルダ (~) は展開されます。サブフォルダは再帰的にスキャンされます。",
     "runRescan": "今すぐ再スキャン",
@@ -178,25 +274,6 @@
       "pathNotFound": "パスが存在しません",
       "pathNotDir": "パスはディレクトリではありません",
       "generic": "インポート失敗: {{message}}"
-    },
-    "providerLabel": "インポート元プロバイダー",
-    "providerHint": "このダッシュボードに取り込みたいローカルエージェントの履歴を選択してください。",
-    "providerClaude": "Claude Code",
-    "providerCodex": "Codex",
-    "backupProviderNote": "ダッシュボードのエクスポートには、Claude CodeとCodexの両方のデータを含めることができます。復元を行うと、エクスポートに含まれるすべてのプロバイダーがマージされます。",
-    "scopeNote": "このインポートはClaude Codeのトランスクリプトのみを処理します。Codexの履歴や、どちらのCLI設定も決して変更しません。",
-    "modeBackup": "バックアップを復元",
-    "modeBackupDesc": "設定上部の「データをエクスポート」からダッシュボードのエクスポート(.json)をインポートし、別のマシンの履歴をマージします。",
-    "backupHint": "ここにエクスポートの.jsonをドロップするか、クリックして選択",
-    "backupSub": "「データをエクスポート」ボタンで生成されたファイル",
-    "runRestore": "復元",
-    "backupResult": {
-      "title": "復元が完了しました",
-      "sessionsImported": "追加されたセッション: {{count}}",
-      "sessionsSkipped": "すでに存在: {{count}}",
-      "events": "イベント: {{count}}",
-      "pricing": "料金ルール: {{count}}",
-      "detail": "{{agents}} エージェント · {{workflows}} ワークフロー · {{runs}} 実行 · {{rules}} アラートルール"
     },
     "codex": {
       "description": "既存のCodexセッションをダッシュボードに取り込みます。ユーザーメッセージ、アシスタントの出力、トークンのスナップショット、ツール呼び出し、待機/アクティブなライフサイクル状態は、リアルタイム監視と同じパイプラインを使用して元のロールアウトJSONLファイルから再構築されます。",
@@ -244,7 +321,47 @@
     "runCleanup": "クリーンアップを実行",
     "nothingToClean": "クリーンアップするものがありません",
     "abandonedResult": " セッションを放棄しました",
-    "purgedResult": " セッションをパージしました ({{events}} イベント, {{agents}} エージェント)"
+    "purgedResult": " セッションをパージしました ({{events}} イベント, {{agents}} エージェント)",
+    "purgedSnapshots": "{{size}} の会話ログのスナップショットを削除しました"
+  },
+  "snapshots": {
+    "title": "会話ログのスナップショット",
+    "description": "Claude Code、Codex、Cursor が自身のトランスクリプトを削除した後も会話を読めるように保持される永続コピーです。",
+    "loading": "スナップショットの保存領域を読み込んでいます...",
+    "total": "合計",
+    "files_one": "{{formatted}} ファイル",
+    "files_other": "{{formatted}} ファイル",
+    "compressedShare": "{{total}} ファイルのうち {{compressed}} 件を圧縮済み",
+    "policy": "圧縮: {{compression}} · 経過日数の上限: {{age}} · サイズの上限: {{size}} (DASHBOARD_SNAPSHOT_* 環境変数で設定)",
+    "on": "オン",
+    "off": "オフ",
+    "unlimited": "なし",
+    "days_one": "{{count}} 日",
+    "days_other": "{{count}} 日",
+    "compressNow": "今すぐ圧縮",
+    "compressHint": "可逆圧縮: 元データが失われたスナップショットのみが対象です。通常のコピーを削除する前に検証します。",
+    "compressNone": "圧縮するものはありません。すべてのスナップショットの元データはディスク上に残っているか、最近まで使用中でした。",
+    "compressResult_one": "{{count}} 件のスナップショットを圧縮しました ({{before}} → {{after}})",
+    "compressResult_other": "{{count}} 件のスナップショットを圧縮しました ({{before}} → {{after}})",
+    "compressFailed_one": "{{count}} 件のスナップショットは圧縮できず、変更されずに残りました。",
+    "compressFailed_other": "{{count}} 件のスナップショットは圧縮できず、変更されずに残りました。",
+    "compressSkipped": "{{providers}} をスキップしました: ソースフォルダーが存在しないか読み取れないため、そこにあるものは削除されたとは扱いません。",
+    "pruneTitle": "古いスナップショットを削除",
+    "pruneDesc": "終了済みセッション全体のスナップショットを古いものから順に削除します。削除されたスナップショットが会話の唯一の残りのコピーである場合があるため、先にプレビューしてください。",
+    "olderThan": "次より古い",
+    "keepUnder": "合計をこの値未満に保つ",
+    "includeOrphans": "データベースにもはや存在しないセッションのスナップショットも削除する",
+    "preview": "プレビュー",
+    "previewFirst": "先にこれらの設定をプレビューしてください",
+    "prune": "削除",
+    "confirmPrune": "削除を確定",
+    "previewNone": "該当なし。削除されるスナップショットはありません。",
+    "previewResult_one": "{{count}} セッション ({{files}} ファイル、{{size}}) が削除され、{{remaining}} が残ります。",
+    "previewResult_other": "{{count}} セッション ({{files}} ファイル、{{size}}) が削除され、{{remaining}} が残ります。",
+    "overCap": "サイズの上限を {{size}} 超過しています。アクティブなセッションと直近24時間以内にアクティブだったセッションは削除されません。",
+    "pruneWarning": "これらのスナップショットは完全に削除されます。元データがすでに削除されたセッションは会話が失われます。",
+    "pruneResult_one": "{{count}} セッションのスナップショットを削除しました ({{size}})",
+    "pruneResult_other": "{{count}} セッションのスナップショットを削除しました ({{size}})"
   },
   "danger": {
     "title": "危険な操作",
@@ -257,20 +374,21 @@
   "about": {
     "title": "情報",
     "description": "サーバーのランタイム情報。",
+    "release": "リリース",
+    "uiBuild": "UIビルド v{{version}} (一致させるにはクライアントを再ビルドしてください)",
     "uptime": "稼働時間",
     "nodejs": "Node.js",
     "platform": "プラットフォーム",
     "wsClients": "WSクライアント",
-    "loadingInfo": "サーバー情報を読み込んでいます...",
-    "release": "リリース",
-    "uiBuild": "UIビルド v{{version}} (一致させるにはクライアントを再ビルドしてください)"
+    "loadingInfo": "サーバー情報を読み込んでいます..."
   },
   "tables": {
     "sessions": "セッション",
     "agents": "エージェント",
     "events": "イベント",
     "sessionsWithCost": "コスト付きセッション",
-    "pricingRules": "価格ルール"
+    "pricingRules": "価格ルール",
+    "cursorPricingRules": "Cursorの価格ルール"
   },
   "messages": {
     "failedLoad": "読み込みに失敗しました",
@@ -461,30 +579,6 @@
         "ヒント: webhook.site のような無料のインスペクターを使用して、正確なペイロードを確認してください。"
       ]
     }
-  },
-  "codexHome": {
-    "title": "Codexホーム",
-    "description": "Codexのロールアウトセッションとフックのルートディレクトリ。新しい場所を保存すると、ライブモニタリングが再有効化され、すぐにそのセッションがスキャンされます。",
-    "save": "保存",
-    "saving": "保存中...",
-    "current": "現在:",
-    "placeholder": "/path/to/codex-home",
-    "saveFailed": "Codexホームの更新に失敗しました"
-  },
-  "homes": {
-    "title": "セッションデータの場所",
-    "description": "ダッシュボードが読み取るローカルのClaude CodeとCodexのディレクトリを設定します。保存された各場所は、アプリを再起動することなく適用されます。"
-  },
-  "display": {
-    "title": "ダッシュボードデータ",
-    "description": "アプリ全体に表示される製品のセッション、トークン、コスト、アクティビティを選択します。変更はすぐに適用され、マシンのデータソースフィルターとは独立して維持されます。",
-    "claude": "Claude Code",
-    "codex": "Codex",
-    "both": "両方",
-    "claudeDescription": "Claude Codeのデータのみを表示します。",
-    "codexDescription": "Codexのデータのみを表示します。",
-    "bothDescription": "Claude CodeとCodexのデータを統合します。",
-    "beta": "BETA"
   },
   "remoteSources": {
     "title": "リモートデータソース",

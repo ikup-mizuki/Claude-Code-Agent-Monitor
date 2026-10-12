@@ -1,6 +1,6 @@
 /**
  * @file Sets up the Express server, API routes, WebSocket, production client,
- * and non-blocking Claude/Codex transcript synchronizers and maintenance jobs.
+ * and non-blocking Claude/Cursor/Codex synchronizers and maintenance jobs.
  * @author Son Nguyen <hoangson091104@gmail.com>
  */
 
@@ -313,6 +313,86 @@ function autoImportLegacySessions() {
 }
 
 /**
+ * One-time repair of token totals that predate complete transcript accounting:
+ * per-record inflation from issue #293 and omitted same-model subagents from
+ * issue #345.
+ *
+ * Why this cannot be left to live fixes alone: `replaceTokenUsage` is a
+ * monotonic high-water mark, so when a corrected parser produces a LOWER total,
+ * the difference is folded into `baseline_*` and the effective number never
+ * drops. A completed session missing subagent usage may also never emit another
+ * hook. Re-reading every stored transcript heals both cases.
+ *
+ * Guards, in order:
+ *   - a `.token-repair-v2.done` marker next to the database, written only after
+ *     a completed pass, so a crash mid-repair retries instead of being skipped;
+ *   - `DASHBOARD_TOKEN_REPAIR=0` opts out entirely;
+ *   - skipped (without writing the marker) while another dashboard shares this
+ *     data directory, since two concurrent repairs would race each other;
+ *   - deferred off the boot path so a large corpus never delays the UI.
+ *
+ * The sweep clears and rewrites non-workflow `token_usage` rows, so it first
+ * copies the table to `token_usage_pre_repair_v2` — one snapshot, kept so the
+ * pre-repair numbers stay recoverable with plain SQL. It is safe to drop.
+ *
+ * A hook that lands mid-repair can lose one write (the sweep parses outside its
+ * transaction), but that self-heals: with baselines zeroed, the very next event
+ * for that session re-parses the whole transcript and `replaceTokenUsage`
+ * writes the true total.
+ */
+function repairInflatedTokenTotals() {
+  try {
+    const fs = require("fs");
+    if (process.env.DASHBOARD_TOKEN_REPAIR === "0") return;
+
+    const dbModule = require("./db");
+    const markerPath = path.join(path.dirname(dbModule.DB_PATH), ".token-repair-v2.done");
+    if (fs.existsSync(markerPath)) return;
+
+    // Another dashboard on the same database would race this sweep. Skip
+    // WITHOUT the marker so the instance that ends up alone still repairs.
+    let peers = [];
+    try {
+      peers = peersSharingDataDir() || [];
+    } catch {
+      /* discovery is best-effort; treat an unreadable peer list as "alone" */
+    }
+    if (peers.length > 0) {
+      console.log("Token repair deferred: another dashboard shares this database.");
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      (async () => {
+        try {
+          dbModule.db.exec(
+            "CREATE TABLE IF NOT EXISTS token_usage_pre_repair_v2 AS SELECT * FROM token_usage"
+          );
+          const { reconcileTokens } = require("../scripts/import-history");
+          const result = await reconcileTokens(dbModule, { all: true, resetBaselines: true });
+          if (result.sessionsTouched > 0) {
+            console.log(
+              `Repaired token totals for ${result.sessionsTouched} session(s) ` +
+                `(issues #293 and #345). Pre-repair values kept in token_usage_pre_repair_v2.`
+            );
+          }
+          try {
+            fs.writeFileSync(markerPath, `${new Date().toISOString()}\n`);
+          } catch {
+            /* non-fatal — the (idempotent) repair simply re-runs next start */
+          }
+        } catch (err) {
+          console.warn("token total repair failed:", err.message);
+        }
+      })();
+    }, 8_000);
+    if (timer.unref) timer.unref();
+  } catch (err) {
+    console.warn("token total repair could not start:", err.message);
+  }
+}
+
+/**
  * Start the background services the dashboard relies on once the HTTP server
  * is listening: a one-time legacy-session import, the upstream update
  * scheduler, the Claude Code config watcher, and a one-time reconciliation of
@@ -326,6 +406,11 @@ function autoImportLegacySessions() {
 function startBackgroundServices() {
   // One-time legacy-session backfill (a no-op once its marker file exists).
   autoImportLegacySessions();
+
+  // One-time repair of historical token totals affected by the old parser or
+  // omitted same-model subagents (issues #293 and #345). Marker-gated and
+  // deferred; see the function for why live fixes cannot heal every old row.
+  repairInflatedTokenTotals();
 
   // Boot liveness reap. When the user quit Claude Code while the dashboard
   // was DOWN, the SessionEnd hook was lost and only the process probe can
@@ -416,6 +501,24 @@ function startBackgroundServices() {
   } catch (err) {
     console.warn("session sync failed to start:", err.message);
   }
+  // Transcript snapshot retention (issue #358): compresses snapshots whose
+  // original was pruned by Claude Code/Cursor and applies the opt-in
+  // DASHBOARD_SNAPSHOT_MAX_AGE_DAYS / _MAX_BYTES caps. First pass ~2 min after
+  // boot, then every 6 h; unref'd, single-flight, never fatal.
+  try {
+    const { startSnapshotMaintenance } = require("./lib/snapshot-retention");
+    startSnapshotMaintenance(require("./db").db);
+  } catch (err) {
+    console.warn("snapshot maintenance failed to start:", err.message);
+  }
+  // Cursor emits Claude-compatible live hooks, but its durable session history
+  // lives under ~/.cursor. A dedicated importer fills metadata that those hooks
+  // omit and snapshots transcripts before Cursor's own cleanup removes them.
+  try {
+    startCursorSessionSync(broadcast);
+  } catch (err) {
+    console.warn("Cursor session sync failed to start:", err.message);
+  }
   // Codex rollouts are append-only JSONL files under ~/.codex/sessions. Hooks
   // nudge this path immediately; this watcher + short poll closes the gap when
   // a hook is unavailable, untrusted, or fired while the dashboard was down.
@@ -455,6 +558,136 @@ function startBackgroundServices() {
   } catch (err) {
     console.warn("dashboard-runs reconciliation failed:", err.message);
   }
+}
+
+/**
+ * Keep Cursor's native chat and transcript trees in sync. Cursor writes chat
+ * metadata at CLI startup and prompt history on submit, before its transcript
+ * exists; filesystem watchers make those changes visible immediately. A short
+ * poll remains a safety net for missed/coalesced filesystem notifications.
+ */
+function startCursorSessionSync(broadcast, options = {}) {
+  const POLL_MS = process.env.DASHBOARD_CURSOR_SYNC_MS
+    ? Number(process.env.DASHBOARD_CURSOR_SYNC_MS)
+    : 5_000;
+  const fs = require("fs");
+  const path = require("path");
+  const dbModule = options.dbModule || require("./db");
+  const { getCursorChatsDir, getCursorHome, getCursorProjectsDir } = require("./lib/cursor-home");
+  const { syncCursorSessions } = require("./lib/cursor-ingest");
+  let running = false;
+  let queued = false;
+  let closed = false;
+  let debounce = null;
+  let pollTimer = null;
+  let bootTimer = null;
+  const watchers = new Map();
+
+  const tick = () => {
+    if (closed) return Promise.resolve();
+    if (running) {
+      queued = true;
+      return Promise.resolve();
+    }
+    running = true;
+    return syncCursorSessions(dbModule, {
+      onSession(result) {
+        if (!result.session) return;
+        broadcast(result.created ? "session_created" : "session_updated", result.session);
+        for (const agent of dbModule.stmts.listAgentsBySession.all(result.session.id)) {
+          broadcast(result.created ? "agent_created" : "agent_updated", agent);
+        }
+        for (const event of result.events || []) broadcast("new_event", event);
+      },
+    })
+      .catch((err) => console.warn("Cursor session sync tick failed:", err?.message || err))
+      .finally(() => {
+        running = false;
+        if (queued && !closed) {
+          queued = false;
+          tick();
+        }
+      });
+  };
+
+  function scheduleTick() {
+    if (closed || debounce) return;
+    debounce = setTimeout(() => {
+      debounce = null;
+      refreshWatchers();
+      tick();
+    }, 100);
+    if (debounce.unref) debounce.unref();
+  }
+
+  function addWatcher(dir, recursive = false) {
+    if (watchers.has(dir) || !fs.existsSync(dir)) return;
+    try {
+      const watcher = fs.watch(dir, { recursive }, scheduleTick);
+      watcher.on("error", () => {
+        watcher.close();
+        watchers.delete(dir);
+      });
+      if (watcher.unref) watcher.unref();
+      watchers.set(dir, watcher);
+    } catch {
+      // Cursor may rotate a directory between discovery and watch setup. The
+      // home watcher or periodic poll will retry without affecting the server.
+    }
+  }
+
+  function walkDirectories(root, depth) {
+    if (depth < 0 || !fs.existsSync(root)) return;
+    addWatcher(root);
+    if (depth === 0) return;
+    let entries = [];
+    try {
+      entries = fs.readdirSync(root, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const entry of entries) {
+      if (entry.isDirectory()) walkDirectories(path.join(root, entry.name), depth - 1);
+    }
+  }
+
+  function refreshWatchers() {
+    if (closed) return;
+    const cursorHome = getCursorHome();
+    const chatsDir = getCursorChatsDir();
+    const projectsDir = getCursorProjectsDir();
+    addWatcher(cursorHome);
+    const recursiveOk = process.platform === "darwin" || process.platform === "win32";
+    if (recursiveOk) {
+      addWatcher(chatsDir, true);
+      addWatcher(projectsDir, true);
+    } else {
+      // Linux does not support recursive fs.watch. Chat depth covers
+      // workspace/session files; project depth covers transcript/subagents.
+      walkDirectories(chatsDir, 2);
+      walkDirectories(projectsDir, 4);
+    }
+  }
+
+  refreshWatchers();
+  bootTimer = setTimeout(tick, options.bootDelayMs ?? 100);
+  if (bootTimer.unref) bootTimer.unref();
+  if (Number.isFinite(POLL_MS) && POLL_MS > 0) {
+    pollTimer = setInterval(tick, POLL_MS);
+    if (pollTimer.unref) pollTimer.unref();
+  }
+
+  return {
+    tick,
+    close() {
+      closed = true;
+      if (bootTimer) clearTimeout(bootTimer);
+      if (pollTimer) clearInterval(pollTimer);
+      if (debounce) clearTimeout(debounce);
+      for (const watcher of watchers.values()) watcher.close();
+      watchers.clear();
+    },
+  };
 }
 
 /**
@@ -570,6 +803,77 @@ function startWorkflowPoll(broadcast) {
  * Fresh files are prioritized and the sweep reads Codex's native live-thread
  * index first, so a large historical rollout tree cannot delay a new card.
  */
+/**
+ * Should a change under the Codex home schedule a discovery sweep?
+ *
+ * Matches the session index and the Codex state database, but DELIBERATELY NOT
+ * its `-shm` sidecar: SQLite touches the wal-index on every WAL-mode reader
+ * open — including the sweep's own read-only open of that same database — so
+ * treating `-shm` as a trigger makes each sweep schedule the next one. That is
+ * a self-sustaining full-scan loop (directory walk + state-DB read + a
+ * synchronous `ps` probe) which runs forever with no Codex process and no user
+ * activity; it measured ~40% of all CPU profile samples (issue #295). Durable
+ * changes always land in the main database file or its `-wal`, both of which
+ * still match.
+ *
+ * A null/absent filename (some platforms and filesystems omit it) still
+ * triggers, so the watcher never goes blind — the debounce, not this filter,
+ * is the platform-independent frequency cap.
+ */
+function codexHomeChangeTriggersSweep(filename) {
+  const name = filename && path.basename(String(filename));
+  if (!name) return true;
+  return name === "session_index.jsonl" || /^state_\d+\.sqlite(?:-wal)?$/.test(name);
+}
+
+/**
+ * Bounded retry budget for the Codex discovery sweep.
+ *
+ * The sweep deliberately re-queues a rollout it could not ingest so a transient
+ * failure (SQLITE_BUSY, a half-written file) is retried on the next pass. That
+ * retry has no upper bound, so a PERMANENT failure — a constraint violation, a
+ * record the parser cannot represent — is retried for the life of the process:
+ * at the 4s `DASHBOARD_CODEX_SYNC_MS` default that is ~21,600 attempts per file
+ * per day, each writing a log line.
+ *
+ * This keeps the transient behaviour and bounds the permanent one: a file gets
+ * `maxAttempts` consecutive FAILED attempts at the SAME fingerprint — the first
+ * attempt counts toward the limit — after which it is left alone. Any new byte changes the fingerprint and restores the full budget,
+ * so a rollout that was merely half-written recovers on its own.
+ *
+ * The fingerprint is the source file's size and mtime, so it only detects
+ * recovery that shows up in the FILE. A failure whose cause is outside the
+ * rollout — repaired database state, say — is not noticed until the file next
+ * grows or the process restarts, which clears the budget with the rest of the
+ * sweep's in-memory state.
+ *
+ * Pure and side-effect free — the caller owns logging.
+ *
+ * @param {number} [maxAttempts] Attempts per fingerprint; defaults to 5.
+ */
+function createIngestRetryBudget(maxAttempts) {
+  const limit = Number.isInteger(maxAttempts) && maxAttempts > 0 ? maxAttempts : 5;
+  const streaks = new Map();
+  return {
+    limit,
+    /** True once this key has spent its budget at this fingerprint. */
+    exhausted(key, fingerprint) {
+      const streak = streaks.get(key);
+      return !!streak && streak.fingerprint === fingerprint && streak.count >= limit;
+    },
+    /** Records one failure; `final` marks the attempt that spends the budget. */
+    fail(key, fingerprint) {
+      const streak = streaks.get(key);
+      const count = streak && streak.fingerprint === fingerprint ? streak.count + 1 : 1;
+      streaks.set(key, { fingerprint, count });
+      return { count, final: count === limit };
+    },
+    succeed(key) {
+      streaks.delete(key);
+    },
+  };
+}
+
 function startCodexSessionSync(broadcast) {
   const fs = require("fs");
   const { getCodexHome, getCodexSessionsDir, onCodexHomeChanged } = require("./lib/codex-home");
@@ -583,6 +887,17 @@ function startCodexSessionSync(broadcast) {
   } = require("./lib/codex-ingest");
   const liveness = require("./lib/session-liveness");
   const fingerprints = new Map();
+  // The response-item tool-call backfill (ingestCodexToolEvents) keeps its own
+  // byte cursor, so semantically it is safe to call every sweep — but its
+  // "no-op" early exit still costs a statSync plus two DB lookups per file.
+  // Across thousands of historical rollouts every 4s that is a constant CPU
+  // tax. Run it for every file once per process (backfill), then only for
+  // files whose fingerprint changed — plus any file whose last tool-event
+  // ingest threw, so a transient failure retries instead of being skipped
+  // until the file happens to grow.
+  let toolBackfillDone = false;
+  const toolIngestFailed = new Set();
+  const retryBudget = createIngestRetryBudget(Number(process.env.DASHBOARD_CODEX_MAX_ATTEMPTS));
   let running = false;
   let queued = false;
   let watcher = null;
@@ -595,6 +910,19 @@ function startCodexSessionSync(broadcast) {
     broadcast(result.created ? "session_created" : "session_updated", result.session);
     if (result.agent) broadcast(result.created ? "agent_created" : "agent_updated", result.agent);
     for (const event of result.events || []) broadcast("new_event", event);
+  }
+
+  function noteIngestFailure(key, fingerprint, label, message) {
+    const { final } = retryBudget.fail(key, fingerprint);
+    if (final) {
+      console.warn(
+        `[CODEX SYNC] ${label}: ${message} — no further attempts after ` +
+          `${retryBudget.limit} identical failures; retrying only when the file changes. ` +
+          `Raise DASHBOARD_CODEX_MAX_ATTEMPTS if this file needs longer to settle.`
+      );
+    } else {
+      console.warn(`[CODEX SYNC] ${label}:`, message);
+    }
   }
 
   async function runSweep() {
@@ -630,31 +958,82 @@ function startCodexSessionSync(broadcast) {
           continue;
         }
         const fingerprint = `${stat.size}:${stat.mtimeMs}`;
-        if (fingerprints.get(transcriptPath) !== fingerprint) {
+        const changed = fingerprints.get(transcriptPath) !== fingerprint;
+        const ingestKey = `ingest:${transcriptPath}`;
+        if (changed && !retryBudget.exhausted(ingestKey, fingerprint)) {
           try {
             // Only retain a successful fingerprint. A temporarily unreadable or
             // malformed rollout must retry on the next sweep rather than being
-            // silently skipped until another byte happens to arrive.
-            publish(ingestCodexTranscript(transcriptPath, { liveTranscripts }));
-            fingerprints.set(transcriptPath, fingerprint);
+            // silently skipped until another byte happens to arrive. Two
+            // failure shapes exist and BOTH must skip the fingerprint: a thrown
+            // error, and an I/O error the ingestor swallows and reports as
+            // `failed` (it returns `{changed:false}` for legitimate no-ops too,
+            // so the flag is the only way to tell them apart).
+            const ingestResult = ingestCodexTranscript(transcriptPath, { liveTranscripts });
+            publish(ingestResult);
+            if (ingestResult?.failed) {
+              noteIngestFailure(
+                ingestKey,
+                fingerprint,
+                `Failed to ingest ${path.basename(transcriptPath)}`,
+                "the ingestor reported a failure"
+              );
+            } else {
+              fingerprints.set(transcriptPath, fingerprint);
+              retryBudget.succeed(ingestKey);
+            }
           } catch (err) {
-            console.warn(
-              `[CODEX SYNC] Failed to ingest ${path.basename(transcriptPath)}:`,
+            noteIngestFailure(
+              ingestKey,
+              fingerprint,
+              `Failed to ingest ${path.basename(transcriptPath)}`,
               err.message
             );
           }
         }
-        try {
-          // This independent cursor backfills response-item tool calls from
-          // rollouts imported before Workflows understood Codex. It is a
-          // no-op after the first pass, and also catches records that arrive
-          // without one of Codex's lower-volume lifecycle event messages.
-          publish(ingestCodexToolEvents(transcriptPath));
-        } catch (err) {
-          console.warn(
-            `[CODEX SYNC] Failed to index tools for ${path.basename(transcriptPath)}:`,
-            err.message
-          );
+        const toolKey = `tools:${transcriptPath}`;
+        if (
+          (changed || !toolBackfillDone || toolIngestFailed.has(transcriptPath)) &&
+          !retryBudget.exhausted(toolKey, fingerprint)
+        ) {
+          try {
+            // This independent cursor backfills response-item tool calls from
+            // rollouts imported before Workflows understood Codex. It is a
+            // no-op after the first pass, and also catches records that arrive
+            // without one of Codex's lower-volume lifecycle event messages —
+            // hence the full pass once per process, then changed-files-only.
+            // A failure re-queues the file so it retries every sweep until it
+            // succeeds — the same retry property the main-ingest fingerprint
+            // above deliberately keeps. Two shapes of failure exist and BOTH
+            // must re-queue: a thrown error (e.g. transient SQLITE_BUSY), and
+            // an I/O error the ingestor swallows internally and reports as
+            // `failed` (it returns `{changed:false}` for legitimate no-ops
+            // too, so the flag is the only way to tell them apart — without it
+            // a transient read error would clear the marker and the file's
+            // tool calls would stay unindexed until it next grew).
+            const toolResult = ingestCodexToolEvents(transcriptPath);
+            publish(toolResult);
+            if (toolResult?.failed) {
+              toolIngestFailed.add(transcriptPath);
+              noteIngestFailure(
+                toolKey,
+                fingerprint,
+                `Failed to index tools for ${path.basename(transcriptPath)}`,
+                "the ingestor reported a failure"
+              );
+            } else {
+              toolIngestFailed.delete(transcriptPath);
+              retryBudget.succeed(toolKey);
+            }
+          } catch (err) {
+            toolIngestFailed.add(transcriptPath);
+            noteIngestFailure(
+              toolKey,
+              fingerprint,
+              `Failed to index tools for ${path.basename(transcriptPath)}`,
+              err.message
+            );
+          }
         }
         // Cold history can contain hundreds of large JSONL files. Yielding in
         // modest batches lets fs.watch/hook callbacks and WebSocket delivery
@@ -663,6 +1042,9 @@ function startCodexSessionSync(broadcast) {
           await new Promise((resolve) => setImmediate(resolve));
         }
       }
+      // Only after one complete pass over every discovered transcript has the
+      // backfill actually covered the full corpus.
+      toolBackfillDone = true;
       for (const result of reconcileCodexSessionLiveness()) publish(result);
     } catch {
       // Codex is optional; an unreadable/missing home must not affect startup.
@@ -689,10 +1071,14 @@ function startCodexSessionSync(broadcast) {
   let debounce;
   const schedule = () => {
     if (debounce) return;
+    // A live Codex process appends to its WAL near-continuously; each sweep is
+    // a full discovery pass (directory walk + state-DB read + `ps` probe), so
+    // coalesce watcher bursts to at most ~1 sweep/second rather than one per
+    // 150ms. Sub-second card latency isn't worth a background full scan loop.
     debounce = setTimeout(() => {
       debounce = null;
       void runSweep();
-    }, 150);
+    }, 1_000);
     if (debounce.unref) debounce.unref();
   };
   function watchSessionsDir() {
@@ -743,14 +1129,7 @@ function startCodexSessionSync(broadcast) {
     if (homeWatcher || !fs.existsSync(codexHome)) return;
     try {
       const nextWatcher = fs.watch(codexHome, { recursive: false }, (_event, filename) => {
-        const name = filename && path.basename(String(filename));
-        if (
-          !name ||
-          name === "session_index.jsonl" ||
-          /^state_\d+\.sqlite(?:-(wal|shm))?$/.test(name)
-        ) {
-          schedule();
-        }
+        if (codexHomeChangeTriggersSweep(filename)) schedule();
       });
       homeWatcher = nextWatcher;
       nextWatcher.on("error", () => {
@@ -775,6 +1154,8 @@ function startCodexSessionSync(broadcast) {
   // response has been sent so a large history never delays the UI action.
   onCodexHomeChanged(() => {
     fingerprints.clear();
+    toolBackfillDone = false; // new home → new corpus needs one full backfill pass
+    toolIngestFailed.clear();
     watchSessionsDir();
     watchCodexHome();
     setImmediate(() => void runSweep());
@@ -1258,4 +1639,12 @@ if (require.main === module) {
   // just this standalone path. See autoImportLegacySessions().
 }
 
-module.exports = { createApp, startServer, startBackgroundServices };
+module.exports = {
+  createApp,
+  startServer,
+  startBackgroundServices,
+  startCursorSessionSync,
+  codexHomeChangeTriggersSweep,
+  createIngestRetryBudget,
+  repairInflatedTokenTotals,
+};

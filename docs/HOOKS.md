@@ -23,7 +23,7 @@ Comprehensive guide to integrating with Claude Code's hook system for real-time 
 
 Claude Code provides a hook system that allows external tools to receive real-time events during agent execution. Agent Dashboard uses these hooks to capture session lifecycle, tool executions, and notifications.
 
-> **Cursor (informational):** Live hooks fire from Claude Code. **Cursor** sessions that only exist as JSONL under `~/.claude` (Cursor uses the same paths locally) are still counted — they appear via startup import, continuous project sync, or remote SSH sync, not via hooks.
+> **Cursor:** Cursor does not need to reach a tool hook before appearing. A filesystem watcher imports `~/.cursor/chats/*/<session>/meta.json` at `agent` startup and its `prompt_history.json` on submit; compatible hook envelopes and the later native transcript add tool/assistant detail. Startup and periodic scans still backfill sessions created while the dashboard was offline.
 
 ```mermaid
 graph TB
@@ -113,6 +113,11 @@ sequenceDiagram
 > The `/api/hooks` ingestion path is **exempt** from the optional `DASHBOARD_TOKEN`
 > gate — it is a local-only write — so hooks keep working without a token even when
 > one is configured for the rest of the API (GHSA-gr74-4xfh-6jw9).
+>
+> The one route in that namespace this does **not** describe is
+> [`POST /api/hooks/ingest-batch`](#remote-push-ingestion-postapihooksingest-batch),
+> which is meant to be reachable from the public internet and carries its own
+> mandatory token instead of being exempt.
 
 ### Hook System Characteristics
 
@@ -185,6 +190,54 @@ The supplied Nginx edge returns `404` for `/api/hooks/*` by default. Remote hook
 ingestion is enabled explicitly by mounting
 `deployments/nginx/snippets/hooks-proxy.conf` and terminating TLS before Nginx.
 Use a hook token separate from the browser/dashboard token.
+
+### Remote push ingestion (`POST /api/hooks/ingest-batch`)
+
+Hook forwarding above still requires the dashboard to be *reachable* from the
+machine running Claude Code or Codex. Remote push covers the opposite case: a
+roaming laptop behind NAT or a CGNAT'd home connection that the dashboard can
+never reach to pull from, and which therefore pushes its own session data.
+
+This is the only route in the server intended to be reachable from the public
+internet, and it is **disabled until you configure it**:
+
+```bash
+REMOTE_PUSH_TOKEN=change-me-to-a-long-random-string
+# or
+REMOTE_PUSH_TOKEN_FILE=/run/ccam-secrets/remote-push-token
+```
+
+Unset, every request answers `503 REMOTE_PUSH_NOT_CONFIGURED`. The token is
+deliberately **separate** from `DASHBOARD_HOOK_TOKEN`: hardening the loopback
+hook routes must not open an internet-writable endpoint as a side effect. Send it
+as `Authorization: Bearer <token>` or `X-Dashboard-Token: <token>` — `?token=` is
+rejected, because a query-string credential on a public route ends up in access
+and proxy logs.
+
+One batch carries token buckets (each entry the bucket's **full current total**,
+like a transcript re-parse, not a delta), tool events, and turn durations,
+persisted as `RemoteToolEvent` and `RemoteTurn` events. Items dedup on
+`(session_id, event_type, uuid)` against committed rows and within the batch, so
+a resend is safe; the batch is capped at 1000 items (`413 BATCH_TOO_LARGE`); and
+a `session_id` already owned by a local or SSH-pulled session is refused per item
+(`SESSION_LOCALLY_OWNED`) so a push can never hijack it. Like every other hook
+path, partial failures stay non-fatal — the response is `200` with per-item
+`errors[]`.
+
+Collectors may optionally supply `repo_remote_url`: inside `data` for
+`POST /api/hooks/event`, or at the top level for `POST /api/hooks/ingest-batch`.
+The server does not run Git to discover this field. The first non-empty sanitized
+remote wins, including when a later event supplies it for an existing session.
+URL/SCP userinfo, query strings, and fragments are removed; malformed URL-style
+values are discarded before persistence. Local hook envelopes stored in
+`events.data` use the sanitized value as well. For example,
+`git@example.internal:team/project.git` is retained as
+`example.internal:team/project.git`. Consumers can use this optional identity
+hint to match repositories across different working-directory paths.
+
+See [API.md → Remote Push Ingestion](API.md#remote-push-ingestion) for the full
+payload shape and [`server/README.md`](../server/README.md) for the route's
+implementation notes.
 > Run `npm run install-hooks` on the host — never inside a container. When run
 > inside Docker/Podman, the installer **refuses** and exits non-zero (issue
 > #193): a container-internal path written into a bind-mounted `~/.claude` would
@@ -193,9 +246,21 @@ Use a hook token separate from the browser/dashboard token.
 > (Escape hatch for running Claude Code *inside* the same container:
 > `CCAM_ALLOW_CONTAINER_HOOKS=1 npm run install-hooks`.)
 
-For Codex, the installer writes only this dashboard's lifecycle entries to `~/.codex/hooks.json`. Each entry runs `scripts/codex-hook-handler.js`, which immediately POSTs the rollout path — or a version-dependent session/thread id that the server resolves against the rollout tree — to `POST /api/hooks/codex` and exits. The server acknowledges `202` before parsing, then incrementally consumes `~/.codex/sessions/**/rollout-*.jsonl`; duplicate hook and watcher notifications are idempotent through a durable byte cursor. Before Codex creates either a hook identity or a native live-thread row, a one-second process probe exposes an in-memory Waiting card to the live Dashboard and Kanban reads. It never writes a session, agent, event, token, workflow, alert, or history row, and disappears when the process exits or durable Codex data takes its place. If Codex defers a new hook for trust approval after assigning an id, the synchronizer reads the very recent native `state_*.sqlite` live-thread row and creates the durable startup card before the rollout is flushed. Newest rollouts are scanned first, a bad historical file remains eligible for retry without blocking the rest, and long cold scans yield between small batches so fresh sessions reach the dashboard promptly. Supported lifecycle notifications are `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Stop`, and `SessionEnd`. `PreToolUse` intentionally ingests the just-completed model turn before a long-running tool delays its matching `PostToolUse` notification.
+For Codex, the installer writes only this dashboard's lifecycle entries to `~/.codex/hooks.json`. Each entry runs `scripts/codex-hook-handler.js`, which immediately POSTs the rollout path — or the session/thread id every Codex hook carries — to `POST /api/hooks/codex` and exits. A rollout is **not** required: the thread id alone identifies the session, and only a payload carrying neither is answered as an unqueued no-op. The server acknowledges `202` before parsing, then incrementally consumes `~/.codex/sessions/**/rollout-*.jsonl`; duplicate hook and watcher notifications are idempotent through a durable byte cursor. Reads advance through complete JSONL records in newline-aligned 64 MiB windows, so a rollout may exceed V8's single-string limit without forcing the whole unread range into memory. Before Codex creates either a hook identity or a native live-thread row, a one-second process probe exposes an in-memory Waiting card to the live Dashboard and Kanban reads. It never writes a session, agent, event, token, workflow, alert, or history row, and disappears when the process exits or durable Codex data takes its place. If Codex defers a new hook for trust approval after assigning an id, the synchronizer reads the very recent native `state_*.sqlite` live-thread row and creates the durable startup card before the rollout is flushed. Newest rollouts are scanned first, a bad historical file remains eligible for retry without blocking the rest, and long cold scans yield between small batches so fresh sessions reach the dashboard promptly. Supported lifecycle notifications are `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Stop`, and `SessionEnd`. `PreToolUse` intentionally ingests the just-completed model turn before a long-running tool delays its matching `PostToolUse` notification.
 
 Codex's append-only rollout is authoritative for live state: `user_message` and `task_started` clear the waiting overlay and set the main agent to `working`; `task_complete` keeps the session `active` but makes its cards **Waiting** with `awaiting_reason = stop`; and `turn_aborted` makes them **Waiting** with `awaiting_reason = interrupted`. Only `SessionEnd` is terminal. A new rollout turn reactivates a session prematurely completed by a missed or mistimed lifecycle notification. After a restart or partial write, the synchronizer reconciles the latest stored Codex lifecycle event and conservatively changes a silent `working` turn to interrupted Waiting after 90 seconds; the next rollout event self-heals it. On supported local hosts, the synchronizer and watchdog enumerate the exact `rollout-*.jsonl` files held open by live Codex processes. Historical files are created or reconciled as completed even when their `cwd` matches a live session; if the probe is unavailable, the existing fail-safe cwd behavior remains in force. The transient pre-identity overlay collapses the Node launcher/native-child PID pair before reconciliation, so a single interactive Codex launch cannot produce duplicate cards.
+
+### Hook-only Codex sessions (`codex exec --ephemeral`)
+
+`codex exec --ephemeral` runs "without persisting session files to disk", so no `rollout-*.jsonl` is ever written and every one of its hooks arrives with `transcript_path: null`. Such a session is driven entirely by its lifecycle notifications:
+
+- **Lifecycle.** `SessionStart` creates the card, `UserPromptSubmit` / `PreToolUse` / `PostToolUse` set the main agent `working`, `Stop` lands it in **Waiting** with `awaiting_reason = stop`, and `SessionEnd` completes the session and stamps `ended_at` — the same states a rollout-backed session moves through.
+- **History.** While the session has no rollout, the payloads themselves are persisted as ordinary events, each tagged `data.source = "hook"`: the prompt as `codex_user_message`, each call as `codex_tool_call`, a shell/MCP/web-search result as its matching `codex_*_end` record, the final assistant message as `codex_task_complete`, and the close as `SessionEnd`. The first prompt titles the session and fills the card's task exactly as a rollout `user_message` would.
+- **Precedence.** The rollout is always authoritative. If one is later linked to the session — an interactive run whose rollout was simply flushed late — the whole hook-built reconstruction is deleted before the byte cursor replays those turns, so nothing is counted twice.
+- **Marking.** The session carries `hook_only: true` in `sessions.metadata` (cleared with the reconstruction above). Session detail uses it to explain that no full transcript exists, instead of the generic "transcript not found" warning.
+- **Lost `SessionEnd`.** Hooks are fire-and-forget, so a dashboard that was down at exit never hears the terminal notification, and a hook-only session has neither a transcript mtime nor an open rollout for the liveness probes to judge — which is also why Windows, where both probes report unavailable, has no other fallback. The synchronizer therefore completes a `hook_only` session whose `awaiting_reason` is still `stop` after `DASHBOARD_CODEX_HOOK_IDLE_SECONDS` (default `60`): a real `Stop` hook arrived, and `SessionEnd` follows `Stop` within a few hundred milliseconds (82 ms / 70 ms / 265 ms across captured codex-cli 0.147.0 runs), so an unanswered `Stop` is positive evidence the notification was lost. A session that is somehow still running self-heals on its next hook through the usual reactivation path.
+
+  Silence is deliberately **not** a trigger. A rollout-less run emits no hooks whatsoever for the entire duration of a tool call — a captured `sleep 12` produced a 12,119 ms `PreToolUse`→`PostToolUse` gap, and a CI build or test suite is unbounded — so an idle-time rule would complete a live run mid-build. For the same reason `awaiting_reason = interrupted` is not eligible either: that reason is the 90-second idle-working heuristic's own inference rather than something Codex reported, and a guess must not be promoted to a terminal state.
 
 Claude `TurnDuration` records use a stable transcript identity (the record UUID when present, otherwise its byte offset). Complete transcript parses atomically reconcile the persisted duration set and exact metadata totals, repairing legacy duplicates; capped tail parses remain append-only so older persisted turns are never deleted. This also keeps timestamp-less, equal-duration turns distinct and replay-safe.
 
@@ -430,7 +495,7 @@ Triggered when a sub-agent (explore, task, etc.) completes.
 - Match the finishing subagent by description, type, or task and mark it `completed`
 - **Deliberately does NOT clear `awaiting_input_since`** (nor `awaiting_reason`) — a backgrounded subagent finishing tells us nothing about whether the human has responded
 - **Triggers a fire-and-forget JSONL scan** (`scanAndImportSubagents` from `scripts/import-history.js`) after `res.json()` returns. The scan walks the session's `subagents/agent-*.jsonl` files, pairs each assistant `tool_use` block with the next matching user `tool_result` block by `tool_use_id`, and emits per-tool `PreToolUse` + `PostToolUse` events under the subagent's own `agent_id`. Idempotent (`data LIKE '%"tool_use_id":"X"%'` dedup) and merges into a hook-created live row when one matches by `subagent_type + started_at` within 30 s — closes the gap where subagent-internal tool calls would otherwise be invisible to the dashboard
-- **Attributes per-subagent tokens to each subagent's OWN model** (issue #185). Each subagent transcript carries its own `msg.usage` under its own `msg.model`; the scan writes those token buckets to `token_usage` keyed by the real model (e.g. a Haiku QA agent under an Opus orchestrator) so cost is no longer priced at the orchestrator's rate. The subagent's resolved model is also stamped onto its agent row (`metadata.model`). Buckets whose model equals the parent session's model are deliberately **skipped** here — that bucket is owned by the main-transcript writer, and double-writing it would trip `replaceTokenUsage`'s compaction baseline-shift; same-model subagents are reconciled by the authoritative `importSession` / `reconcileTokens` path instead
+- **Attributes per-subagent tokens to each subagent's OWN model** (issue #185). Each subagent transcript carries its own `msg.usage` under its own `msg.model`; the scan stamps the resolved model and token buckets onto that agent's metadata for its individual cost. For session cost, every hook event reads the main transcript plus all flat `subagents/*.jsonl` files and writes their combined model buckets (issue #345), so the asynchronous scan skips every model that live combined writer already owns. The lookup is non-recursive, so nested Workflow-tool agents keep their separately tracked workflow cost. `importSession` / `reconcileTokens` uses the same combination rule for historical sessions
 - **Rebuilds the nested-subagent hierarchy** (`reconcileSubagentParents`). Subagent rows are inserted flat under the main agent because no single hook event or JSONL file carries the spawner's identity. Each subagent transcript, however, records every child it spawned via the Task tool as `toolUseResult.agentId` (surfaced by `parseSubagentFile` as `spawnedChildren`). The scan inverts these into a child→parent map and repoints `parent_agent_id` (via `setAgentParent`) so a subagent that spawns its own subagents nests under its **true** spawner instead of collapsing to a single level under main; any subagent no other subagent claims stays under main. Idempotent and additive (only rewrites `parent_agent_id`, never inserts/deletes), it also corrects the live PreToolUse-`Agent` parent heuristic's guesses once transcripts land. `scanAndImportSubagents` returns `reparented` alongside `created`; the `SubagentStop` refetch nudge fires when either is non-zero so a pure re-parent still refreshes the tree
 - Imported tool events carry `imported: true, source: "subagent_jsonl"` in their JSON `data` payload so analytics can distinguish backfilled rows from live hook-captured ones if needed
 
@@ -591,6 +656,12 @@ graph TB
 ```
 
 ### Transcript-derived sync
+
+Cursor uses the same fail-safe hook transport where available, but its native lifecycle starts under `~/.cursor/chats`, not in the later JSONL. The watcher creates `provider = 'cursor'` rows from `meta.json` at CLI launch, changes the main agent from waiting to working when `prompt_history.json` gains a submitted turn, persists a deduplicated `cursor_user_message` for Timeline/last-active state, and broadcasts the same session/agent/event WebSocket frames as hooks. A hook payload whose `transcript_path` matches `~/.cursor/projects/*/agent-transcripts/<session>/<session>.jsonl` is still classified as Cursor. The enrichment pass joins the canonical transcript when it arrives, updates native title/cwd/turn metadata, imports sibling `subagents/*.jsonl`, and snapshots the files under the dashboard data directory.
+
+Cursor has no Stop-equivalent that the sync can rely on, so its turn lifecycle is derived from activity. A main agent that is `working` with no tool in flight and no awaiting-input flag moves to **Waiting** once neither its `~/.cursor` files nor a hook have advanced for `DASHBOARD_WORKING_IDLE_SECONDS` (default 120 s). After 10 minutes without activity the session completes. A prompt that is only discovered after that window, for example while the dashboard was down, updates history without reviving the agent. The first sync after boot and every 5 minutes after that also complete any live-status agents still attached to `completed`/`abandoned` Cursor sessions. These are rows older builds left showing **Working** indefinitely, which the stale sweep never examined because it only looks at `active` sessions.
+
+Startup and periodic `cursor-ingest` sweeps also discover sessions that existed before the dashboard or never emitted a hook. This is the backfill path for older placeholder cards: when `meta.json` carries no title, the sweep reads the chat name read-only from the Cursor IDE's `User/globalStorage/state.vscdb` (`DASHBOARD_CURSOR_STATE_DB` overrides the path) and falls back to the first prompt, then `Cursor session <id>`, if that store is missing, locked, or unrecognized. Before JSONL exists, Conversation reads synthesize stable user-message rows from prompt history; once the transcript arrives, matching ids replace those rows without duplicates. Reads then resolve the original path first and the durable snapshot second, so messages and tool calls survive Cursor cleanup. `DASHBOARD_CURSOR_HOME` overrides the root and `DASHBOARD_CURSOR_SYNC_MS=0` disables only the polling fallback—filesystem watching remains active.
 
 On every event that carries a `transcript_path`, the shared `TranscriptCache` re-reads the JSONL (incrementally) and the ingestor keeps three session fields in sync with what the user is actually doing in the CLI:
 

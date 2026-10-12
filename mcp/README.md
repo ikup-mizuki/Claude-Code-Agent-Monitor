@@ -1,6 +1,6 @@
 # CCAM MCP Server Reference
 
-The Claude Code Agent Monitor (CCAM) MCP server exposes the local dashboard's complete supported action surface as **97 typed tools**. The same canonical catalog is used by stdio, Streamable HTTP, legacy SSE, and the interactive REPL, so tool names, schemas, and policy guards cannot drift between transports.
+The Claude Code Agent Monitor (CCAM) MCP server exposes the local dashboard's complete supported action surface as **103 typed tools**. The same canonical catalog is used by stdio, Streamable HTTP, legacy SSE, and the interactive REPL, so tool names, schemas, and policy guards cannot drift between transports.
 
 ## Architecture
 
@@ -38,6 +38,10 @@ npm run mcp:start:repl
 | stdio | `ccam mcp stdio` | MCP JSON-RPC on stdin/stdout |
 | Streamable HTTP + SSE | `ccam mcp http` | `/mcp`, `/sse`, `/messages`, `/health` on port `8819` by default |
 | REPL | `ccam mcp repl` | Direct validated tool invocation with domain filtering |
+
+A stdio server self-terminates when its host process goes away — stdin reaching end/close, or the process being re-parented away from the parent it started under (polled every 5s). This prevents the orphaned, unreachable servers that a host crashing without `SIGTERM`/`SIGINT` would otherwise leave behind. Re-parenting is measured against the startup parent rather than pid 1, so a server launched under an init-like parent (a container running `tini` as PID 1) is not killed off as a false positive. See `docs/MCP.md` for the full lifecycle.
+
+An HTTP session is tracked under the `mcp-session-id` returned by `initialize` (or the `sessionId` handed to a legacy SSE client) and released on `DELETE /mcp`, on SSE disconnect, or by an idle sweep — terminating a session is optional in the protocol, so a client that crashes would otherwise pin its `McpServer` forever. `GET /health` reports the live count as `activeSessions`; tune with `MCP_HTTP_SESSION_TIMEOUT_MS`.
 
 ## Tool Catalog
 
@@ -77,11 +81,12 @@ Event filtering covers event types, tools, agents, sessions, text, time range, p
 ### Pricing and cost
 
 - `dashboard_get_pricing_rules`, `dashboard_upsert_pricing_rule`, `dashboard_delete_pricing_rule`
+- `dashboard_get_cursor_pricing_rules`, `dashboard_upsert_cursor_pricing_rule`, `dashboard_delete_cursor_pricing_rule`
 - `dashboard_get_gpt_pricing_rules`, `dashboard_upsert_gpt_pricing_rule`, `dashboard_delete_gpt_pricing_rule`
 - `dashboard_get_total_cost`, `dashboard_get_session_cost`
 - `dashboard_reset_pricing_defaults`
 
-Claude pricing includes standard, 1-hour cache-write, fast-mode, and introductory rates. GPT/Codex pricing includes short-context, long-context, and fast-mode rates.
+Claude pricing includes standard, 1-hour cache-write, fast-mode, and introductory rates. Cursor pricing uses its independent input/cache-write/cache-read/output rate card. GPT/Codex pricing includes short-context, long-context, and fast-mode rates.
 
 ### Workflows
 
@@ -165,6 +170,7 @@ Deleting a source retains imported data by default. Purging requires `confirmati
 
 - `dashboard_cleanup_data`, `dashboard_reimport_history`
 - `dashboard_reinstall_hooks`, `dashboard_clear_all_data`
+- `dashboard_get_snapshot_storage` (read), `dashboard_compress_snapshots` (mutation, lossless), `dashboard_prune_snapshots` (dry run by default; applying is destructive; `max_bytes` takes bytes or a size like `"5GB"`)
 
 ## Safety Model
 
@@ -172,7 +178,7 @@ Deleting a source retains imported data by default. Purging requires `confirmati
 | --- | --- | --- |
 | Read | enabled | all GET-like tools |
 | Mutation | disabled | writes, process control, imports, syncs, notifications, external tests |
-| Destructive | disabled | full data clearing |
+| Destructive | disabled | full data clearing, applying a transcript snapshot prune |
 
 Enable controlled writes with:
 
@@ -188,7 +194,7 @@ MCP_DASHBOARD_ALLOW_DESTRUCTIVE=true \
 ccam mcp stdio
 ```
 
-The call must also pass `confirmation_token = "CLEAR_ALL_DATA"`.
+The call must also pass `confirmation_token = "CLEAR_ALL_DATA"`. Applying a snapshot prune (`dashboard_prune_snapshots` with `dry_run: false`) needs the same two flags plus `confirmation_token = "PRUNE_SNAPSHOTS"`; its default dry run is read-only and reports exactly which sessions' snapshots would be removed. A pruned snapshot may be the only remaining copy of a conversation once Claude Code, Codex, or Cursor deleted the original.
 
 All dashboard fetches reject HTTP redirects. Binary transcript-image responses are streamed with a 10 MiB cap, including responses without a trustworthy `Content-Length`, so a local endpoint cannot make the MCP process buffer an unbounded payload.
 
@@ -203,12 +209,13 @@ All dashboard fetches reject HTTP redirects. Binary transcript-image responses a
 | `MCP_DASHBOARD_RETRY_COUNT` | `2` | Extra attempts for GET requests only |
 | `MCP_DASHBOARD_RETRY_BACKOFF_MS` | `250` | Exponential backoff base |
 | `MCP_DASHBOARD_ALLOW_MUTATIONS` | `false` | Enable write-capable tools |
-| `MCP_DASHBOARD_ALLOW_DESTRUCTIVE` | `false` | Enable full data clearing, with mutation gate and confirmation token |
+| `MCP_DASHBOARD_ALLOW_DESTRUCTIVE` | `false` | Enable full data clearing and applied snapshot prunes, with mutation gate and confirmation token |
 | `MCP_TRANSPORT` | `stdio` | `stdio`, `http`, or `repl` |
 | `MCP_HTTP_HOST` | `127.0.0.1` | HTTP transport bind host |
 | `MCP_HTTP_PORT` | `8819` | HTTP transport port |
 | `MCP_HTTP_AUTH_TOKEN` | unset | Bearer token required by `/mcp`, `/sse`, and `/messages`; `/health` remains probeable |
 | `MCP_HTTP_AUTH_TOKEN_FILE` | unset | File-backed MCP client token |
+| `MCP_HTTP_SESSION_TIMEOUT_MS` | `1800000` | Close an HTTP/SSE session after this long with no request; `0` disables reaping. Clamped to `[60000, 86400000]` |
 | `MCP_LOG_LEVEL` | `info` | `debug`, `info`, `warn`, or `error` |
 
 Direct loopback URLs (`127.0.0.1`, `localhost`, or `::1`) and the private Compose service `agent-monitor` may use a bearer token over HTTP. A tokenized container-host alias such as `host.docker.internal`, `gateway.docker.internal`, or `host.containers.internal` must use HTTPS. Startup fails instead of sending the token over an unsafe route.
@@ -239,7 +246,7 @@ npm run mcp:build
 npm run extensions:validate
 ```
 
-`test:mcp` asserts the 97-tool catalog, unique names, policy gates, destructive confirmations, and schema validation in direct REPL invocation.
+`test:mcp` asserts the 103-tool catalog, unique names, policy gates, destructive confirmations, and schema validation in direct REPL invocation.
 
 ## Troubleshooting
 
@@ -251,4 +258,6 @@ npm run extensions:validate
 - Mutation denied: set `MCP_DASHBOARD_ALLOW_MUTATIONS=true` for that MCP process.
 - Plugin MCP launch fails: run `npm run setup`, then verify `ccam mcp repl`.
 - HTTP clients cannot connect: verify `/health`, bind host, firewall, and the exact `/mcp` endpoint.
+- Streamable HTTP requests fail with `Bad Request: No valid session or initialization`: send the `mcp-session-id` header returned by `initialize` on every later request. A session ends when the client sends `DELETE /mcp` with that header, and `/health` reports the live count as `activeSessions`.
+- stdio server exited on its own: check stderr for `shutting down orphaned stdio server` and its `reason` (`stdin_end`, `stdin_close`, or `reparented`) — the host process ended or the server was re-parented.
 - Never write protocol logs to stdout in stdio mode. MCP logs use stderr.

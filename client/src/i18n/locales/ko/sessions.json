@@ -21,8 +21,8 @@
   "filterCompleted": "완료됨",
   "filterError": "오류",
   "filterAbandoned": "중단됨",
-  "sessionCount": "{{count}}개 세션 기록됨",
-  "sessionCount_plural": "{{count}}개 세션 기록됨",
+  "sessionCount_one": "{{count}}개 세션 기록됨",
+  "sessionCount_other": "{{count}}개 세션 기록됨",
   "noSessions": "세션을 찾을 수 없습니다",
   "noSessionsDesc": "검색어나 필터를 조정해 보세요.",
   "noSessionsHint": "hooks가 설치된 모니터링 Agent 세션을 시작하면 추적이 시작됩니다.",
@@ -80,6 +80,7 @@
     "conversation": "대화",
     "timeline": "타임라인 ({{shown}}/{{total}})",
     "transcriptNotFound": "이 Agent의 대화 기록을 찾을 수 없습니다. Transcript 파일이 없거나 아직 연결되지 않았을 수 있습니다.",
+    "hookOnlySession": "이 Codex 세션은 rollout을 디스크에 기록하지 않고 실행되어(예: `codex exec --ephemeral`) 생명주기 hook에서 기록을 재구성했습니다. 프롬프트, 도구 호출, 응답은 저장되었지만 열어 볼 전체 transcript는 없습니다.",
     "transcript": {
       "loadOlder": "↑ 이전 메시지 불러오기"
     }

@@ -258,10 +258,13 @@ vi.mock("../../lib/api", async (importOriginal) => {
       },
       pricing: {
         list: r({ pricing: [] }),
+        listCursor: r({ pricing: [] }),
         listGpt: r({ pricing: [] }),
         upsert: r({ pricing: {} }),
+        upsertCursor: r({ pricing: {} }),
         upsertGpt: r({ pricing: {} }),
         delete: r({ ok: true }),
+        deleteCursor: r({ ok: true }),
         deleteGpt: r({ ok: true }),
         totalCost: r(cost),
         sessionCost: r(cost),
@@ -279,7 +282,13 @@ vi.mock("../../lib/api", async (importOriginal) => {
         clearData: r({ ok: true, cleared: {} }),
         reimport: r({ ok: true, imported: 0, skipped: 0, errors: 0 }),
         reinstallHooks: r({ ok: true, hooks: { installed: true, hooks: {} } }),
-        resetPricing: r({ ok: true, provider: "both", pricing: [], gpt_pricing: [] }),
+        resetPricing: r({
+          ok: true,
+          provider: "both",
+          pricing: [],
+          cursor_pricing: [],
+          gpt_pricing: [],
+        }),
         exportData: () => "/api/settings/export",
         cleanup: r({
           ok: true,
@@ -597,6 +606,41 @@ describe("screen snapshots", () => {
   it("Settings", async () => {
     await snapshot(<Settings />, "/settings");
   });
+  it("scrolls to the section a deep link names", async () => {
+    // `/settings#<section>` is how the command palette reaches an individual
+    // section; React Router does not resolve a hash on its own.
+    const scrolled: string[] = [];
+    const original = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = function (this: Element) {
+      if (this.id) scrolled.push(this.id);
+    };
+    try {
+      render(
+        <MemoryRouter initialEntries={["/settings#alerts"]}>
+          <Settings />
+        </MemoryRouter>
+      );
+      await settle();
+      await act(async () => {
+        // The scroll is deferred a frame so the target has been laid out.
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+      });
+      expect(scrolled).toContain("alerts");
+    } finally {
+      Element.prototype.scrollIntoView = original;
+    }
+  });
+  it("ignores a malformed hash instead of throwing", async () => {
+    // `decodeURIComponent("%zz")` raises URIError. A link mangled in transit is
+    // not worth taking the Settings page down for.
+    render(
+      <MemoryRouter initialEntries={["/settings#%zz"]}>
+        <Settings />
+      </MemoryRouter>
+    );
+    await settle();
+    expect(document.getElementById("alerts")).not.toBeNull();
+  });
   it("aligns GPT pricing controls with Claude and keeps rate caveats in the tooltip", async () => {
     render(
       <MemoryRouter initialEntries={["/settings"]}>
@@ -617,6 +661,14 @@ describe("screen snapshots", () => {
     const gptAdd = gpt.getByRole("button", { name: "Add Model" });
     const subtitle = gpt.getByText(/Published OpenAI API rates.*USD per 1M tokens\./);
 
+    expect(gpt.getByRole("columnheader", { name: "Fast · Short ≤272K" })).toHaveAttribute(
+      "colspan",
+      "4"
+    );
+    expect(gpt.getByRole("columnheader", { name: "Fast · Long >272K" })).toHaveAttribute(
+      "colspan",
+      "4"
+    );
     expect(gptReset.className).toBe(claudeReset.className);
     expect(gptAdd.className).toBe(claudeAdd.className);
     expect(

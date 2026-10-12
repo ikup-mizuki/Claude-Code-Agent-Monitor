@@ -6,6 +6,8 @@ Comprehensive documentation for the Agent Dashboard project.
 
 ## Quick Links
 
+- [Complete English Guide](../README-EN.md) - Full product, configuration, API, lifecycle, desktop, and deployment reference
+- Full localized guides: [中文](../README-CN.md) · [Tiếng Việt](../README-VN.md) · [한국어](../README-KO.md) · [Español](../README-ES.md)
 - [Operator Handbook](https://github.com/hoangsonww/Claude-Code-Agent-Monitor/wiki) - Task-oriented usage, operations, automation, and troubleshooting
 - [Localized Product Wiki](https://hoangsonww.github.io/Claude-Code-Agent-Monitor/wiki/) - English, Vietnamese, Chinese, Korean, and Spanish product and architecture tour
 - [Architecture Overview](../ARCHITECTURE.md) - System design and technical reference
@@ -71,6 +73,13 @@ graph TB
 | [I18N.md](./I18N.md) | Language architecture, locale strategy, and rollout checklist | Frontend and product teams |
 | [CLI.md](./CLI.md) | `ccam` command reference — monitoring, browsing, insights, alerts, pricing, import, administration | Terminal users and CI scripting |
 | [monitoring/README.md](../monitoring/README.md) | Prometheus + Grafana stack (`npm run monitoring:up` or Docker) | DevOps / observability |
+| [cli/README.md](../cli/README.md) | `ccam` CLI internals — module layout, global options, offline mode, error model, adding a command | CLI contributors |
+| [bin/README.md](../bin/README.md) | The `ccam` executable shim and how `npm link` puts it on your PATH | CLI contributors |
+| [scripts/README.md](../scripts/README.md) | Dev, hook, data-management, codegen, and release scripts with their `npm run` entry points | All contributors |
+| [plugins/README.md](../plugins/README.md) | Agent-extension plugin sources, layout, and the sync/validate workflow | Plugin authors |
+| [wiki/README.md](../wiki/README.md) | Localized static wiki files, local preview, and i18n/cache-bump rules | Docs contributors |
+| [.github/workflows/README.md](../.github/workflows/README.md) | CI, file-header, triage, and CLA workflows and how to reproduce CI locally | Maintainers |
+| [.claude/README.md](../.claude/README.md) | Project Claude Code settings, path-scoped rules, review subagents, and skills | Coding-agent users |
 
 ---
 
@@ -278,6 +287,44 @@ sequenceDiagram
 - [WebSocket Protocol](./API.md#websocket-api)
 - [Client Integration](../client/README.md#websocket-integration)
 - [Server Broadcasting](../server/README.md#websocket-protocol)
+
+---
+
+### Command Palette
+
+`Cmd/Ctrl+K` is the dashboard's only navigation shortcut. One query resolves nine groups spanning every page, view, setting, and session.
+
+```mermaid
+graph TB
+    Key["Cmd/Ctrl+K"] --> Palette[CommandPalette]
+    Palette --> Static["buildPaletteCommands()<br/>pages, views, settings,<br/>config tabs, actions"]
+    Palette --> Live["GET /api/sessions?q=<br/>debounced 180ms"]
+    Palette --> Facets["GET /api/sessions/facets<br/>projects and machines"]
+    Palette --> Registry{"boundIds from<br/>PaletteActionProvider"}
+
+    Registry -->|handler mounted| Offer["Listed under 'This page'"]
+    Registry -->|not mounted| Hide["Not offered at all"]
+
+    Static --> Rank["fuzzyMatch ranking<br/>+ matched-character highlight"]
+    Live --> Rank
+    Facets --> Rank
+    Offer --> Rank
+    Rank --> Row[Rendered row]
+    Row -->|navigates| Route[Route change]
+    Row -->|changes state| Toast[ActionToast confirmation]
+
+    style Registry fill:#F59E0B
+    style Hide fill:#EF4444
+    style Toast fill:#10B981
+```
+
+A page command is offered **only** while its handler is mounted, so the palette can never list an action that does nothing — the failure that made its first three quick actions feel broken. Anything that changes state without moving the user confirms itself with a toast, because navigation is its own feedback and nothing else is.
+
+**Documentation:**
+- [Palette architecture](../ARCHITECTURE.md#command-palette)
+- [Palette action registry](../ARCHITECTURE.md#palette-action-registry)
+- [URL-addressable sub-views](../ARCHITECTURE.md#url-addressable-sub-views)
+- [Client components](../client/README.md#commandpalette)
 
 ---
 

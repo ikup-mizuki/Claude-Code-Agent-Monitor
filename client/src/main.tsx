@@ -92,6 +92,7 @@ if ("serviceWorker" in navigator) {
     .catch(() => {});
 }
 
+/** Mount point for the React app in `index.html`. */
 const root = document.getElementById("root");
 if (!root) throw new Error("Root element not found");
 

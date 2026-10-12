@@ -10,8 +10,8 @@
 # "Not possible to fast-forward". A real merge (no --ff-only) is required,
 # which occasionally needs a human to resolve a conflict.
 #
-# Why does this also strip .github/workflows/ on every run? This is a
-# private repo pushed via Git Credential Manager (OAuth) without the
+# Why does this also strip .github/workflows/ on every run? This repo is
+# pushed via Git Credential Manager (OAuth) without the
 # "workflow" scope. GitHub refuses any push that creates/updates
 # .github/workflows/*, and a plain merge re-adds that path whenever upstream
 # touches it (.gitignore alone doesn't stop a merge from bringing in changes
@@ -96,9 +96,19 @@ if ($LASTEXITCODE -ne 0) {
   exit 1
 }
 
-Step "running npm run setup (root + client + vscode-extension deps)..."
-npm run setup
-if ($LASTEXITCODE -ne 0) { Fail "npm run setup failed (see above)" }
+# Not `npm run setup`: since v2.3.0 it also installs mcp/, whose `file:..`
+# dependency needs a symlink/junction — impossible on the exFAT drive this repo
+# lives on (EISDIR). mcp/ is installed with --install-links (copy instead of
+# link; --no-save keeps mcp/package-lock.json untouched) instead.
+Step "syncing root + client + mcp dependencies..."
+npm install
+if ($LASTEXITCODE -ne 0) { Fail "npm install (root) failed (see above)" }
+npm --prefix client install
+if ($LASTEXITCODE -ne 0) { Fail "npm install (client) failed (see above)" }
+npm --prefix mcp install --install-links --no-save
+if ($LASTEXITCODE -ne 0) { Fail "npm install (mcp) failed (see above)" }
+npm run mcp:build
+if ($LASTEXITCODE -ne 0) { Fail "npm run mcp:build failed (see above)" }
 
 Step "building client..."
 npm run build
