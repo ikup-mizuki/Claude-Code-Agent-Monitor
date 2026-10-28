@@ -1,4 +1,4 @@
-> 本ページは本家 [hoangsonww/Claude-Code-Agent-Monitor](https://github.com/hoangsonww/Claude-Code-Agent-Monitor) v2.3.0 時点(2026-10-12)の詳細ドキュメント [README-EN.md](./README-EN.md) を和訳したものです。概要ページは [README.md](./README.md)(英語原文: [README-TOP-EN.md](./README-TOP-EN.md))、日本語版のセットアップは [JA-SETUP.md](./JA-SETUP.md) を参照してください。
+> 本ページは本家 [hoangsonww/Claude-Code-Agent-Monitor](https://github.com/hoangsonww/Claude-Code-Agent-Monitor) v2.4.5 時点(2026-10-28)の詳細ドキュメント [README-EN.md](./README-EN.md) を和訳したものです。概要ページは [README.md](./README.md)(英語原文: [README-TOP-EN.md](./README-TOP-EN.md))、日本語版のセットアップは [JA-SETUP.md](./JA-SETUP.md) を参照してください。
 
 # Claude Code、Cursor & Codex 用エージェントダッシュボード
 
@@ -354,7 +354,7 @@ flowchart LR
 | **Pre-Existing Session Detection** | 起動時のインポートで最近更新されたトランスクリプトをアクティブとしてマークし、その後の Stop イベントで、インポートされた完了済みまたは中断されたセッションを更新前に再アクティブ化します。 |
 | **Continuous Project Sync** | 起動直後の即時スイープ、デバウンスされたファイルシステムウォッチャー、`DASHBOARD_SESSION_SYNC_MS`（デフォルト 30 秒）のポーリングが、mtime キャッシュと統合されたスキャンを共有します。新規または更新されたファイルのみを再パースし、Linux で安全なウォッチャー範囲とライブのセッションブロードキャストを備えています。 |
 | **Remote Data Sources** | SSH ソースは、`scp` または WSL の `tar` を通じて Claude と Codex のホームを独立してミラーリングし、`sessions.source` にタグを付け、ライフサイクルを調整し、どちらかのプロバイダーが動作していれば正常な状態を保ちます。ポーリングのデフォルトは 15 秒で、古いデータへのフォールバックは失敗したプロバイダーにのみ影響します。認証情報はホストの SSH にとどまります。 |
-| **Remote Push Ingestion** | `POST /api/hooks/ingest-batch` は NAT の背後にあるマシンをサポートします。`REMOTE_PUSH_TOKEN` が設定されるまで無効のままで、クエリ文字列のトークンとローカルが所有するセッションを拒否し、バッチを 1000 件に制限し、`(session_id, event_type, uuid)` で重複排除し、項目ごとの部分エラーを返し、コミット後にのみブロードキャストします。 |
+| **Remote Push Ingestion** | `POST /api/hooks/ingest-batch` は NAT の背後にあるマシンからセッション合計とイベントを送信し、`POST /api/hooks/ingest-transcript` はタイトル・履歴・トークン・サブエージェントのインポート用に、オフセット検証付きでメインおよびサブエージェントの JSONL を追加します。どちらも `REMOTE_PUSH_TOKEN` または `REMOTE_PUSH_TOKEN_FILE` が設定されるまで無効のままで、クエリ文字列の認証情報とローカルが所有するセッションを拒否します。`ingest-transcript` は大きなパーサーを実行する前に認証を行います。 |
 | **Responsive Design** | モバイルレイアウトでは、グリッドを縦に積み、幅の広いテーブルをスクロールさせ、ナビゲーションを折りたたみます。 |
 | **UI Localization** | 英語、中国語、ベトナム語、韓国語、スペイン語が、UI の文言、アクセシビリティラベル、ワークフローの説明とツールチップ、モデル価格設定のガイダンス、プロバイダーホーム、Import History をカバーします。 |
 | **Seed Data** | 組み込みのスクリプトが、現実的なデモ用・開発用データを提供します。 |
@@ -642,7 +642,8 @@ flowchart LR
 | `DASHBOARD_TOKEN` | 未設定 | Bearer ヘッダー、`x-dashboard-token`、または `?token=` で `/api/*` と WebSocket を保護します。ループバックがデフォルトの信頼の境界です。 |
 | `DASHBOARD_TOKEN_FILE` | 未設定 | Docker/Kubernetes シークレット用の、ファイルでバックアップされたダッシュボードトークン；`DASHBOARD_TOKEN` が優先されます。 |
 | `DASHBOARD_HOOK_TOKEN` / `DASHBOARD_HOOK_TOKEN_FILE` | 未設定 | ループバックを超える場合の `/api/hooks/event` および `/api/hooks/codex` に対する独立した保護。 |
-| `REMOTE_PUSH_TOKEN` / `REMOTE_PUSH_TOKEN_FILE` | 未設定 | 公開される `POST /api/hooks/ingest-batch` 用の別個のゲート。このルートはデフォルトで無効で、ローカルのフックトークンを引き継ぐことはありません。 |
+| `REMOTE_PUSH_TOKEN` / `REMOTE_PUSH_TOKEN_FILE` | 未設定 | 公開される `POST /api/hooks/ingest-batch` と `/api/hooks/ingest-transcript` 用の別個のゲート。どちらもデフォルトで無効で、ローカルのフックトークンを引き継ぐことはありません。 |
+| `REMOTE_TRANSCRIPT_MAX_FILE_MB` | `256` | `ingest-transcript` が受け付ける各ファイルの最大保存サイズ(MiB)。リクエストのチャンクは別途 1 つあたり 4 MiB に制限されます。 |
 | `DASHBOARD_ALLOWED_HOSTS` | ループバック | DNS リバインディング対策のための、HTTP および WebSocket の `Host` 値の追加分（コンマ区切り）。 |
 | `DASHBOARD_ENV_PATH` | リポジトリの `.env` | プロバイダーホームのオーバーライドを永続化するために使用される書き込み可能な dotenv ファイル；コンテナのデフォルトは `/app/config/.env` です。 |
 | `CCAM_DASHBOARD_URL` | localhost 自動検出 | リモートフックの宛先。非ループバックの URL には HTTPS とフックトークンが必要です。 |
@@ -1092,6 +1093,7 @@ npm run openapi:yaml
 | ------ | ------------------ | -------------------------------------------- |
 | `POST` | `/api/hooks/event` | Claude Code のフックイベントを受信して処理します |
 | `POST` | `/api/hooks/ingest-batch` | ローミング / NAT 配下のマシンからセッションデータのバッチをプッシュします（デフォルトでは無効。下記の `REMOTE_PUSH_TOKEN` と、ペイロード形式の詳細は `server/README.md` を参照） |
+| `POST` | `/api/hooks/ingest-transcript` | リモートマシンのトランスクリプト JSONL をオフセット基準のチャンクでアップロードします（同じ `REMOTE_PUSH_TOKEN` によるゲート。セッションは先に `ingest-batch` で登録されている必要があります） |
 
 **フックイベントのペイロード:**
 
